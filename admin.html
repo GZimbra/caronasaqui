@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caronas Aqui — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d0f12;
+    --bg-card:   #13161b;
+    --bg-hover:  #1a1e25;
+    --border:    #23272f;
+    --border-md: #2e333d;
+    --accent:    #4fffb0;
+    --accent-dim:#1a4a35;
+    --danger:    #ff4f6a;
+    --warn:      #ffc94f;
+    --info:      #4fa8ff;
+    --text:      #e8ecf0;
+    --text-muted:#6b7280;
+    --text-dim:  #9ca3af;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'IBM Plex Sans', sans-serif;
+    --radius:    8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+
+  .login-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-md);
+    border-radius: 12px;
+    padding: 48px 40px;
+    width: 360px;
+    box-shadow: 0 0 60px rgba(79,255,176,0.06);
+  }
+
+  .login-box .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .login-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .login-box label {
+    display: block;
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .pw-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .pw-wrapper input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius);
+    padding: 11px 40px 11px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .pw-wrapper input:focus { border-color: var(--accent); }
+
+  .pw-wrapper button.eye {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); padding: 4px;
+    display: flex; align-items: center;
+  }
+
+  .pw-wrapper button.eye:hover { color: var(--text); }
+
+  .btn-login {
+    width: 100%;
+    background: var(--accent);
+    color: #0d0f12;
+    border: none;
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-login:hover { opacity: 0.85; }
+
+  .login-error {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--danger);
+    text-align: center;
+    min-height: 18px;
+  }
+
+  /* ── DASHBOARD ── */
+  #dashboard { display: none; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(13,15,18,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .header-logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    font-size: 14px;
+    color: var(--text-dim);
+    padding-left: 16px;
+    border-left: 1px solid var(--border-md);
+  }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  #lastUpdate {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .btn-refresh, .btn-export, .btn-logout {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-md);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-refresh { background: var(--bg-card); color: var(--text-dim); }
+  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-export { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-dim); }
+  .btn-export:hover { background: var(--accent); color: #0d0f12; }
+
+  .btn-logout { background: none; color: var(--text-muted); }
+  .btn-logout:hover { color: var(--danger); border-color: var(--danger); }
+
+  main { padding: 32px; max-width: 1300px; margin: 0 auto; }
+
+  /* ── LOADING ── */
+  #loadingState {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 16px;
+    padding: 80px 0;
+  }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border-md);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #loadingState p {
+    font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ── SEÇÃO ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    margin-top: 36px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .kpi-card:hover { border-color: var(--border-md); }
+
+  .kpi-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .kpi-value.accent { color: var(--accent); }
+  .kpi-value.danger { color: var(--danger); }
+  .kpi-value.warn   { color: var(--warn); }
+  .kpi-value.info   { color: var(--info); }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ── TABELAS ── */
+  .table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .table-header h3 {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .table-header span {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.01);
+  }
+
+  td {
+    padding: 12px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-hover); }
+
+  td.mono { font-family: var(--mono); font-size: 12px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-green  { background: var(--accent-dim); color: var(--accent); }
+  .badge-red    { background: rgba(255,79,106,0.15); color: var(--danger); }
+  .badge-yellow { background: rgba(255,201,79,0.15); color: var(--warn); }
+  .badge-blue   { background: rgba(79,168,255,0.15); color: var(--info); }
+  .badge-gray   { background: var(--bg-hover); color: var(--text-muted); }
+
+  /* ── GRID DE TABELAS ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ── BARRA HORIZONTAL ── */
+  .bar-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bar-row:last-child { border-bottom: none; }
+
+  .bar-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 130px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+
+  .bar-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 30px;
+    text-align: right;
+  }
+
+  /* ── EMPTY ── */
+  .empty-row td {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 28px;
+  }
+
+  /* ── RESPONSIVO ── */
+  @media (max-width: 768px) {
+    main { padding: 16px; }
+    header { padding: 14px 16px; }
+    .two-col { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     TELA DE LOGIN
+══════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">Caronas Aqui</div>
+    <h1>Painel Admin</h1>
+    <p>Acesso restrito a administradores.</p>
+
+    <label for="adminPw">Senha de acesso</label>
+    <div class="pw-wrapper">
+      <input type="password" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      <button class="eye" onclick="togglePwAdmin()" aria-label="Mostrar senha">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════ -->
+<div id="dashboard">
+  <header>
+    <div class="header-left">
+      <span class="header-logo">Caronas Aqui</span>
+      <span class="header-title">Painel de Administração</span>
+    </div>
+    <div class="header-right">
+      <span id="lastUpdate">—</span>
+      <button class="btn-refresh" onclick="carregarDados()">↻ Atualizar</button>
+      <button class="btn-export" onclick="exportarCSV()">↓ Exportar CSV</button>
+      <button class="btn-logout" onclick="sair()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="loadingState">
+      <div class="spinner"></div>
+      <p>CARREGANDO DADOS...</p>
+    </div>
+
+    <div id="conteudo" style="display:none"></div>
+  </main>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="js/services/firebase.js"></script>
+
+<script>
+// ════════════════════════════════════════════════════
+// ⚙️  CONFIGURAÇÃO
+// Troque a senha abaixo por uma senha forte!
+// Dica: use letras, números e símbolos (ex: "Adm!n@2025")
+// ════════════════════════════════════════════════════
+const ADMIN_PASSWORD = "admin123";
+
+// ════════════════════════════════════════════════════
+// 🔒 AUTENTICAÇÃO
+// ════════════════════════════════════════════════════
+let autenticado = false;
+let dadosGlobais = null;
+
+function togglePwAdmin() {
+  const inp = document.getElementById("adminPw");
+  const ico = document.getElementById("eyeIcon");
+  const mostrar = inp.type === "password";
+  inp.type = mostrar ? "text" : "password";
+  ico.innerHTML = mostrar
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+function fazerLogin() {
+  const pw = document.getElementById("adminPw").value;
+  const err = document.getElementById("loginError");
+
+  if (pw === ADMIN_PASSWORD) {
+    autenticado = true;
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    carregarDados();
+  } else {
+    err.textContent = "Senha incorreta. Tente novamente.";
+    document.getElementById("adminPw").value = "";
+    setTimeout(() => err.textContent = "", 3000);
+  }
+}
+
+function sair() {
+  autenticado = false;
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("adminPw").value = "";
+}
+
+// ════════════════════════════════════════════════════
+// 📊 COLETA DE DADOS
+// ════════════════════════════════════════════════════
+async function carregarDados() {
+  if (!autenticado) return;
+
+  document.getElementById("loadingState").style.display = "flex";
+  document.getElementById("conteudo").style.display = "none";
+
+  try {
+    const [snapUsuarios, snapCaronas, snapSolicitacoes, snapChats] = await Promise.all([
+      db.collection("usuarios").get(),
+      db.collection("caronas").get(),
+      db.collection("solicitacoes").get(),
+      db.collection("chats").get()
+    ]);
+
+    const usuarios    = snapUsuarios.docs.map(d => ({ id: d.id, ...d.data() }));
+    const caronas     = snapCaronas.docs.map(d => ({ id: d.id, ...d.data() }));
+    const solicitacoes= snapSolicitacoes.docs.map(d => ({ id: d.id, ...d.data() }));
+    const chats       = snapChats.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    dadosGlobais = { usuarios, caronas, solicitacoes, chats };
+
+    renderizarDashboard(dadosGlobais);
+
+    const agora = new Date();
+    document.getElementById("lastUpdate").textContent =
+      "Atualizado às " + agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("loadingState").innerHTML =
+      `<p style="color:var(--danger)">Erro ao carregar dados: ${e.message}</p>`;
+  }
+}
+
+// ════════════════════════════════════════════════════
+// 🖥️ RENDERIZAÇÃO
+// ════════════════════════════════════════════════════
+function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
+
+  // ── Métricas de caronas ──
+  const totalCaronas      = caronas.length;
+  const caronasFinalizadas= caronas.filter(c => c.status === "finalizada").length;
+  const caronasCanceladas = caronas.filter(c => c.status === "cancelada").length;
+  const caronasAtivas     = caronas.filter(c => ["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length;
+
+  // ── Passageiros únicos ──
+  const passageirosSet = new Set();
+  caronas.forEach(c => {
+    (c.passageiros || []).forEach(p => { if (p?.id) passageirosSet.add(p.id); });
+    (c.participantes || []).forEach(id => { if (id) passageirosSet.add(id); });
+  });
+  const totalPassageiros = passageirosSet.size;
+
+  // ── Total de assentos ocupados ──
+  let totalAssentos = 0;
+  caronas.forEach(c => {
+    totalAssentos += (c.passageiros?.length || 0);
+  });
+
+  // ── Solicitações ──
+  const solicitacoesAceitas  = solicitacoes.filter(s => s.status === "aceita").length;
+  const solicitacoesPendentes= solicitacoes.filter(s => s.status === "pendente").length;
+  const solicitacoesRecusadas= solicitacoes.filter(s => s.status === "recusada").length;
+
+  // ── Taxa de conclusão ──
+  const taxaConclusao = totalCaronas > 0
+    ? ((caronasFinalizadas / totalCaronas) * 100).toFixed(1)
+    : "0.0";
+
+  // ── Taxa de aceite de solicitações ──
+  const taxaAceite = solicitacoes.length > 0
+    ? ((solicitacoesAceitas / solicitacoes.length) * 100).toFixed(1)
+    : "0.0";
+
+  // ── Média de passageiros por carona finalizada ──
+  const mediaPassageiros = caronasFinalizadas > 0
+    ? (totalAssentos / caronasFinalizadas).toFixed(1)
+    : "0.0";
+
+  // ── Distância total percorrida ──
+  let distanciaTotal = 0;
+  caronas.filter(c => c.status === "finalizada").forEach(c => {
+    distanciaTotal += parseFloat(c.distancia || 0);
+  });
+
+  // ── Motoristas ativos (criaram ao menos 1 carona) ──
+  const motoristasSet = new Set(caronas.map(c => c.motoristaId).filter(Boolean));
+  const totalMotoristas = motoristasSet.size;
+
+  // ── Usuários sem foto ──
+  const semFoto = usuarios.filter(u => !u.foto).length;
+
+  // ── Top motoristas ──
+  const contagemMotoristas = {};
+  caronas.forEach(c => {
+    if (!c.motoristaId) return;
+    const nome = c.motoristaNome || c.motorista || c.motoristaId;
+    if (!contagemMotoristas[c.motoristaId]) {
+      contagemMotoristas[c.motoristaId] = { nome, total: 0, finalizadas: 0 };
+    }
+    contagemMotoristas[c.motoristaId].total++;
+    if (c.status === "finalizada") contagemMotoristas[c.motoristaId].finalizadas++;
+  });
+  const topMotoristas = Object.values(contagemMotoristas)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
+
+  // ── Status distribution ──
+  const statusCount = {};
+  caronas.forEach(c => {
+    const s = c.status || "aberta";
+    statusCount[s] = (statusCount[s] || 0) + 1;
+  });
+
+  // ── Horários de pico (hora do dia das caronas criadas) ──
+  const horaCount = {};
+  caronas.forEach(c => {
+    let hora = null;
+    if (c.criadoEm?.toDate) hora = c.criadoEm.toDate().getHours();
+    else if (c.criadoEm instanceof Date) hora = c.criadoEm.getHours();
+    if (hora !== null) {
+      const label = `${String(hora).padStart(2,"0")}h`;
+      horaCount[label] = (horaCount[label] || 0) + 1;
+    }
+  });
+  const horariosPico = Object.entries(horaCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+
+  // ── Usuários recentes ──
+  const usuariosRecentes = [...usuarios]
+    .filter(u => u.nome)
+    .slice(-8)
+    .reverse();
+
+  // ── Caronas recentes ──
+  const caronasRecentes = [...caronas]
+    .sort((a, b) => {
+      const ta = a.criadoEm?.seconds || 0;
+      const tb = b.criadoEm?.seconds || 0;
+      return tb - ta;
+    })
+    .slice(0, 8);
+
+  // ════ RENDER ════
+  const el = document.getElementById("conteudo");
+  el.innerHTML = `
+
+    <!-- KPIs PRINCIPAIS -->
+    <div class="section-label">visão geral</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Usuários cadastrados</div>
+        <div class="kpi-value accent">${usuarios.length}</div>
+        <div class="kpi-sub">${totalMotoristas} motoristas · ${semFoto} sem foto</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Caronas criadas</div>
+        <div class="kpi-value">${totalCaronas}</div>
+        <div class="kpi-sub">${caronasAtivas} ativas agora</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Caronas finalizadas</div>
+        <div class="kpi-value accent">${caronasFinalizadas}</div>
+        <div class="kpi-sub">Taxa de conclusão: ${taxaConclusao}%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Caronas canceladas</div>
+        <div class="kpi-value danger">${caronasCanceladas}</div>
+        <div class="kpi-sub">${((caronasCanceladas/Math.max(totalCaronas,1))*100).toFixed(1)}% do total</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Passageiros únicos</div>
+        <div class="kpi-value info">${totalPassageiros}</div>
+        <div class="kpi-sub">${totalAssentos} assentos ocupados no total</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Média passageiros/carona</div>
+        <div class="kpi-value">${mediaPassageiros}</div>
+        <div class="kpi-sub">Em caronas finalizadas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Distância total</div>
+        <div class="kpi-value warn">${distanciaTotal.toFixed(0)}<span style="font-size:16px;color:var(--text-muted)"> km</span></div>
+        <div class="kpi-sub">Em caronas finalizadas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Conversas abertas</div>
+        <div class="kpi-value">${chats.length}</div>
+        <div class="kpi-sub">${solicitacoes.length} solicitações totais</div>
+      </div>
+    </div>
+
+    <!-- SOLICITAÇÕES -->
+    <div class="section-label">solicitações</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total de solicitações</div>
+        <div class="kpi-value">${solicitacoes.length}</div>
+        <div class="kpi-sub">De passageiros para motoristas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Aceitas</div>
+        <div class="kpi-value accent">${solicitacoesAceitas}</div>
+        <div class="kpi-sub">Taxa de aceite: ${taxaAceite}%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pendentes</div>
+        <div class="kpi-value warn">${solicitacoesPendentes}</div>
+        <div class="kpi-sub">Aguardando resposta</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Recusadas</div>
+        <div class="kpi-value danger">${solicitacoesRecusadas}</div>
+        <div class="kpi-sub">${((solicitacoesRecusadas/Math.max(solicitacoes.length,1))*100).toFixed(1)}% do total</div>
+      </div>
+    </div>
+
+    <!-- TABELAS -->
+    <div class="section-label">análises</div>
+    <div class="two-col">
+
+      <!-- Top Motoristas -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Top Motoristas</h3>
+          <span>${topMotoristas.length} motoristas</span>
+        </div>
+        ${topMotoristas.length ? `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Caronas</th>
+              <th>Finalizadas</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topMotoristas.map((m, i) => `
+              <tr>
+                <td class="mono" style="color:var(--text-muted)">${i + 1}</td>
+                <td>${esc(m.nome)}</td>
+                <td class="mono">${m.total}</td>
+                <td class="mono"><span class="badge badge-green">${m.finalizadas}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ` : `<table><tbody><tr class="empty-row"><td>Nenhum motorista ainda</td></tr></tbody></table>`}
+      </div>
+
+      <!-- Status das Caronas -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Status das Caronas</h3>
+          <span>${totalCaronas} total</span>
+        </div>
+        ${Object.keys(statusCount).length ? `
+          ${Object.entries(statusCount)
+            .sort((a, b) => b[1] - a[1])
+            .map(([status, count]) => `
+              <div class="bar-row">
+                <span class="bar-label">${labelStatus(status)}</span>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:${(count/totalCaronas*100).toFixed(1)}%"></div>
+                </div>
+                <span class="bar-count">${count}</span>
+              </div>
+            `).join("")}
+        ` : `<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px">Sem dados</div>`}
+      </div>
+    </div>
+
+    <!-- Horários de pico -->
+    ${horariosPico.length ? `
+    <div class="section-label">horários de pico</div>
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Caronas por Horário</h3>
+        <span>Top ${horariosPico.length} horários</span>
+      </div>
+      ${horariosPico.map(([h, count]) => {
+        const max = horariosPico[0][1];
+        return `
+          <div class="bar-row">
+            <span class="bar-label">${h}</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${(count/max*100).toFixed(1)}%;background:var(--info)"></div>
+            </div>
+            <span class="bar-count">${count}</span>
+          </div>
+        `;
+      }).join("")}
+    </div>
+    ` : ""}
+
+    <!-- Tabelas de registros recentes -->
+    <div class="section-label">registros recentes</div>
+    <div class="two-col">
+
+      <!-- Usuários recentes -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Últimos Usuários</h3>
+          <span>${usuarios.length} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Nome</th><th>Curso</th><th>Foto</th></tr>
+          </thead>
+          <tbody>
+            ${usuariosRecentes.length
+              ? usuariosRecentes.map(u => `
+                <tr>
+                  <td>${esc(u.nome || "—")}</td>
+                  <td style="color:var(--text-muted)">${esc(u.curso || "—")}</td>
+                  <td>${u.foto
+                    ? `<span class="badge badge-green">✓ sim</span>`
+                    : `<span class="badge badge-gray">não</span>`}</td>
+                </tr>
+              `).join("")
+              : `<tr class="empty-row"><td colspan="3">Nenhum usuário</td></tr>`
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Caronas recentes -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Últimas Caronas</h3>
+          <span>${totalCaronas} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Motorista</th><th>Origem</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            ${caronasRecentes.length
+              ? caronasRecentes.map(c => `
+                <tr>
+                  <td>${esc(c.motoristaNome || c.motorista || "—")}</td>
+                  <td style="color:var(--text-muted);font-size:11px">${esc(resumirEndereco(c.origemEndereco))}</td>
+                  <td>${badgeStatus(c.status)}</td>
+                </tr>
+              `).join("")
+              : `<tr class="empty-row"><td colspan="3">Nenhuma carona</td></tr>`
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("loadingState").style.display = "none";
+  el.style.display = "block";
+}
+
+// ════════════════════════════════════════════════════
+// 📥 EXPORTAR CSV
+// ════════════════════════════════════════════════════
+function exportarCSV() {
+  if (!dadosGlobais) return;
+  const { usuarios, caronas, solicitacoes, chats } = dadosGlobais;
+
+  const sheets = [
+    {
+      nome: "Usuarios",
+      colunas: ["ID", "Nome", "Email", "Celular", "Curso", "Tem Foto"],
+      linhas: usuarios.map(u => [u.id, u.nome, u.email, u.celular, u.curso, u.foto ? "Sim" : "Não"])
+    },
+    {
+      nome: "Caronas",
+      colunas: ["ID", "Motorista", "Status", "Origem", "Destino", "Vagas", "Passageiros", "Distancia (km)", "Preco", "Criado Em"],
+      linhas: caronas.map(c => [
+        c.id,
+        c.motoristaNome || c.motorista,
+        c.status,
+        c.origemEndereco || "",
+        c.destinoEndereco || "",
+        c.vagasTotais || 4,
+        (c.passageiros?.length || 0),
+        c.distancia || "",
+        c.preco || "",
+        formatarData(c.criadoEm)
+      ])
+    },
+    {
+      nome: "Solicitacoes",
+      colunas: ["ID", "Carona ID", "Passageiro ID", "Passageiro Nome", "Status", "Criado Em"],
+      linhas: solicitacoes.map(s => [
+        s.id, s.caronaId, s.passageiroId, s.passageiroNome, s.status, formatarData(s.criadoEm)
+      ])
+    },
+    {
+      nome: "Resumo",
+      colunas: ["Metrica", "Valor"],
+      linhas: [
+        ["Total de usuarios", usuarios.length],
+        ["Total de caronas", caronas.length],
+        ["Caronas finalizadas", caronas.filter(c=>c.status==="finalizada").length],
+        ["Caronas canceladas", caronas.filter(c=>c.status==="cancelada").length],
+        ["Caronas ativas", caronas.filter(c=>["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length],
+        ["Total de solicitacoes", solicitacoes.length],
+        ["Solicitacoes aceitas", solicitacoes.filter(s=>s.status==="aceita").length],
+        ["Conversas abertas", chats.length],
+        ["Data de exportacao", new Date().toLocaleString("pt-BR")]
+      ]
+    }
+  ];
+
+  sheets.forEach(sheet => {
+    const rows = [sheet.colunas, ...sheet.linhas];
+    const csv = rows.map(row =>
+      row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")
+    ).join("\n");
+
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `caronas-aqui_${sheet.nome}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+// ════════════════════════════════════════════════════
+// 🛠️ HELPERS
+// ════════════════════════════════════════════════════
+function esc(v) {
+  return String(v ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+function resumirEndereco(end) {
+  if (!end) return "—";
+  const partes = end.split(",").map(p => p.trim()).filter(p => p && p.toLowerCase() !== "brasil");
+  return partes.slice(0, 2).join(", ") || end;
+}
+
+function formatarData(ts) {
+  if (!ts) return "—";
+  const d = ts?.toDate ? ts.toDate() : ts;
+  if (!(d instanceof Date) || isNaN(d)) return "—";
+  return d.toLocaleString("pt-BR");
+}
+
+function labelStatus(s) {
+  const labels = {
+    aberta: "Aberta", em_andamento: "Em andamento", lotada: "Lotada",
+    a_caminho: "A caminho", chegou: "Chegou", finalizada: "Finalizada", cancelada: "Cancelada"
+  };
+  return labels[s] || s;
+}
+
+function badgeStatus(s) {
+  const map = {
+    aberta: "badge-green", finalizada: "badge-blue",
+    cancelada: "badge-red", a_caminho: "badge-yellow",
+    lotada: "badge-yellow", em_andamento: "badge-yellow",
+    chegou: "badge-blue"
+  };
+  return `<span class="badge ${map[s] || "badge-gray"}">${labelStatus(s)}</span>`;
+}
+</script>
+</body>
+</html>

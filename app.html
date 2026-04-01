@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>App - Carona</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<!-- 🔐 VALIDA USUÁRIO ANTES DE TUDO -->
+<script>
+(function(){
+
+  const user = localStorage.getItem("user");
+
+  if(!user){
+    window.location.replace("index.html");
+    return;
+  }
+
+  // 🔥 DEFINE GLOBAL ANTES DOS SCRIPTS
+  window.usuarioLogado = JSON.parse(user);
+
+})();
+</script>
+
+<!-- 📦 LIBS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+<!-- 🔥 SERVIÇOS -->
+<script src="js/services/firebase.js"></script>
+<script src="js/services/geo.js"></script>
+<script src="js/services/map.js"></script>
+
+<!-- 🚀 FEATURES -->
+<script src="js/features/feed.js"></script>
+<script src="js/features/minha-carona.js"></script>
+<script src="js/features/chat.js"></script>
+<script src="js/features/solicitacoes.js"></script>
+<script src="js/features/profile.js"></script>
+<script src="js/features/sidebar.js"></script>
+
+<!-- 🧰 UTILS -->
+<script src="js/utils/icons.js"></script>
+<script src="js/utils/helpers.js"></script>
+<script src="js/features/localizacao-passageiros.js"></script>
+
+<!-- 🧠 CORE (SEMPRE POR ÚLTIMO) -->
+<script src="js/core/app.js"></script>
+
+</body>
+</html>
