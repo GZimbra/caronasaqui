@@ -109,7 +109,7 @@ function renderMinhaCaronaErro(mensagem) {
   container.innerHTML = `
     <div class="ride-card minha-carona-card empty-my-ride">
       <h2>Ops! Algo deu errado</h2>
-      <p>${escapeHtml(mensagem || "Tente novamente em instantes.")}</p>
+      <p>${esc(mensagem || "Tente novamente em instantes.")}</p>
       <div class="popup-actions">
         <button class="btn-secondary" onclick="inicializarMinhaCarona()">
           Tentar novamente
@@ -179,8 +179,8 @@ function renderCardMinhaCarona(carona, options = {}) {
         <div class="my-ride-history-top">
           <div>
             <p class="my-ride-helper">Registro encerrado</p>
-            <h3>${escapeHtml(dados.origem)} <span class="history-arrow">→</span> ${escapeHtml(dados.destino)}</h3>
-            <p>${dados.passageiros.length} passageiro(s) • ${escapeHtml(formatarDataCarona(dados.carona.finalizadoEm || dados.carona.criadoEm))}</p>
+            <h3>${esc(dados.origem)} <span class="history-arrow">→</span> ${esc(dados.destino)}</h3>
+            <p>${dados.passageiros.length} passageiro(s) • ${esc(formatarDataCarona(dados.carona.finalizadoEm || dados.carona.criadoEm))}</p>
           </div>
 
           <div class="my-ride-history-actions">
@@ -211,8 +211,8 @@ function renderCardMinhaCarona(carona, options = {}) {
       <div class="my-ride-header">
         <div>
           <p class="my-ride-helper">Sua carona em tempo real</p>
-          <h2>${escapeHtml(dados.origem)}</h2>
-          <p class="destino">Destino: ${escapeHtml(dados.destino)}</p>
+          <h2>${esc(dados.origem)}</h2>
+          <p class="destino">Destino: ${esc(dados.destino)}</p>
         </div>
 
         <span class="status-badge status-${dados.status}">
@@ -253,12 +253,12 @@ function renderDetalhesMinhaCarona(dados) {
     <div class="my-ride-grid">
       <div class="my-ride-item">
         <span>Origem</span>
-        <strong>${escapeHtml(dados.origem)}</strong>
+        <strong>${esc(dados.origem)}</strong>
       </div>
 
       <div class="my-ride-item">
         <span>Destino</span>
-        <strong>${escapeHtml(dados.destino)}</strong>
+        <strong>${esc(dados.destino)}</strong>
       </div>
 
       <div class="my-ride-item">
@@ -279,7 +279,7 @@ function renderDetalhesMinhaCarona(dados) {
 
       <div>
         <span class="my-ride-helper">Motorista</span>
-        <h3>${escapeHtml(dados.motoristaNome)}</h3>
+        <h3>${esc(dados.motoristaNome)}</h3>
         <p>${dados.passageiros.length} passageiro(s) confirmado(s)</p>
       </div>
     </div>
@@ -341,8 +341,8 @@ function renderListaPassageiros(passageiros) {
       ${passageiros.map(passageiro => `
         <div class="passenger-item">
           <div>
-            <strong>${escapeHtml(passageiro.nome || "Passageiro")}</strong>
-            <p>ID: ${escapeHtml(passageiro.id || "-")}</p>
+            <strong>${esc(passageiro.nome || "Passageiro")}</strong>
+            <p>ID: ${esc(passageiro.id || "-")}</p>
           </div>
 
           <div class="passenger-flags">
@@ -468,20 +468,11 @@ function formatarEnderecoCarona(carona, tipo) {
   
 function criarAvatarMotorista(nome, foto) {
   if (foto) {
-    return `<img src="${escapeHtml(foto)}" alt="${escapeHtml(nome)}" class="my-ride-avatar-img">`;
+    return `<img src="${esc(foto)}" alt="${esc(nome)}" class="my-ride-avatar-img">`;
   }
 
   const inicial = (nome || "M").trim().charAt(0).toUpperCase();
-  return `<div class="my-ride-avatar-fallback">${escapeHtml(inicial)}</div>`;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  return `<div class="my-ride-avatar-fallback">${esc(inicial)}</div>`;
 }
 
 async function atualizarStatusMinhaCarona(caronaId, novoStatus) {

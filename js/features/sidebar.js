@@ -1,84 +1,19 @@
-function usuarioParticipaDoChat(chat) {
-  return chat.participantes?.includes(usuarioLogado.id);
-}
+// ============================================================
+// SIDEBAR DIREITA — notificações de solicitações e mensagens
+// ============================================================
 
-function obterNomeContato(chat, outroId) {
-  return chat.nomes?.[outroId] || "Usuário";
-}
-
-async function montarResumoConversa(doc) {
-  const chat = doc.data();
-
-  if (!usuarioParticipaDoChat(chat)) return null;
-
-  const outroId = chat.participantes?.find(id => id !== usuarioLogado.id);
-
-  let outroNome = obterNomeContato(chat, outroId);
-  let outroFoto = chat.fotos?.[outroId] || "";
-
-  if (outroId) {
-    try {
-      const usuarioDoc = await db.collection("usuarios").doc(outroId).get();
-      if (usuarioDoc.exists) {
-        const usuarioData = usuarioDoc.data();
-        outroNome = usuarioData.nome || outroNome;
-        outroFoto = usuarioData.foto || outroFoto;
-      }
-    } catch (error) {
-      console.warn("Não foi possível carregar dados do contato:", error);
-    }
-  }
-
-  const ordem = chat.atualizadoEm?.seconds || 0;
-
-  return {
-    id: doc.id,
-    outroNome,
-    outroFoto,
-    ultimaTexto: chat.ultimaMensagem || "Toque para abrir a conversa",
-    ordem
-  };
-}
-
-function renderizarCardConversa(conversa) {
-  const ativa = conversa.id === window.chatAtualId ? "active" : "";
-  const nome = conversa.outroNome || "Contato";
-  const inicial = nome.charAt(0).toUpperCase();
-  const preview = conversa.ultimaTexto || "Toque para abrir a conversa";
-
-  const avatar = conversa.outroFoto
-    ? `<img class="conversa-avatar conversa-foto" src="${conversa.outroFoto}" alt="${inicial}">`
-    : `<div class="conversa-avatar">${inicial}</div>`;
-
-  return `
-    <div
-      class="ride-card show conversa-card ${ativa}"
-      role="button"
-      tabindex="0"
-      onclick="abrirChat('${conversa.id}', true)"
-      onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); abrirChat('${conversa.id}', true); }"
-    >
-      ${avatar}
-      <div class="conversa-info">
-        <span class="conversa-nome">${inicial}${nome.slice(1)}</span>
-        <span class="conversa-preview">${preview}</span>
-      </div>
-    </div>
-  `;
-}
+// ── Notificações ─────────────────────────────────────────────
 
 function iniciarNotificacoes() {
-  db.collection("solicitacoes")
-    .where("motoristaId", "==", usuarioLogado.id)
-    .where("status", "==", "pendente")
-    .where("lida", "==", false)
-    .onSnapshot(snapshot => {
-      renderizarSidebar(snapshot.docs);
-    });
+  db.collection('solicitacoes')
+    .where('motoristaId', '==', usuarioLogado.id)
+    .where('status',      '==', 'pendente')
+    .where('lida',        '==', false)
+    .onSnapshot(snapshot => renderizarSidebar(snapshot.docs));
 }
 
 async function renderizarSidebar(solicitacoes) {
-  const sidebar = document.getElementById("rightSidebar");
+  const sidebar = document.getElementById('rightSidebar');
   if (!sidebar) return;
 
   let html = `<h3>${ICONS.bell} Notificações</h3>`;
@@ -92,53 +27,49 @@ async function renderizarSidebar(solicitacoes) {
     html += `
       <div class="notificacao-card">
         <b>${ICONS.car} Nova solicitação</b>
-        <p>${escapeHtmlSidebar(s.passageiroNome)} quer entrar na carona</p>
+        <p>${esc(s.passageiroNome)} quer entrar na carona</p>
         <div class="popup-actions">
-          <button class="btn-primary" onclick="aceitarSolicitacao('${doc.id}', '${s.caronaId}')">
-            Aprovar
-          </button>
+          <button class="btn-primary"   onclick="aceitarSolicitacao('${doc.id}','${s.caronaId}')">Aprovar</button>
+          <button class="btn-secondary" onclick="recusarSolicitacao('${doc.id}')">Recusar</button>
         </div>
       </div>
     `;
   });
 
-  // Filtra chats apenas do usuário logado — evita buscar todos os chats do sistema
-  const chats = await db.collection("chats")
-    .where("participantes", "array-contains", usuarioLogado.id)
+  // Mensagens não lidas
+  const chats = await db.collection('chats')
+    .where('participantes', 'array-contains', usuarioLogado.id)
     .get();
 
   html += `<h3 style="margin-top:20px;">${ICONS.message} Mensagens</h3>`;
 
-  // Busca última mensagem de cada chat via subcoleção
-  const chatPromises = chats.docs.map(async doc => {
-    const data = doc.data();
-    const outroId = data.participantes?.find(id => id !== usuarioLogado.id);
-    const outroNome = obterNomeContato(data, outroId);
+  const naoLidas = (await Promise.all(
+    chats.docs.map(async doc => {
+      const data    = doc.data();
+      const outroId = data.participantes?.find(id => id !== usuarioLogado.id);
+      const nome    = data.nomes?.[outroId] || 'Usuário';
 
-    const ultimaSnap = await db
-      .collection("chats").doc(doc.id)
-      .collection("mensagens")
-      .orderBy("criadoEm", "desc")
-      .limit(1)
-      .get();
+      const snap = await db.collection('chats').doc(doc.id)
+        .collection('mensagens').orderBy('criadoEm', 'desc').limit(1).get();
+      if (snap.empty) return null;
 
-    if (ultimaSnap.empty) return null;
+      const ultima = snap.docs[0].data();
+      if (ultima.lida || ultima.userId === usuarioLogado.id) return null;
 
-    const ultima = ultimaSnap.docs[0].data();
+      return { chatId: doc.id, nome, texto: ultima.texto };
+    })
+  )).filter(Boolean);
 
-    // Só mostra se a última mensagem for do outro e não lida
-    if (ultima.lida || ultima.userId === usuarioLogado.id) return null;
+  if (!naoLidas.length) {
+    html += `<p>Nenhuma mensagem nova</p>`;
+  }
 
-    return { docId: doc.id, outroNome, texto: ultima.texto };
-  });
-
-  const resultados = await Promise.all(chatPromises);
-  resultados.filter(Boolean).forEach(({ docId, outroNome, texto }) => {
+  naoLidas.forEach(({ chatId, nome, texto }) => {
     html += `
       <div class="notificacao-card">
-        <b>${escapeHtmlSidebar(outroNome)}</b>
-        <p>${escapeHtmlSidebar(texto)}</p>
-        <button class="btn-secondary" onclick="abrirChat('${docId}')">Abrir Chat</button>
+        <b>${esc(nome)}</b>
+        <p>${esc(texto)}</p>
+        <button class="btn-secondary" onclick="abrirChat('${chatId}')">Abrir Chat</button>
       </div>
     `;
   });
@@ -146,20 +77,19 @@ async function renderizarSidebar(solicitacoes) {
   sidebar.innerHTML = html;
 }
 
+// ── Lista de conversas (aba Mensagens) ───────────────────────
+
 async function carregarConversas() {
-  const lista = document.getElementById("listaConversas");
+  const lista = document.getElementById('listaConversas');
   if (!lista) return;
 
-  lista.innerHTML = "";
+  lista.innerHTML = '';
 
-  // Filtra só os chats do usuário — não busca todos
-  const chats = await db.collection("chats")
-    .where("participantes", "array-contains", usuarioLogado.id)
+  const chats = await db.collection('chats')
+    .where('participantes', 'array-contains', usuarioLogado.id)
     .get();
 
-  const conversasBrutas = await Promise.all(chats.docs.map(montarResumoConversa));
-
-  const conversas = conversasBrutas
+  const conversas = (await Promise.all(chats.docs.map(_montarConversa)))
     .filter(Boolean)
     .sort((a, b) => b.ordem - a.ordem);
 
@@ -173,18 +103,54 @@ async function carregarConversas() {
     return;
   }
 
-  lista.innerHTML = conversas.map(renderizarCardConversa).join("");
+  lista.innerHTML = conversas.map(_cardConversa).join('');
 }
 
-function escapeHtmlSidebar(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+async function _montarConversa(doc) {
+  const chat    = doc.data();
+  if (!chat.participantes?.includes(usuarioLogado.id)) return null;
+
+  const outroId = chat.participantes.find(id => id !== usuarioLogado.id);
+  let nome = chat.nomes?.[outroId] || 'Usuário';
+  let foto = chat.fotos?.[outroId] || '';
+
+  if (outroId) {
+    try {
+      const u = await db.collection('usuarios').doc(outroId).get();
+      if (u.exists) { nome = u.data().nome || nome; foto = u.data().foto || foto; }
+    } catch { /* silencioso */ }
+  }
+
+  return {
+    id: doc.id,
+    nome,
+    foto,
+    preview: chat.ultimaMensagem || 'Toque para abrir a conversa',
+    ordem:   chat.atualizadoEm?.seconds || 0,
+  };
 }
 
-window.iniciarNotificacoes = iniciarNotificacoes;
-window.renderizarSidebar = renderizarSidebar;
-window.carregarConversas = carregarConversas;
+function _cardConversa(c) {
+  const ativa   = c.id === window.chatAtualId ? 'active' : '';
+  const inicial = (c.nome || 'C')[0].toUpperCase();
+  const avatar  = c.foto
+    ? `<img class="conversa-avatar conversa-foto" src="${c.foto}" alt="${inicial}">`
+    : `<div class="conversa-avatar">${inicial}</div>`;
+
+  return `
+    <div class="ride-card show conversa-card ${ativa}"
+         role="button" tabindex="0"
+         onclick="abrirChat('${c.id}', true)"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirChat('${c.id}',true);}">
+      ${avatar}
+      <div class="conversa-info">
+        <span class="conversa-nome">${esc(c.nome)}</span>
+        <span class="conversa-preview">${esc(c.preview)}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ── Exports ──────────────────────────────────────────────────
+
+Object.assign(window, { iniciarNotificacoes, renderizarSidebar, carregarConversas });

@@ -156,7 +156,7 @@ function abrirChat(id, jaNaAbaMensagens = false) {
         bubble.className = `msg ${isMe ? "me" : "other"}`;
         bubble.innerHTML = `
           <div class="bubble">
-            <span>${escapeHtmlChat(m.texto)}</span>
+            <span>${esc(m.texto)}</span>
             <div class="time">${time}</div>
           </div>
         `;
@@ -247,16 +247,6 @@ async function marcarMensagensComoLidas(chatId) {
   const batch = db.batch();
   snapshot.forEach(doc => batch.update(doc.ref, { lida: true }));
   await batch.commit();
-}
-
-// Escape local para o chat (evita XSS nas mensagens)
-function escapeHtmlChat(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 window.gerarChatId = gerarChatId;

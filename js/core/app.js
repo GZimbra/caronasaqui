@@ -1,21 +1,23 @@
-(function () {
+// ============================================================
+// APP SHELL — inicialização, navegação e popup de nova carona
+// ============================================================
+
+(function bootstrap() {
   if (window.appStarted) return;
   window.appStarted = true;
 
   if (!window.usuarioLogado) {
-    location.replace("index.html");
+    location.replace('index.html');
     return;
   }
 
   iniciarApp();
-})();
+}());
 
-// ============================================================
-// APP SHELL
-// ============================================================
+// ── Shell ────────────────────────────────────────────────────
 
 function iniciarApp() {
-  document.getElementById("app").innerHTML = `
+  document.getElementById('app').innerHTML = `
     <div class="layout">
       <aside class="sidebar">
         <div class="logo">
@@ -23,14 +25,22 @@ function iniciarApp() {
         </div>
 
         <nav>
-          <button onclick="loadPage('feed', this)"        class="active"  data-tooltip="Feed">${ICONS.home} <span>Feed</span></button>
-          <button onclick="loadPage('minha-carona', this)"                data-tooltip="Minha carona">${ICONS.car} <span>Minha carona</span></button>
-          <button onclick="loadPage('mapa', this)"                        data-tooltip="Mapa">${ICONS.map} <span>Mapa</span></button>
-          <button onclick="loadPage('mensagens', this)"                   data-tooltip="Mensagens">${ICONS.message} <span>Mensagens</span></button>
+          <button onclick="loadPage('feed', this)" class="active" data-tooltip="Feed">
+            ${ICONS.home} <span>Feed</span>
+          </button>
+          <button onclick="loadPage('minha-carona', this)" data-tooltip="Minha carona">
+            ${ICONS.car} <span>Minha carona</span>
+          </button>
+          <button onclick="loadPage('mapa', this)" data-tooltip="Mapa">
+            ${ICONS.map} <span>Mapa</span>
+          </button>
+          <button onclick="loadPage('mensagens', this)" data-tooltip="Mensagens">
+            ${ICONS.message} <span>Mensagens</span>
+          </button>
         </nav>
 
         <div class="user" onclick="loadPage('perfil')">
-          ${criarAvatarHTML(usuarioLogado, "user-avatar")}
+          ${criarAvatarHTML(usuarioLogado, 'user-avatar')}
           <span>${usuarioLogado.nome}</span>
         </div>
       </aside>
@@ -42,47 +52,36 @@ function iniciarApp() {
     </div>
   `;
 
-  loadPage("feed");
+  loadPage('feed');
   iniciarNotificacoes();
 }
 
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
+// ── Navegação ────────────────────────────────────────────────
 
 function loadPage(page, btn = null) {
-  const content = document.getElementById("content");
+  const content = document.getElementById('content');
 
   window.encerrarMinhaCaronaListener?.();
+  if (page !== 'mapa') window.pararLocalizacaoCompleta?.();
 
-  // Para listeners de localização de passageiros ao sair do mapa
-  if (page !== "mapa") {
-    window.pararLocalizacaoCompleta?.();
-  }
-
-  // Marca botão ativo
-  const botoesNav = document.querySelectorAll(".sidebar nav button");
-  const indicePorPagina = { feed: 0, "minha-carona": 1, mapa: 2, mensagens: 3 };
-
-  botoesNav.forEach(b => b.classList.remove("active"));
-  const botaoAtivo = btn || botoesNav[indicePorPagina[page]];
-  if (botaoAtivo) botaoAtivo.classList.add("active");
+  // Atualiza botão ativo na sidebar
+  const botoesNav = document.querySelectorAll('.sidebar nav button');
+  const indices   = { feed: 0, 'minha-carona': 1, mapa: 2, mensagens: 3 };
+  botoesNav.forEach(b => b.classList.remove('active'));
+  (btn || botoesNav[indices[page]])?.classList.add('active');
 
   const paginas = {
-    feed: renderFeed,
-    "minha-carona": renderMinhaCarona,
-    mapa: renderMapa,
-    mensagens: renderMensagens,
-    perfil: renderPerfil,
+    feed:          renderFeed,
+    'minha-carona': renderMinhaCarona,
+    mapa:          renderMapa,
+    mensagens:     renderMensagens,
+    perfil:        renderPerfil,
   };
 
-  const render = paginas[page];
-  if (render) render(content);
+  paginas[page]?.(content);
 }
 
-// ============================================================
-// PÁGINAS
-// ============================================================
+// ── Páginas ──────────────────────────────────────────────────
 
 function renderFeed(content) {
   content.innerHTML = `
@@ -90,18 +89,9 @@ function renderFeed(content) {
       <h1>Mural de Caronas</h1>
       <button class="btn-primary" onclick="abrirPopup()">+ Nova Publicação</button>
     </div>
-
-    <div class="filtros">
-      <button onclick="setFiltro('todas')">Todas</button>
-      <button onclick="setFiltro('oferta')">Ofertas</button>
-      <button onclick="setFiltro('pedido')">Pedidos</button>
-    </div>
-
     <input placeholder="Buscar rotas..." oninput="setBusca(this.value)" class="search">
-
     <div id="feed" class="feed"></div>
   `;
-
   carregarFeed();
 }
 
@@ -115,7 +105,6 @@ function renderMinhaCarona(content) {
     </div>
     <div id="minhaCaronaContainer" class="feed"></div>
   `;
-
   inicializarMinhaCarona();
 }
 
@@ -124,7 +113,6 @@ function renderMapa(content) {
     <div class="header"><h1>Mapa</h1></div>
     <div id="mapMain" class="map"></div>
   `;
-
   setTimeout(initMapMain, 100);
 }
 
@@ -140,7 +128,6 @@ function renderMensagens(content) {
       </div>
     </div>
   `;
-
   carregarConversas();
 }
 
@@ -152,14 +139,13 @@ function renderPerfil(content) {
         <div id="perfilFotoArea" class="perfil-foto-area">
           <div class="avatar-clickable" title="Clique para trocar ou remover a foto"
                onclick="toggleMenuFotoPerfil(event)">
-            ${criarAvatarHTML(usuarioLogado, "avatar-perfil", "perfilAvatarPreview")}
+            ${criarAvatarHTML(usuarioLogado, 'avatar-perfil', 'perfilAvatarPreview')}
           </div>
           <div id="menuFotoPerfil" class="menu-foto-perfil hidden">
             <button class="btn-secondary menu-foto-btn" onclick="abrirSeletorFotoPerfil()">Trocar foto</button>
             <button class="btn-secondary menu-foto-btn" onclick="removerFotoPerfil()">Remover foto</button>
           </div>
         </div>
-
         <div>
           <h2>${usuarioLogado.nome}</h2>
           <p>${usuarioLogado.email}</p>
@@ -171,23 +157,20 @@ function renderPerfil(content) {
 
       <p><b>Nome:</b> ${usuarioLogado.nome}</p>
       <p><b>Email:</b> ${usuarioLogado.email}</p>
-      <p><b>Celular:</b> ${formatarCelularExibicaoApp(usuarioLogado.celular || "—")}</p>
-      <p><b>Curso:</b> ${usuarioLogado.curso || "—"}</p>
+      <p><b>Celular:</b> ${_fmtCelular(usuarioLogado.celular || '—')}</p>
+      <p><b>Curso:</b> ${usuarioLogado.curso || '—'}</p>
     </div>
     <button class="btn-secondary" onclick="logout()">Sair da conta</button>
   `;
 }
 
-// ============================================================
-// POPUP NOVA CARONA
-// ============================================================
+// ── Popup — Nova Carona ──────────────────────────────────────
 
 function abrirPopup() {
   fecharPopup();
 
-  const popup = document.createElement("div");
-  popup.className = "popup";
-
+  const popup = document.createElement('div');
+  popup.className = 'popup';
   popup.innerHTML = `
     <div class="popup-box popup-box-wide">
       <h2>Nova Carona</h2>
@@ -195,18 +178,18 @@ function abrirPopup() {
       <input id="descricaoCarona" placeholder="Descrição da carona">
 
       <div class="popup-section">
-        <div class="cobrar-toggle-row">
-          <label class="cobrar-label">
-            ${ICONS.dollar}
-            <span>Cobrar pela carona?</span>
-          </label>
-          <button id="btnCobrar" class="toggle-cobrar active" onclick="toggleCobrar()">
-            <span class="toggle-thumb"></span>
-          </button>
-        </div>
-        <div id="precoSection">
-          <input id="precoCarona" placeholder="Preço (opcional — será calculado se vazio)">
-        </div>
+        <p class="popup-label">Horário de saída</p>
+        <input id="horarioCarona" type="time" class="input-time">
+      </div>
+
+      <div class="aviso-financeiro">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Qualquer questão financeira deve ser combinada diretamente entre motorista e passageiro, fora da plataforma.</span>
       </div>
 
       <div class="popup-section">
@@ -220,188 +203,138 @@ function abrirPopup() {
       <div class="popup-section">
         <p class="popup-label">Seleção manual no mapa</p>
         <div class="popup-actions popup-actions-grid">
-          <button id="btnSelecionarOrigem" class="btn-secondary manual-select-btn" onclick="definirOrigem()">${ICONS.circleGreen} Marcar origem</button>
+          <button id="btnSelecionarOrigem"  class="btn-secondary manual-select-btn" onclick="definirOrigem()">${ICONS.circleGreen} Marcar origem</button>
           <button id="btnSelecionarDestino" class="btn-secondary manual-select-btn" onclick="definirDestino()">${ICONS.circleRed} Marcar destino</button>
         </div>
         <p id="modoSelecaoTxt" class="popup-hint">Clique no mapa para marcar a origem da carona.</p>
       </div>
 
       <div class="location-preview">
-        <p id="origemTxt" class="location-chip">Origem não definida</p>
+        <p id="origemTxt"  class="location-chip">Origem não definida</p>
         <p id="destinoTxt" class="location-chip">Destino não definido</p>
       </div>
 
       <div id="mapSelect" class="map"></div>
 
       <div class="popup-actions">
-        <button class="btn-primary" onclick="salvarCarona()">Publicar</button>
-        <button class="btn-secondary" onclick="fecharPopup()">Cancelar</button>
+        <button class="btn-primary"    onclick="salvarCarona()">Publicar</button>
+        <button class="btn-secondary"  onclick="fecharPopup()">Cancelar</button>
       </div>
     </div>
   `;
 
   document.body.appendChild(popup);
-
-  window.modo = "origem";
+  window.modo = 'origem';
   atualizarModoSelecao();
   setTimeout(initMapPopup, 100);
 }
 
-function toggleCobrar() {
-  const btn = document.getElementById("btnCobrar");
-  const precoSection = document.getElementById("precoSection");
-  const isActive = btn.classList.contains("active");
-
-  if (isActive) {
-    btn.classList.remove("active");
-    precoSection.style.display = "none";
-    document.getElementById("precoCarona") && (document.getElementById("precoCarona").value = "");
-  } else {
-    btn.classList.add("active");
-    precoSection.style.display = "";
-  }
-}
-
-function atualizarModoSelecao() {
-  const btnOrigem  = document.getElementById("btnSelecionarOrigem");
-  const btnDestino = document.getElementById("btnSelecionarDestino");
-  const texto      = document.getElementById("modoSelecaoTxt");
-
-  if (!btnOrigem || !btnDestino || !texto) return;
-
-  btnOrigem.classList.toggle("active", window.modo === "origem");
-  btnDestino.classList.toggle("active", window.modo === "destino");
-
-  if (window.modo === "origem")  { texto.innerText = "Clique no mapa para marcar a origem da carona."; return; }
-  if (window.modo === "destino") { texto.innerText = "Agora clique no mapa para marcar o destino."; return; }
-
-  if (window.origem && window.destino) {
-    texto.innerText = "Origem e destino definidos. Use os botões acima para ajustar.";
-    return;
-  }
-
-  texto.innerText = "Escolha se deseja marcar origem ou destino manualmente.";
-}
-
-function definirOrigem()  { window.modo = "origem";  atualizarModoSelecao(); }
-function definirDestino() { window.modo = "destino"; atualizarModoSelecao(); }
-
 function fecharPopup() {
-  document.querySelector(".popup")?.remove();
-
-  if (window.mapaPopup) {
-    window.mapaPopup.remove();
-    window.mapaPopup = null;
-  }
-
+  document.querySelector('.popup')?.remove();
+  if (window.mapaPopup) { window.mapaPopup.remove(); window.mapaPopup = null; }
   window.origem  = null;
   window.destino = null;
   window.modo    = null;
 }
 
+function atualizarModoSelecao() {
+  const btnOrigem  = document.getElementById('btnSelecionarOrigem');
+  const btnDestino = document.getElementById('btnSelecionarDestino');
+  const texto      = document.getElementById('modoSelecaoTxt');
+  if (!btnOrigem || !btnDestino || !texto) return;
+
+  btnOrigem.classList.toggle('active',  window.modo === 'origem');
+  btnDestino.classList.toggle('active', window.modo === 'destino');
+
+  if (window.modo === 'origem')  { texto.innerText = 'Clique no mapa para marcar a origem da carona.'; return; }
+  if (window.modo === 'destino') { texto.innerText = 'Agora clique no mapa para marcar o destino.';   return; }
+  if (window.origem && window.destino) {
+    texto.innerText = 'Origem e destino definidos. Use os botões acima para ajustar.';
+    return;
+  }
+  texto.innerText = 'Escolha se deseja marcar origem ou destino manualmente.';
+}
+
+function definirOrigem()  { window.modo = 'origem';  atualizarModoSelecao(); }
+function definirDestino() { window.modo = 'destino'; atualizarModoSelecao(); }
+
 async function salvarCarona() {
   if (!window.origem || !window.destino) {
-    showToast("Defina a origem e o destino no mapa.", "aviso");
+    showToast('Defina a origem e o destino no mapa.', 'aviso');
     return;
   }
 
-  const existente = await db.collection("caronas")
-    .where("motoristaId", "==", usuarioLogado.id)
-    .where("status", "in", ["aberta", "em_andamento", "lotada", "a_caminho", "chegou"])
+  const ativa = await db.collection('caronas')
+    .where('motoristaId', '==', usuarioLogado.id)
+    .where('status', 'in', ['aberta', 'em_andamento', 'lotada', 'a_caminho', 'chegou'])
     .get();
 
-  if (!existente.empty) {
-    showToast("Você já tem uma carona ativa. Finalize-a antes de criar outra.", "aviso");
+  if (!ativa.empty) {
+    showToast('Você já tem uma carona ativa. Finalize-a antes de criar outra.', 'aviso');
     return;
   }
 
-  const descricao = document.getElementById("descricaoCarona").value.trim();
-  const precoInput = document.getElementById("precoCarona")?.value?.trim() || "";
-  const cobrar = document.getElementById("btnCobrar")?.classList.contains("active") ?? true;
+  const descricao = document.getElementById('descricaoCarona').value.trim();
+  const horario   = document.getElementById('horarioCarona')?.value || '';
 
   const [origemEndereco, destinoEndereco] = await Promise.all([
     pegarEndereco(window.origem.lat, window.origem.lng),
     pegarEndereco(window.destino.lat, window.destino.lng),
   ]);
 
-  const dist  = calcularDistancia(window.origem.lat, window.origem.lng, window.destino.lat, window.destino.lng);
-  const preco = cobrar ? (precoInput || calcularPreco(dist)) : "0";
-  const tipo  = cobrar ? "oferta" : "pedido";
+  const dist = calcularDistancia(
+    window.origem.lat, window.origem.lng,
+    window.destino.lat, window.destino.lng
+  );
 
-  await db.collection("caronas").add({
-    motorista:     usuarioLogado.nome,
-    motoristaNome: usuarioLogado.nome,
-    motoristaFoto: usuarioLogado.foto || "",
-    motoristaId:   usuarioLogado.id,
-
+  await db.collection('caronas').add({
+    motorista:      usuarioLogado.nome,
+    motoristaFoto:  usuarioLogado.foto || '',
+    motoristaId:    usuarioLogado.id,
     descricao,
-    preco,
-    tipo,
-    vagas:         4,
-    vagasTotais:   4,
-    status:        "aberta",
-    passageiros:   [],
-    participantes: [],
-
-    origem:  { lat: window.origem.lat, lng: window.origem.lng },
-    destino: { lat: window.destino.lat, lng: window.destino.lng },
-
+    horario,
+    tipo:           'oferta',
+    vagas:          4,
+    vagasTotais:    4,
+    status:         'aberta',
+    passageiros:    [],
+    participantes:  [],
+    origem:         { lat: window.origem.lat,  lng: window.origem.lng  },
+    destino:        { lat: window.destino.lat, lng: window.destino.lng },
     origemEndereco,
     destinoEndereco,
-    origemTexto:  origemEndereco,
-    destinoTexto: destinoEndereco,
-    distancia:    dist.toFixed(1),
-
-    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    distancia:      dist.toFixed(1),
+    criadoEm:       firebase.firestore.FieldValue.serverTimestamp(),
   });
 
   fecharPopup();
   carregarFeed();
-
-  if (!cobrar) {
-    // Muda filtro para "pedido" para o usuário ver a própria publicação
-    setFiltro("pedido");
-  }
-
-  showToast(`Carona publicada com sucesso`, "sucesso");
+  showToast('Carona publicada com sucesso!', 'sucesso');
 }
 
-// ============================================================
-// LOGOUT
-// ============================================================
+// ── Logout ───────────────────────────────────────────────────
 
 function logout() {
   auth.signOut()
-    .then(() => {
-      localStorage.removeItem("user");
-      location.replace("index.html");
-    })
-    .catch(err => {
-      console.error("Erro ao sair:", err);
-      showToast("Não foi possível sair da conta. Tente novamente.", "erro");
-    });
+    .then(() => { localStorage.removeItem('user'); location.replace('index.html'); })
+    .catch(() => showToast('Não foi possível sair da conta. Tente novamente.', 'erro'));
 }
 
-// ============================================================
-// GLOBALS
-// ============================================================
+// ── Utilitário local ─────────────────────────────────────────
 
-window.logout             = logout;
-window.loadPage           = loadPage;
-window.abrirPopup         = abrirPopup;
-window.abrirCriarCarona   = abrirPopup;
-window.fecharPopup        = fecharPopup;
-window.salvarCarona       = salvarCarona;
-window.atualizarModoSelecao = atualizarModoSelecao;
-window.definirOrigem      = definirOrigem;
-window.definirDestino     = definirDestino;
-window.toggleCobrar       = toggleCobrar;
-
-function formatarCelularExibicaoApp(cel) {
-  const nums = String(cel).replace(/\D/g, '');
-  if (nums.length === 11) return `(${nums.slice(0,2)}) ${nums.slice(2,7)}-${nums.slice(7)}`;
-  if (nums.length === 10) return `(${nums.slice(0,2)}) ${nums.slice(2,6)}-${nums.slice(6)}`;
+function _fmtCelular(cel) {
+  const n = String(cel).replace(/\D/g, '');
+  if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
+  if (n.length === 10) return `(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}`;
   return cel;
 }
+
+// ── Exports ──────────────────────────────────────────────────
+
+Object.assign(window, {
+  loadPage, abrirPopup, abrirCriarCarona: abrirPopup,
+  fecharPopup, salvarCarona, atualizarModoSelecao,
+  definirOrigem, definirDestino, logout,
+});
 
 pegarLocalizacao();

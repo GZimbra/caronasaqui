@@ -351,26 +351,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .btn-small { padding: 6px 12px; font-size: 12px; }
 
-/* ============================================================
-   FILTROS
-   ============================================================ */
-.filtros {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.filtros button {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 7px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-}
-
-.filtros button:hover { background: var(--bg-hover); color: var(--text); border-color: var(--border-md); }
-
 .search { margin-bottom: 18px; }
 
 /* ============================================================
@@ -460,24 +440,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 /* ============================================================
    TAGS / BADGES
    ============================================================ */
-.tag {
-  background: var(--bg-hover);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
 .price {
   color: var(--green);
   font-weight: 700;
   font-size: 15px;
 }
-
-.rating { font-size: 12px; color: var(--text-muted); margin: 0; }
 
 /* ============================================================
    STATUS BADGES
@@ -648,8 +615,31 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .typing { font-size: 12px; color: var(--text-dim); padding: 4px 18px; }
 
-.chat-box::-webkit-scrollbar { width: 4px; }
-.chat-box::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 4px; }
+/* ── Scrollbar global ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(79, 158, 255, 0.25);
+  border-radius: var(--radius-full);
+  transition: background 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 158, 255, 0.55);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 158, 255, 0.25) transparent;
+}
 
 /* ============================================================
    PERFIL
@@ -1036,7 +1026,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .hidden { display: none !important; }
 
 /* ============================================================
-   RESPONSIVO
+   RESPONSIVO — TABLET
    ============================================================ */
 @media (max-width: 960px) {
   .mensagens-layout { grid-template-columns: 1fr; height: auto; }
@@ -1044,9 +1034,166 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   .right-sidebar { display: none; }
 }
 
+/* ============================================================
+   RESPONSIVO — MOBILE (≤ 700px)
+   ============================================================ */
 @media (max-width: 700px) {
-  #content { padding: 16px; }
 
+  /* ── Layout geral ── */
+  .layout {
+    flex-direction: column;
+    height: 100dvh; /* dvh respeita barra do browser mobile */
+  }
+
+  /* ── Sidebar vira bottom nav ── */
+  .sidebar {
+    width: 100% !important;
+    height: 60px;
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    padding: 0 8px;
+    order: 2; /* fica embaixo do conteúdo */
+    overflow: visible;
+    justify-content: space-around;
+    align-items: center;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  /* Remove o hover expand na sidebar em mobile */
+  .sidebar:hover {
+    width: 100% !important;
+    padding: 0 8px;
+    align-items: center;
+  }
+
+  /* Logo some no mobile (bottom nav não tem logo) */
+  .logo { display: none; }
+
+  /* Nav vira row */
+  .sidebar nav {
+    flex-direction: row;
+    flex: 1;
+    gap: 0;
+    justify-content: space-around;
+    align-items: center;
+    width: auto;
+  }
+
+  /* Botões da nav: compactos e verticais */
+  .sidebar button {
+    flex-direction: column;
+    gap: 3px !important;
+    padding: 8px 12px !important;
+    font-size: 20px !important;
+    justify-content: center !important;
+    border-radius: var(--radius-sm);
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .sidebar:hover button {
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 12px !important;
+    font-size: 20px !important;
+    justify-content: center !important;
+  }
+
+  /* Labels aparecem sempre no mobile (pequenas, abaixo do ícone) */
+  .sidebar button span,
+  .sidebar:hover button span {
+    max-width: none !important;
+    opacity: 1 !important;
+    font-size: 9px !important;
+    pointer-events: auto !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 56px !important;
+    transition: none !important;
+  }
+
+  /* Remove tooltips no mobile */
+  .sidebar button::after { display: none; }
+
+  /* User (perfil) na sidebar mobile */
+  .user {
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 12px !important;
+    border-top: none;
+    justify-content: center;
+    align-items: center;
+    min-width: 48px;
+  }
+
+  .sidebar:hover .user {
+    flex-direction: column;
+    gap: 3px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .user span,
+  .sidebar:hover .user span {
+    max-width: none !important;
+    opacity: 1 !important;
+    font-size: 9px !important;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+
+  /* Remove tooltip do user */
+  .sidebar:not(:hover) .user::after { display: none; }
+
+  /* ── Área principal ── */
+  .main-area {
+    flex: 1;
+    overflow: hidden;
+    order: 1;
+  }
+
+  .right-sidebar { display: none; }
+
+  /* ── Conteúdo ── */
+  #content {
+    padding: 16px 14px;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  /* ── Tipografia ── */
+  h1 { font-size: 18px; }
+  h2 { font-size: 16px; }
+
+  /* ── Header ── */
+  .header { margin-bottom: 14px; }
+
+  /* ── Feed cards ── */
+  .ride-card { padding: 14px 14px; }
+
+  .ride-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ride-footer button {
+    width: 100%;
+  }
+
+  .ride-driver {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .ride-meta { flex-wrap: wrap; }
+
+  /* ── Minha Carona ── */
   .my-ride-header,
   .passenger-item,
   .my-ride-history-top,
@@ -1055,12 +1202,45 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   .passenger-flags { justify-content: flex-start; }
   .my-ride-actions { flex-direction: column; }
 
-  .perfil-topo { flex-direction: column; align-items: flex-start; }
+  .my-ride-grid { grid-template-columns: 1fr 1fr; }
 
+  /* ── Perfil ── */
+  .perfil-topo { flex-direction: column; align-items: flex-start; }
   .menu-foto-perfil { top: calc(100% + 10px); left: 0; transform: none; }
 
+  /* ── Popup / Modal ── */
+  .popup { padding: 12px; align-items: flex-end; }
+
+  .popup-box {
+    width: 100% !important;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 92dvh;
+    padding: 22px 18px 28px;
+  }
+
+  /* ── Mensagens ── */
+  .mensagens-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 10px;
+  }
+
+  .mensagens-lista { min-height: 200px; max-height: 240px; }
+  .mensagens-chat  { min-height: 340px; }
+
+  /* ── Mapa ── */
+  .map, .leaflet-container { height: 220px !important; }
+  #mapMain { height: 260px !important; }
+
+  /* ── Login ── */
   .login-left { display: none; }
   .login-right { flex: 1; }
+
+  /* ── Botões gerais ── */
+  .popup-actions {
+    flex-direction: column;
+  }
+  .popup-actions button { width: 100%; }
 }
 
 /* ============================================================
@@ -1073,8 +1253,7 @@ svg {
 }
 
 .time svg,
-.descricao svg,
-.rating svg {
+.descricao svg {
   margin-right: 4px;
   opacity: 0.75;
 }
@@ -1165,18 +1344,6 @@ svg {
 }
 .ride-card[data-tipo="pedido"] {
   border-left: 3px solid var(--amber);
-}
-
-/* Tag colorida por tipo */
-.tag.tag-oferta {
-  background: var(--accent-dim);
-  border-color: rgba(79,158,255,0.3);
-  color: var(--accent);
-}
-.tag.tag-pedido {
-  background: rgba(245,166,35,0.12);
-  border-color: rgba(245,166,35,0.3);
-  color: var(--amber);
 }
 
 /* Driver name com hover de link */
@@ -1315,3 +1482,34 @@ input:focus {
   flex-direction: column;
   gap: 10px;
 }
+
+/* ============================================================
+   AVISO FINANCEIRO (popup criar carona)
+   ============================================================ */
+.aviso-financeiro {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(245, 166, 35, 0.08);
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 4px 0;
+}
+.aviso-financeiro svg { color: var(--amber); margin-top: 1px; }
+
+/* Campo de horário no popup */
+.input-time {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg2, #131820);
+  color: var(--text);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.input-time:focus { outline: none; border-color: var(--accent); }

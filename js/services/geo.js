@@ -11,7 +11,3 @@ function calcularDistancia(lat1, lon1, lat2, lon2){
 
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-
-function calcularPreco(dist){
-  return (5 + dist*2).toFixed(2);
-}
