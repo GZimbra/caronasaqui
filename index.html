@@ -58,19 +58,28 @@
 
       <h2 id="titulo">Entrar</h2>
 
+      <form id="authForm" onsubmit="acaoAuth();return false;" style="display:contents">
       <div class="auth-fields" id="authFields">
-        <!-- Campo nome: aparece sempre (login usa como identificador, registro cadastra) -->
-        <input id="nomeUsuario" placeholder="Nome de usuário" autocapitalize="none" spellcheck="false">
+        <!-- Campo nome: username para acessibilidade e autofill do browser -->
+        <input id="nomeUsuario" placeholder="Nome de usuário" autocapitalize="none" spellcheck="false" autocomplete="username">
 
         <!-- Campo extra só no registro -->
         <div class="campos-extras" id="camposExtras">
           <div class="campos-extras-inner">
-            <input id="confirmarSenha" type="password" placeholder="Confirmar senha">
+            <div class="senha-wrapper">
+              <input id="confirmarSenha" type="password" placeholder="Confirmar senha" autocomplete="new-password">
+              <button type="button" class="btn-olho" onclick="toggleConfirmarSenha()" id="btnOlhoConfirmar" aria-label="Mostrar confirmação de senha">
+                <svg id="iconeOlhoConfirmar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="senha-wrapper">
-          <input id="senha" type="password" placeholder="Senha">
+          <input id="senha" type="password" placeholder="Senha" autocomplete="current-password">
           <button type="button" class="btn-olho" onclick="toggleSenha()" id="btnOlho" aria-label="Mostrar senha">
             <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -79,6 +88,7 @@
           </button>
         </div>
       </div>
+      </form>
 
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
         <button class="btn-primary" onclick="acaoAuth()" id="btnAcao">Entrar</button>
@@ -92,6 +102,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 <script src="js/services/firebase.js"></script>
 <script src="js/utils/helpers.js"></script>
 <script src="js/core/auth.js"></script>
@@ -99,19 +110,19 @@
 <script>
 if (localStorage.getItem("user")) {
   window.location.replace("app.html");
-
-  input.value = v;
 }
 
-function toggleSenha() {
-  const input = document.getElementById("senha");
-  const icone = document.getElementById("iconeOlho");
+function _toggleInput(inputId, iconeId) {
+  const input = document.getElementById(inputId);
+  const icone = document.getElementById(iconeId);
   const mostrar = input.type === "password";
   input.type = mostrar ? "text" : "password";
   icone.innerHTML = mostrar
     ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
     : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 }
+function toggleSenha() { _toggleInput("senha", "iconeOlho"); }
+function toggleConfirmarSenha() { _toggleInput("confirmarSenha", "iconeOlhoConfirmar"); }
 </script>
 
 </body>

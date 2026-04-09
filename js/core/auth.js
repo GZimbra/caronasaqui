@@ -127,17 +127,48 @@ async function registrar() {
   const slug  = _slugNome(nome);
 
   try {
-    // Verifica se nome já está em uso
+    console.log('[REGISTRO] Iniciando para:', nome, email);
+
+    // Verifica se nome já está em uso no Firestore
+    let uid;
+    try {
+      console.log('[REGISTRO] Criando conta no Firebase Auth...');
+      const res = await auth.createUserWithEmailAndPassword(email, senha);
+      uid = res.user.uid;
+      console.log('[REGISTRO] Conta Auth criada! UID:', uid);
+    } catch (authErr) {
+      console.error('[REGISTRO] Erro no Auth:', authErr.code, authErr.message);
+      if (authErr.code === 'auth/email-already-in-use') {
+        console.log('[REGISTRO] Email já existe no Auth, tentando login para recuperar uid...');
+        try {
+          const res = await auth.signInWithEmailAndPassword(email, senha);
+          uid = res.user.uid;
+          console.log('[REGISTRO] Login de recuperação OK. UID:', uid);
+        } catch (loginErr) {
+          console.error('[REGISTRO] Login de recuperação falhou:', loginErr.code);
+          showToast('Nome de usuário já está em uso. Escolha outro.', 'aviso');
+          btn.disabled = false; btn.innerText = 'Registrar';
+          return;
+        }
+      } else {
+        throw authErr;
+      }
+    }
+
+    // Agora autenticado — verifica se nome já está em uso
+    console.log('[REGISTRO] Verificando nome no Firestore (agora autenticado)...');
     const jaExiste = await db.collection('usuarios').where('nomeSlug', '==', slug).get();
     if (!jaExiste.empty) {
+      // Nome em uso — apaga a conta Auth recém criada para não deixar lixo
+      await auth.currentUser?.delete();
       showToast('Nome de usuário já está em uso. Escolha outro.', 'aviso');
       btn.disabled = false; btn.innerText = 'Registrar';
       return;
     }
+    console.log('[REGISTRO] Nome disponível.');
 
-    const res = await auth.createUserWithEmailAndPassword(email, senha);
-    const uid = res.user.uid;
-
+    // Cria o documento no Firestore
+    console.log('[REGISTRO] Salvando documento no Firestore...');
     await db.collection('usuarios').doc(uid).set({
       nome,
       nomeSlug: slug,
@@ -146,12 +177,14 @@ async function registrar() {
       curso:   '',
       foto:    ''
     });
+    console.log('[REGISTRO] Documento salvo com sucesso!');
 
     showToast('Conta criada! Faça login para continuar.', 'sucesso', 4000);
     mostrarLogin(true);
 
   } catch (e) {
-    showToast(_traduzirErro(e.code) || 'Não foi possível criar a conta.', 'erro');
+    console.error('[REGISTRO] ERRO FINAL:', e.code, e.message, e);
+    showToast(_traduzirErro(e.code) || 'Não foi possível criar a conta. Erro: ' + (e.code || e.message), 'erro');
   } finally {
     btn.disabled = false;
     btn.innerText = 'Registrar';
