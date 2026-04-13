@@ -37,6 +37,10 @@ function iniciarApp() {
           <button onclick="loadPage('mensagens', this)" data-tooltip="Mensagens">
             ${ICONS.message} <span>Mensagens</span>
           </button>
+          <button id="btnNotifMobile" class="notif-mobile-btn" onclick="toggleNotifDrawer()" data-tooltip="Notificações">
+            <span class="notif-bell-wrap">${ICONS.bell}<span id="notifBadge" class="notif-badge hidden">0</span></span>
+            <span>Avisos</span>
+          </button>
         </nav>
 
         <div class="user" onclick="loadPage('perfil')">
@@ -56,7 +60,54 @@ function iniciarApp() {
   iniciarNotificacoes();
 }
 
-// ── Navegação ────────────────────────────────────────────────
+// ── Drawer de Notificações (mobile) ─────────────────────────
+
+function toggleNotifDrawer() {
+  let drawer = document.getElementById('notifDrawer');
+  if (!drawer) {
+    drawer = document.createElement('div');
+    drawer.id = 'notifDrawer';
+    drawer.className = 'notif-drawer';
+    drawer.innerHTML = `
+      <div class="notif-drawer-header">
+        <span>${ICONS.bell} Notificações</span>
+        <button class="notif-drawer-close" onclick="fecharNotifDrawer()">✕</button>
+      </div>
+      <div id="notifDrawerContent" class="notif-drawer-content">
+        <p style="color:var(--text-muted)">Carregando...</p>
+      </div>
+    `;
+    document.body.appendChild(drawer);
+
+    // Overlay para fechar ao clicar fora
+    const overlay = document.createElement('div');
+    overlay.id = 'notifOverlay';
+    overlay.className = 'notif-overlay';
+    overlay.onclick = fecharNotifDrawer;
+    document.body.appendChild(overlay);
+  }
+
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    fecharNotifDrawer();
+  } else {
+    drawer.classList.add('open');
+    document.getElementById('notifOverlay')?.classList.add('open');
+    // Renderiza o conteúdo atual da rightSidebar no drawer
+    const sidebarContent = document.getElementById('rightSidebar');
+    const drawerContent  = document.getElementById('notifDrawerContent');
+    if (sidebarContent && drawerContent) {
+      drawerContent.innerHTML = sidebarContent.innerHTML || '<p style="color:var(--text-muted)">Nenhuma notificação</p>';
+    }
+  }
+}
+
+function fecharNotifDrawer() {
+  document.getElementById('notifDrawer')?.classList.remove('open');
+  document.getElementById('notifOverlay')?.classList.remove('open');
+}
+
+Object.assign(window, { toggleNotifDrawer, fecharNotifDrawer });
 
 function loadPage(page, btn = null) {
   const content = document.getElementById('content');

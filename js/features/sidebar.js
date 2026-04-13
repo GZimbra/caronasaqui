@@ -75,6 +75,25 @@ async function renderizarSidebar(solicitacoes) {
   });
 
   sidebar.innerHTML = html;
+
+  // ── Sincroniza badge e drawer mobile ─────────────────────
+  const totalNotifs = solicitacoes.length + naoLidas.length;
+  const badge = document.getElementById('notifBadge');
+  if (badge) {
+    if (totalNotifs > 0) {
+      badge.textContent = totalNotifs > 9 ? '9+' : totalNotifs;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  // Atualiza o drawer se estiver aberto
+  const drawer = document.getElementById('notifDrawer');
+  if (drawer?.classList.contains('open')) {
+    const drawerContent = document.getElementById('notifDrawerContent');
+    if (drawerContent) drawerContent.innerHTML = html;
+  }
 }
 
 // ── Lista de conversas (aba Mensagens) ───────────────────────
