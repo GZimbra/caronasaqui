@@ -28,12 +28,12 @@
   --shadow-lg:   0 16px 48px rgba(0,0,0,0.5);
   --transition:  0.2s ease;
 }
-
+ 
 /* ============================================================
    RESET & BASE
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
-
+ 
 body {
   margin: 0;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -43,13 +43,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-
+ 
 h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
 h1 { font-size: 22px; }
 h2 { font-size: 18px; }
 h3 { font-size: 15px; }
 p  { margin: 0 0 6px; color: var(--text-muted); }
-
+ 
 /* ============================================================
    LAYOUT
    ============================================================ */
@@ -58,21 +58,21 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   height: 100vh;
   overflow: hidden;
 }
-
+ 
 .main-area {
   flex: 1;
   display: flex;
   min-width: 0;
   overflow: hidden;
 }
-
+ 
 #content {
   flex: 1;
   padding: 28px 32px;
   overflow-y: auto;
   min-width: 0;
 }
-
+ 
 /* ============================================================
    SIDEBAR
    ============================================================ */
@@ -91,13 +91,13 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   flex-shrink: 0;
   z-index: 10;
 }
-
+ 
 .sidebar:hover {
   width: 224px;
   padding: 20px 14px;
   align-items: stretch;
 }
-
+ 
 .logo {
   display: flex;
   align-items: center;
@@ -108,9 +108,9 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   margin-bottom: 8px;
   width: 100%;
 }
-
+ 
 .sidebar:hover .logo { justify-content: flex-start; gap: 10px; }
-
+ 
 .brand-name,
 .sidebar button span,
 .user span {
@@ -126,7 +126,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
     max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
     opacity   0.18s ease 0.10s;
 }
-
+ 
 .sidebar:hover .brand-name,
 .sidebar:hover button span,
 .sidebar:hover .user span {
@@ -138,7 +138,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
     max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
     opacity   0.12s ease;
 }
-
+ 
 /* Nav */
 .sidebar nav {
   display: flex;
@@ -147,7 +147,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   flex: 1;
   width: 100%;
 }
-
+ 
 .sidebar button {
   display: flex;
   align-items: center;
@@ -166,22 +166,24 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   box-shadow: none;
   overflow: hidden;
 }
-
+ 
 .sidebar:hover button {
   justify-content: flex-start;
   gap: 12px;
   padding: 10px 12px;
   font-size: 16px;
 }
-
+ 
 .sidebar button:hover { background: var(--bg-hover); color: var(--text); }
-
+ 
 .sidebar button.active {
   background: var(--accent-dim);
   color: var(--accent);
   font-weight: 600;
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
-
+ 
 /* Tooltip when collapsed */
 .sidebar button::after {
   content: attr(data-tooltip);
@@ -200,12 +202,12 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   transition: all var(--transition);
   box-shadow: var(--shadow-sm);
 }
-
+ 
 .sidebar:not(:hover) button:hover::after {
   opacity: 1;
   transform: none;
 }
-
+ 
 /* User avatar */
 .user {
   display: flex;
@@ -221,11 +223,11 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   transition: all var(--transition);
   width: 100%;
 }
-
+ 
 .sidebar:hover .user { justify-content: flex-start; gap: 10px; }
-
+ 
 .user:hover { background: var(--bg-hover); padding: 8px 10px; border-radius: var(--radius-md); }
-
+ 
 .sidebar:not(:hover) .user::after {
   content: "Perfil";
   position: absolute;
@@ -240,11 +242,11 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   transform: translateX(-6px);
   transition: all var(--transition);
 }
-
+ 
 .sidebar:not(:hover) .user:hover::after { opacity: 1; transform: none; }
-
+ 
 .user-avatar { min-width: 36px; min-height: 36px; font-size: 14px; }
-
+ 
 /* ============================================================
    RIGHT SIDEBAR
    ============================================================ */
@@ -257,7 +259,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   overflow-y: auto;
   flex-shrink: 0;
 }
-
+ 
 .right-sidebar h3 {
   font-size: 13px;
   text-transform: uppercase;
@@ -265,7 +267,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   color: var(--text-dim);
   margin-bottom: 14px;
 }
-
+ 
 .notificacao-card {
   background: var(--bg-subtle);
   border: 1px solid var(--border);
@@ -274,11 +276,11 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   margin-bottom: 10px;
   transition: border-color var(--transition);
 }
-
+ 
 .notificacao-card:hover { border-color: var(--border-md); }
 .notificacao-card p { margin: 5px 0; color: var(--text-muted); }
 .notificacao-card .popup-actions { margin-top: 10px; }
-
+ 
 /* ============================================================
    HEADER
    ============================================================ */
@@ -288,7 +290,7 @@ p  { margin: 0 0 6px; color: var(--text-muted); }
   align-items: center;
   margin-bottom: 24px;
 }
-
+ 
 /* ============================================================
    INPUTS
    ============================================================ */
@@ -304,14 +306,14 @@ input {
   outline: none;
   transition: border-color var(--transition), background var(--transition);
 }
-
+ 
 input:focus {
   border-color: var(--accent);
   background: rgba(79,158,255,0.04);
 }
-
+ 
 input::placeholder { color: var(--text-dim); }
-
+ 
 /* ============================================================
    BUTTONS
    ============================================================ */
@@ -327,37 +329,37 @@ button {
   transition: all var(--transition);
   box-shadow: none;
 }
-
+ 
 button:hover { border-color: var(--border-md); background: rgba(255,255,255,0.07); }
 button:active { transform: scale(0.97); }
 button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
+ 
 .btn-primary {
   background: var(--accent);
   border-color: transparent;
   color: #fff;
   font-weight: 600;
 }
-
+ 
 .btn-primary:hover { background: #6aadff; border-color: transparent; }
-
+ 
 .btn-secondary {
   background: var(--bg-subtle);
   border-color: var(--border);
   color: var(--text);
 }
-
+ 
 .btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-md); }
-
+ 
 .btn-small { padding: 6px 12px; font-size: 12px; }
-
+ 
 .search { margin-bottom: 18px; }
-
+ 
 /* ============================================================
    FEED / CARDS
    ============================================================ */
 .feed { display: flex; flex-direction: column; gap: 12px; }
-
+ 
 .ride-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -367,30 +369,30 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   opacity: 0;
   transform: translateY(8px);
 }
-
+ 
 .ride-card.show {
   opacity: 1;
   transform: none;
   transition: opacity 0.3s ease, transform 0.3s ease, border-color var(--transition), box-shadow var(--transition);
 }
-
+ 
 .ride-card:hover {
   border-color: var(--border-md);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-
+ 
 .ride-top { display: flex; gap: 14px; margin-bottom: 14px; }
-
+ 
 .timeline { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
-
+ 
 .dot {
   width: 10px; height: 10px;
   background: var(--accent);
   border-radius: 50%;
   flex-shrink: 0;
 }
-
+ 
 .line {
   width: 2px;
   flex: 1;
@@ -398,13 +400,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   background: linear-gradient(to bottom, var(--accent), transparent);
   margin: 4px 0;
 }
-
+ 
 .ride-info { flex: 1; }
 .ride-info .time { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; display: block; }
 .ride-info h3 { font-size: 15px; color: var(--text); margin: 0 0 4px; }
 .ride-info .destino { color: var(--text-muted); font-size: 13px; margin: 0 0 8px; }
 .ride-info .descricao { font-size: 13px; color: var(--text-dim); }
-
+ 
 .ride-driver {
   display: flex;
   justify-content: space-between;
@@ -415,13 +417,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
-
+ 
 .driver-left { display: flex; align-items: center; gap: 10px; }
-
+ 
 .ride-meta { display: flex; align-items: center; gap: 8px; }
-
+ 
 .ride-footer { display: flex; gap: 8px; flex-wrap: wrap; }
-
+ 
 /* ============================================================
    AVATAR
    ============================================================ */
@@ -434,9 +436,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   font-weight: 700; font-size: 13px; color: var(--accent);
   overflow: hidden; flex-shrink: 0;
 }
-
+ 
 .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
+ 
 /* ============================================================
    TAGS / BADGES
    ============================================================ */
@@ -445,7 +447,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   font-weight: 700;
   font-size: 15px;
 }
-
+ 
 /* ============================================================
    STATUS BADGES
    ============================================================ */
@@ -455,7 +457,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   background: var(--bg-hover); border: 1px solid var(--border);
   font-size: 12px; white-space: nowrap; font-weight: 500;
 }
-
+ 
 .status-aberta     { color: #2ecc71; }
 .status-em_andamento,
 .status-a_caminho  { color: var(--accent); }
@@ -463,7 +465,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .status-chegou     { color: #f39c12; }
 .status-finalizada { color: #27ae60; }
 .status-cancelada  { color: var(--red); }
-
+ 
 /* ============================================================
    POPUP
    ============================================================ */
@@ -474,7 +476,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   display: flex; justify-content: center; align-items: center;
   z-index: 1000; padding: 20px; box-sizing: border-box;
 }
-
+ 
 .popup-box {
   background: #0f1620;
   border: 1px solid var(--border-md);
@@ -484,31 +486,31 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   max-height: 90vh; overflow: auto;
   box-shadow: var(--shadow-lg);
 }
-
+ 
 .popup-box-wide { width: min(560px, 100%); }
 .popup-section { margin-top: 18px; }
 .popup-label { margin: 0 0 8px; color: var(--text); font-size: 13px; font-weight: 600; }
 .popup-hint { margin: 8px 0 0; color: var(--accent); font-size: 12px; }
-
+ 
 .popup-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .popup-actions button { flex: 1; }
 .popup-actions-grid button { min-width: 160px; }
-
+ 
 .manual-select-btn.active {
   background: var(--accent);
   color: #fff;
   border-color: transparent;
 }
-
+ 
 .location-preview { display: grid; gap: 8px; margin: 14px 0 8px; }
-
+ 
 .location-chip {
   margin: 0; padding: 10px 14px;
   border-radius: var(--radius-md);
   background: var(--bg-subtle); border: 1px solid var(--border);
   color: var(--text-muted); font-size: 13px;
 }
-
+ 
 /* ============================================================
    MAPA
    ============================================================ */
@@ -517,9 +519,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-radius: var(--radius-lg);
   margin: 10px 0;
 }
-
+ 
 #mapMain { height: 480px !important; border-radius: var(--radius-lg); }
-
+ 
 /* ============================================================
    MENSAGENS
    ============================================================ */
@@ -530,7 +532,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   align-items: start;
   height: calc(100vh - 120px);
 }
-
+ 
 .mensagens-lista,
 .mensagens-chat {
   background: var(--bg-card);
@@ -538,10 +540,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
-
+ 
 .mensagens-lista { height: 100%; overflow-y: auto; padding: 12px; }
 .mensagens-chat  { height: 100%; display: flex; flex-direction: column; }
-
+ 
 /* Conversa cards */
 .conversa-card {
   display: flex; align-items: center; gap: 12px;
@@ -553,14 +555,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   margin-bottom: 4px;
   transition: all var(--transition);
 }
-
+ 
 .conversa-card:hover { background: var(--bg-hover); border-color: var(--border); }
-
+ 
 .conversa-card.active {
   background: var(--accent-dim);
   border-color: rgba(79,158,255,0.3);
 }
-
+ 
 .conversa-avatar {
   width: 42px; height: 42px; border-radius: 50%;
   background: #1c2535; border: 1px solid var(--border-md);
@@ -568,15 +570,15 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   font-weight: 700; font-size: 14px; color: var(--accent);
   flex-shrink: 0; overflow: hidden;
 }
-
+ 
 .conversa-foto { object-fit: cover; }
-
+ 
 .conversa-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .conversa-nome { color: var(--text); font-size: 14px; font-weight: 600; }
 .conversa-preview { color: var(--text-muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+ 
 .chat-placeholder { color: var(--text-dim); padding: 40px 20px; text-align: center; }
-
+ 
 /* Chat */
 .chat-header {
   display: flex; align-items: center; gap: 12px;
@@ -584,37 +586,44 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
+ 
+/* Botão voltar: visível em mobile, oculto em desktop */
+.btn-voltar-chat { display: none; }
+ 
+@media (max-width: 768px) {
+  .btn-voltar-chat { display: inline-flex; }
+}
+ 
 .chat-box {
   flex: 1; padding: 16px 18px;
   overflow-y: auto;
   display: flex; flex-direction: column; gap: 10px;
 }
-
+ 
 .msg { display: flex; }
 .msg.me    { justify-content: flex-end; }
 .msg.other { justify-content: flex-start; }
-
+ 
 .bubble {
   max-width: 68%; padding: 10px 14px;
   border-radius: 16px; font-size: 14px; line-height: 1.5;
 }
-
+ 
 .msg.me    .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
 .msg.other .bubble { background: var(--bg-hover); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
-
+ 
 .bubble .time { font-size: 10px; opacity: 0.6; margin-top: 4px; text-align: right; }
-
+ 
 .chat-input {
   display: flex; gap: 8px; padding: 14px 18px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
-
+ 
 .chat-input input { flex: 1; margin: 0; }
-
+ 
 .typing { font-size: 12px; color: var(--text-dim); padding: 4px 18px; }
-
+ 
 /* ── Scrollbar global ───────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
@@ -634,13 +643,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
-
+ 
 /* Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(79, 158, 255, 0.25) transparent;
 }
-
+ 
 /* ============================================================
    PERFIL
    ============================================================ */
@@ -650,20 +659,20 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   padding: 28px; border-radius: var(--radius-xl);
   margin-bottom: 16px;
 }
-
+ 
 .perfil-topo { display: flex; align-items: center; gap: 28px; margin-bottom: 24px; }
-
+ 
 .perfil-foto-area { position: relative; display: flex; align-items: center; }
-
+ 
 .avatar-clickable { display: inline-block; cursor: pointer; border-radius: 50%; }
-
+ 
 .avatar-perfil {
   width: 120px; height: 120px; font-size: 42px;
   position: relative;
   border: 2px solid var(--border-md);
   box-shadow: var(--shadow-md);
 }
-
+ 
 .avatar-overlay {
   position: absolute; inset: auto 0 0 0;
   background: rgba(0,0,0,0.7);
@@ -672,10 +681,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;
   opacity: 0; transition: opacity var(--transition);
 }
-
+ 
 .avatar-clickable:hover .avatar-overlay,
 .avatar-perfil:hover .avatar-overlay { opacity: 1; }
-
+ 
 .menu-foto-perfil {
   position: absolute;
   top: 50%; left: calc(100% + 14px);
@@ -688,108 +697,108 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   box-shadow: var(--shadow-lg);
   z-index: 20;
 }
-
+ 
 .menu-foto-btn { width: 100%; }
 .perfil-status { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
-
+ 
 /* ============================================================
    MINHA CARONA
    ============================================================ */
 .minha-carona-card { opacity: 1; transform: none; }
 .empty-my-ride { text-align: center; padding: 32px; }
 .my-ride-helper { color: var(--text-dim); margin: 0 0 6px; font-size: 12px; }
-
+ 
 .my-ride-header {
   display: flex; justify-content: space-between; gap: 16px;
   align-items: flex-start; margin-bottom: 18px;
 }
-
+ 
 .my-ride-stack, .my-ride-section { display: flex; flex-direction: column; gap: 12px; }
-
+ 
 .my-ride-section-title {
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; margin-bottom: 10px;
 }
-
+ 
 .my-ride-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 10px; margin-bottom: 16px;
 }
-
+ 
 .my-ride-item {
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 12px 14px;
 }
-
+ 
 .my-ride-item span { display: block; color: var(--text-dim); font-size: 11px; margin-bottom: 5px; }
-
+ 
 .my-ride-driver-box {
   display: flex; align-items: center; gap: 14px;
   background: var(--bg-subtle); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;
 }
-
+ 
 .my-ride-driver-avatar,
 .my-ride-avatar-fallback,
 .my-ride-avatar-img { width: 48px; height: 48px; border-radius: 50%; }
-
+ 
 .my-ride-avatar-fallback {
   display: flex; align-items: center; justify-content: center;
   background: #1c2535; font-weight: 700; color: var(--accent);
 }
-
+ 
 .my-ride-avatar-img { object-fit: cover; display: block; }
-
+ 
 .my-ride-passengers { margin-top: 4px; }
-
+ 
 .passenger-list { display: flex; flex-direction: column; gap: 8px; }
-
+ 
 .passenger-item {
   display: flex; justify-content: space-between; gap: 12px;
   align-items: flex-start;
   background: var(--bg-subtle); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 12px 14px;
 }
-
+ 
 .passenger-flags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
-
+ 
 .passenger-flag {
   padding: 4px 10px; border-radius: var(--radius-full);
   font-size: 11px; background: var(--bg-hover); border: 1px solid var(--border);
 }
-
+ 
 .passenger-flag.is-ok     { color: var(--green); border-color: rgba(46,204,113,0.2); }
 .passenger-flag.is-pending { color: var(--amber); border-color: rgba(245,166,35,0.2); }
-
+ 
 .empty-inline { color: var(--text-muted); font-size: 13px; }
-
+ 
 .my-ride-history-card { padding: 14px 16px; }
-
+ 
 .my-ride-history-top {
   display: flex; justify-content: space-between;
   gap: 14px; align-items: flex-start;
 }
-
+ 
 .my-ride-history-top h3 { margin: 0 0 6px; }
-
+ 
 .my-ride-history-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-
+ 
 .my-ride-history-body {
   margin-top: 14px; padding-top: 14px;
   border-top: 1px solid var(--border);
 }
-
+ 
 .history-arrow { color: var(--text-dim); }
-
+ 
 .my-ride-actions { margin-top: 16px; }
-
+ 
 /* ============================================================
    LOGIN PAGE
    ============================================================ */
 .login-page { display: flex; height: 100vh; }
-
+ 
 .login-left {
   flex: 1;
   position: relative;
@@ -803,7 +812,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   align-items: center;
   justify-content: center;
 }
-
+ 
 /* Grade de pontos sutil no fundo */
 .login-left::before {
   content: "";
@@ -813,7 +822,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   background-size: 32px 32px;
   pointer-events: none;
 }
-
+ 
 /* Linha decorativa vertical */
 .login-left::after {
   content: "";
@@ -823,7 +832,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   height: 100%;
   background: linear-gradient(to bottom, transparent, rgba(79,158,255,0.2) 30%, rgba(79,158,255,0.2) 70%, transparent);
 }
-
+ 
 .login-left-content {
   position: relative;
   z-index: 1;
@@ -834,14 +843,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   max-width: 500px;
   width: 100%;
 }
-
+ 
 /* Brand */
 .login-brand {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
+ 
 .login-brand-icon {
   width: 44px; height: 44px;
   background: var(--accent-dim);
@@ -851,14 +860,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   color: var(--accent);
   flex-shrink: 0;
 }
-
+ 
 .login-brand-name {
   font-size: 18px;
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
 }
-
+ 
 /* Hero text */
 .login-headline {
   font-size: 42px;
@@ -872,7 +881,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
+ 
 .login-sub {
   font-size: 15px;
   color: var(--text-muted);
@@ -880,7 +889,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   margin: 0;
   max-width: 380px;
 }
-
+ 
 /* Ilustração */
 .login-illustration {
   border-radius: var(--radius-lg);
@@ -888,43 +897,43 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border: 1px solid rgba(79,158,255,0.12);
   box-shadow: 0 0 40px rgba(79,158,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04);
 }
-
+ 
 .city-svg {
   display: block;
   width: 100%;
   height: auto;
 }
-
+ 
 /* Animação do carro principal */
 .car-main {
   animation: car-drive 6s ease-in-out infinite;
 }
-
+ 
 @keyframes car-drive {
   0%, 100% { transform: translateX(0px); }
   50%       { transform: translateX(8px); }
 }
-
+ 
 .car-bg {
   animation: car-drive 6s ease-in-out infinite 0.8s;
 }
-
+ 
 .car-far {
   animation: car-drive2 7s ease-in-out infinite 0.4s;
 }
-
+ 
 @keyframes car-drive2 {
   0%, 100% { transform: translateX(0px); }
   50%       { transform: translateX(-6px); }
 }
-
+ 
 /* Features */
 .login-features {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
+ 
 .login-feature {
   display: flex;
   align-items: center;
@@ -932,7 +941,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   font-size: 13.5px;
   color: var(--text-muted);
 }
-
+ 
 .login-feature-icon {
   width: 32px; height: 32px;
   background: rgba(79,158,255,0.08);
@@ -942,19 +951,19 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   color: var(--accent);
   flex-shrink: 0;
 }
-
+ 
 .login-right {
   flex: 1; display: flex; justify-content: center; align-items: center;
   background: #0a0e16;
 }
-
+ 
 .auth-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   padding: 36px; border-radius: var(--radius-xl);
   width: 340px; box-shadow: var(--shadow-lg);
 }
-
+ 
 /* Container dos campos do formulário — anima altura ao trocar de aba */
 .auth-fields {
   display: flex;
@@ -963,25 +972,25 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   overflow: hidden;
   transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+ 
 /* Todos os inputs dentro do auth-card: espaçamento zerado (gap cuida disso) */
 .auth-card input,
 .auth-card .senha-wrapper {
   margin: 0;
   width: 100%;
 }
-
+ 
 .senha-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
-
+ 
 .senha-wrapper input {
   width: 100%;
   padding-right: 42px;
 }
-
+ 
 .btn-olho {
   position: absolute;
   right: 10px;
@@ -997,34 +1006,34 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   border-radius: 4px;
   transition: color 0.2s;
 }
-
+ 
 .btn-olho:hover {
   color: var(--text);
   background: none;
   box-shadow: none;
 }
-
+ 
 .tabs {
   display: flex; gap: 4px; margin-bottom: 24px;
   background: var(--bg-subtle); border-radius: var(--radius-md);
   padding: 4px;
 }
-
+ 
 .tabs button {
   flex: 1; border-radius: var(--radius-sm);
   border: none; color: var(--text-muted);
   background: transparent; padding: 8px; font-size: 13px;
   box-shadow: none;
 }
-
+ 
 .tabs button:hover { background: var(--bg-hover); color: var(--text); }
 .tabs button.active { background: var(--bg-card); color: var(--text); font-weight: 600; }
-
+ 
 /* ============================================================
    UTILS
    ============================================================ */
 .hidden { display: none !important; }
-
+ 
 /* ============================================================
    RESPONSIVO — TABLET
    ============================================================ */
@@ -1033,10 +1042,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   .mensagens-lista, .mensagens-chat { min-height: 320px; }
   .right-sidebar { display: none; }
 }
-
+ 
 /* ── Botão sino mobile — oculto em desktop ── */
 .notif-mobile-btn { display: none; }
-
+ 
 /* ── Badge de notificações ── */
 .notif-bell-wrap {
   position: relative;
@@ -1044,7 +1053,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   align-items: center;
   justify-content: center;
 }
-
+ 
 .notif-badge {
   position: absolute;
   top: -6px;
@@ -1063,9 +1072,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   padding: 0 3px;
   pointer-events: none;
 }
-
+ 
 .notif-badge.hidden { display: none; }
-
+ 
 /* ── Drawer de notificações (mobile) ── */
 .notif-overlay {
   display: none;
@@ -1075,7 +1084,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   z-index: 199;
 }
 .notif-overlay.open { display: block; }
-
+ 
 .notif-drawer {
   position: fixed;
   top: 0;
@@ -1093,9 +1102,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   transition: transform 0.3s ease;
   overflow: hidden;
 }
-
+ 
 .notif-drawer.open { transform: translateY(0); }
-
+ 
 .notif-drawer-header {
   display: flex;
   align-items: center;
@@ -1107,7 +1116,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   color: var(--text);
   flex-shrink: 0;
 }
-
+ 
 .notif-drawer-close {
   background: none;
   border: none;
@@ -1119,24 +1128,24 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   transition: background 0.15s;
 }
 .notif-drawer-close:hover { background: var(--bg-hover); }
-
+ 
 .notif-drawer-content {
   overflow-y: auto;
   padding: 14px 18px 18px;
   flex: 1;
 }
-
+ 
 /* ============================================================
    RESPONSIVO — MOBILE (≤ 700px)
    ============================================================ */
 @media (max-width: 700px) {
-
+ 
   /* ── Layout geral ── */
   .layout {
     flex-direction: column;
     height: 100dvh; /* dvh respeita barra do browser mobile */
   }
-
+ 
   /* ── Sidebar vira bottom nav ── */
   .sidebar {
     width: 100% !important;
@@ -1154,17 +1163,17 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     bottom: 0;
     z-index: 100;
   }
-
+ 
   /* Remove o hover expand na sidebar em mobile */
   .sidebar:hover {
     width: 100% !important;
     padding: 0 8px;
     align-items: center;
   }
-
+ 
   /* Logo some no mobile (bottom nav não tem logo) */
   .logo { display: none; }
-
+ 
   /* Nav vira row */
   .sidebar nav {
     flex-direction: row;
@@ -1174,7 +1183,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     align-items: center;
     width: auto;
   }
-
+ 
   /* Botões da nav: compactos e verticais */
   .sidebar button {
     flex-direction: column;
@@ -1186,7 +1195,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     min-width: 48px;
     min-height: 48px;
   }
-
+ 
   .sidebar:hover button {
     flex-direction: column;
     gap: 3px;
@@ -1194,7 +1203,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     font-size: 20px !important;
     justify-content: center !important;
   }
-
+ 
   /* Labels aparecem sempre no mobile (pequenas, abaixo do ícone) */
   .sidebar button span,
   .sidebar:hover button span {
@@ -1208,13 +1217,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     max-width: 56px !important;
     transition: none !important;
   }
-
+ 
   /* Remove tooltips no mobile */
   .sidebar button::after { display: none; }
-
+ 
   /* Botão de notificações aparece apenas no mobile */
-  .notif-mobile-btn { display: flex; }
-
+  .notif-mobile-btn { display: flex !important; }
+ 
   /* User (perfil) na sidebar mobile */
   .user {
     flex-direction: column;
@@ -1224,15 +1233,17 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     justify-content: center;
     align-items: center;
     min-width: 48px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
-
+ 
   .sidebar:hover .user {
     flex-direction: column;
     gap: 3px;
     justify-content: center;
     align-items: center;
   }
-
+ 
   .user span,
   .sidebar:hover .user span {
     max-width: none !important;
@@ -1241,103 +1252,103 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     pointer-events: auto !important;
     transition: none !important;
   }
-
+ 
   /* Remove tooltip do user */
   .sidebar:not(:hover) .user::after { display: none; }
-
+ 
   /* ── Área principal ── */
   .main-area {
     flex: 1;
     overflow: hidden;
     order: 1;
   }
-
+ 
   .right-sidebar { display: none; }
-
+ 
   /* ── Conteúdo ── */
   #content {
     padding: 16px 14px;
     overflow-y: auto;
     height: 100%;
   }
-
+ 
   /* ── Tipografia ── */
   h1 { font-size: 18px; }
   h2 { font-size: 16px; }
-
+ 
   /* ── Header ── */
   .header { margin-bottom: 14px; }
-
+ 
   /* ── Feed cards ── */
   .ride-card { padding: 14px 14px; }
-
+ 
   .ride-footer {
     flex-direction: column;
     gap: 8px;
   }
-
+ 
   .ride-footer button {
     width: 100%;
   }
-
+ 
   .ride-driver {
     flex-direction: column;
     gap: 8px;
     align-items: flex-start;
   }
-
+ 
   .ride-meta { flex-wrap: wrap; }
-
+ 
   /* ── Minha Carona ── */
   .my-ride-header,
   .passenger-item,
   .my-ride-history-top,
   .my-ride-history-actions { flex-direction: column; align-items: flex-start; }
-
+ 
   .passenger-flags { justify-content: flex-start; }
   .my-ride-actions { flex-direction: column; }
-
+ 
   .my-ride-grid { grid-template-columns: 1fr 1fr; }
-
+ 
   /* ── Perfil ── */
   .perfil-topo { flex-direction: column; align-items: flex-start; }
   .menu-foto-perfil { top: calc(100% + 10px); left: 0; transform: none; }
-
+ 
   /* ── Popup / Modal ── */
   .popup { padding: 12px; align-items: flex-end; }
-
+ 
   .popup-box {
     width: 100% !important;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     max-height: 92dvh;
     padding: 22px 18px 28px;
   }
-
+ 
   /* ── Mensagens ── */
   .mensagens-layout {
     grid-template-columns: 1fr;
     height: auto;
     gap: 10px;
   }
-
+ 
   .mensagens-lista { min-height: 200px; max-height: 240px; }
   .mensagens-chat  { min-height: 340px; }
-
+ 
   /* ── Mapa ── */
   .map, .leaflet-container { height: 220px !important; }
   #mapMain { height: 260px !important; }
-
+ 
   /* ── Login ── */
   .login-left { display: none; }
   .login-right { flex: 1; }
-
+ 
   /* ── Botões gerais ── */
   .popup-actions {
     flex-direction: column;
   }
   .popup-actions button { width: 100%; }
 }
-
+ 
 /* ============================================================
    ÍCONES SVG — alinhamento inline
    ============================================================ */
@@ -1346,23 +1357,23 @@ svg {
   vertical-align: middle;
   flex-shrink: 0;
 }
-
+ 
 .time svg,
 .descricao svg {
   margin-right: 4px;
   opacity: 0.75;
 }
-
+ 
 .sidebar nav button svg {
   width: 18px;
   height: 18px;
 }
-
+ 
 .logo svg {
   width: 20px;
   height: 20px;
 }
-
+ 
 /* ============================================================
    TOGGLE COBRAR CARONA
    ============================================================ */
@@ -1373,7 +1384,7 @@ svg {
   padding: 10px 0 8px;
   gap: 12px;
 }
-
+ 
 .cobrar-label {
   display: flex;
   align-items: center;
@@ -1382,11 +1393,11 @@ svg {
   color: var(--text-muted);
   font-weight: 500;
 }
-
+ 
 .cobrar-label svg {
   opacity: 0.7;
 }
-
+ 
 .toggle-cobrar {
   position: relative;
   width: 40px;
@@ -1399,12 +1410,12 @@ svg {
   transition: background 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
-
+ 
 .toggle-cobrar.active {
   background: var(--accent-dim);
   border-color: var(--accent);
 }
-
+ 
 .toggle-thumb {
   position: absolute;
   top: 2px;
@@ -1415,24 +1426,24 @@ svg {
   background: var(--text-dim);
   transition: transform 0.2s, background 0.2s;
 }
-
+ 
 .toggle-cobrar.active .toggle-thumb {
   transform: translateX(18px);
   background: var(--accent);
 }
-
+ 
 #precoSection {
   transition: opacity 0.2s;
 }
-
+ 
 #precoSection input {
   margin-top: 4px;
 }
-
+ 
 /* ============================================================
    MELHORIAS VISUAIS — CARDS, PERFIL MODAL, SHIMMER, DRIVER LINK
    ============================================================ */
-
+ 
 /* Bordas coloridas sutis por tipo de carona */
 .ride-card[data-tipo="oferta"] {
   border-left: 3px solid var(--accent);
@@ -1440,7 +1451,7 @@ svg {
 .ride-card[data-tipo="pedido"] {
   border-left: 3px solid var(--amber);
 }
-
+ 
 /* Driver name com hover de link */
 .driver-name-link {
   transition: color var(--transition);
@@ -1450,7 +1461,7 @@ svg {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-
+ 
 /* Shimmer de carregamento */
 .loading-shimmer {
   background: linear-gradient(90deg, var(--border) 25%, var(--border-md) 50%, var(--border) 75%);
@@ -1461,7 +1472,7 @@ svg {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
+ 
 /* Modal de perfil de usuário */
 #modalPerfilUsuario .popup-box {
   min-width: 320px;
@@ -1475,7 +1486,7 @@ svg {
 #modalPerfilUsuario .perfil-card p:last-child {
   border-bottom: none;
 }
-
+ 
 /* Melhorias no header */
 .header {
   display: flex;
@@ -1483,7 +1494,7 @@ svg {
   justify-content: space-between;
   margin-bottom: 20px;
 }
-
+ 
 /* Melhorias nos inputs */
 input {
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -1491,7 +1502,7 @@ input {
 input:focus {
   box-shadow: 0 0 0 3px rgba(79,158,255,0.12);
 }
-
+ 
 /* Ride footer botões mais espaçados */
 .ride-footer {
   gap: 10px;
@@ -1501,7 +1512,7 @@ input:focus {
   flex: 1;
   min-width: 0;
 }
-
+ 
 /* Perfil card melhoria */
 .perfil-card p {
   padding: 10px 0;
@@ -1517,14 +1528,14 @@ input:focus {
   color: var(--text);
   margin-right: 6px;
 }
-
+ 
 /* Auth card — melhora visual do login */
 .auth-card {
   box-shadow: 0 0 0 1px var(--border), var(--shadow-lg);
 }
-
+ 
 /* Login left — gradiente já definido acima */
-
+ 
 /* ============================================================
    BOTÃO GOOGLE
    ============================================================ */
@@ -1534,11 +1545,11 @@ input:focus {
   justify-content: center;
   gap: 10px;
 }
-
+ 
 .btn-google svg {
   flex-shrink: 0;
 }
-
+ 
 /* ============================================================
    ANIMAÇÃO CAMPOS EXTRAS (registro ↔ login)
    Técnica grid-template-rows: 0fr → 1fr, zero layout jump
@@ -1548,11 +1559,11 @@ input:focus {
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+ 
 .campos-extras.campos-abertos {
   grid-template-rows: 1fr;
 }
-
+ 
 .campos-extras-inner {
   overflow: hidden;
   display: flex;
@@ -1562,11 +1573,11 @@ input:focus {
   padding-bottom: 0;
   transition: padding-bottom 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+ 
 .campos-extras.campos-abertos .campos-extras-inner {
   padding-bottom: 0;
 }
-
+ 
 /* Remove margin individual dos inputs dentro do auth-fields */
 .auth-fields > input,
 .auth-fields > .senha-wrapper {
@@ -1577,7 +1588,7 @@ input:focus {
   flex-direction: column;
   gap: 10px;
 }
-
+ 
 /* ============================================================
    AVISO FINANCEIRO (popup criar carona)
    ============================================================ */
@@ -1595,7 +1606,7 @@ input:focus {
   margin: 4px 0;
 }
 .aviso-financeiro svg { color: var(--amber); margin-top: 1px; }
-
+ 
 /* Campo de horário no popup */
 .input-time {
   width: 100%;

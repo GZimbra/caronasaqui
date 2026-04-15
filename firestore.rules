@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /usuarios/{userId} {
+      allow list: if true;
+      allow get: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /caronas/{caronaId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.motoristaId;
+
+      match /localizacoes/{passageiroId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == passageiroId;
+      }
+    }
+
+    match /solicitacoes/{solId} {
+      allow read: if request.auth != null
+        && (request.auth.uid == resource.data.passageiroId
+         || request.auth.uid == resource.data.motoristaId);
+      allow create: if request.auth != null;
+      allow update: if request.auth != null
+        && (request.auth.uid == resource.data.passageiroId
+         || request.auth.uid == resource.data.motoristaId);
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.passageiroId;
+    }
+
+    match /chats/{chatId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null
+        && request.auth.uid in resource.data.participantes;
+
+      match /mensagens/{msgId} {
+        allow read, write: if request.auth != null
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes;
+      }
+    }
+
+    match /mensagens/{conversaId}/msgs/{msgId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

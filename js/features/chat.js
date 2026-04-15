@@ -19,33 +19,39 @@ async function garantirChat(chatId, outroId, outroNome = "Usuário") {
   if (!chatId || !outroId) return null;
 
   const ref = db.collection("chats").doc(chatId);
-  const doc = await ref.get();
-  const atual = doc.exists ? doc.data() : {};
 
-  const participantes = Array.from(new Set([
-    ...(atual.participantes || []),
-    usuarioLogado.id,
-    outroId
-  ]));
-
-  const nomes = {
-    ...(atual.nomes || {}),
-    [usuarioLogado.id]: usuarioLogado.nome,
-    [outroId]: outroNome || atual.nomes?.[outroId] || "Usuário"
-  };
-
-  const fotos = {
-    ...(atual.fotos || {}),
-    [usuarioLogado.id]: usuarioLogado.foto || ""
-  };
-
-  await ref.set({
-    participantes,
-    nomes,
-    fotos,
-    criadoEm: atual.criadoEm || firebase.firestore.FieldValue.serverTimestamp(),
-    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
-  }, { merge: true });
+  // Não faz get() antes — leitura exigiria que uid já estivesse em participantes.
+  // Tenta criar direto (allow create: qualquer autenticado).
+  // Se o doc já existir, o Firestore lança erro e o catch faz apenas update.
+  try {
+    await ref.set({
+      participantes: [usuarioLogado.id, outroId],
+      nomes: {
+        [usuarioLogado.id]: usuarioLogado.nome,
+        [outroId]: outroNome || "Usuário"
+      },
+      fotos: {
+        [usuarioLogado.id]: usuarioLogado.foto || ""
+      },
+      criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (_errSet) {
+    // Documento já existe: só atualiza os campos do remetente atual.
+    // O uid já está em participantes neste caso, então a regra de update passa.
+    try {
+      await ref.update({
+        participantes: firebase.firestore.FieldValue.arrayUnion(usuarioLogado.id, outroId),
+        [`nomes.${usuarioLogado.id}`]: usuarioLogado.nome,
+        [`fotos.${usuarioLogado.id}`]: usuarioLogado.foto || "",
+        atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (_errUpdate) {
+      // Se também falhar (ex: usuário não está em participantes por algum motivo),
+      // ignora silenciosamente — o chat pode ter sido criado pelo outro participante.
+      console.warn("garantirChat: update ignorado", _errUpdate.code);
+    }
+  }
 
   return chatId;
 }
@@ -54,9 +60,16 @@ function abrirAbaMensagens(chatId = null) {
   if (chatId) window.chatAtualId = chatId;
   loadPage("mensagens");
   if (chatId) {
-    requestAnimationFrame(() => {
-      abrirChat(chatId, true);
-    });
+    // Aguarda o DOM da aba mensagens estar completamente renderizado
+    const tentarAbrir = (tentativas = 0) => {
+      const panel = document.getElementById("chatPanel");
+      if (panel) {
+        abrirChat(chatId, true);
+      } else if (tentativas < 20) {
+        setTimeout(() => tentarAbrir(tentativas + 1), 50);
+      }
+    };
+    tentarAbrir();
   }
 }
 
@@ -78,7 +91,8 @@ async function iniciarChatDaCarona(caronaId) {
 }
 
 function abrirChat(id, jaNaAbaMensagens = false) {
-  if (!jaNaAbaMensagens && !document.getElementById("listaConversas")) {
+  // Se a aba de mensagens ainda não foi carregada, navega para ela primeiro
+  if (!document.getElementById("listaConversas")) {
     abrirAbaMensagens(id);
     return;
   }
@@ -91,10 +105,13 @@ function abrirChat(id, jaNaAbaMensagens = false) {
     window.chatUnsubscribe = null;
   }
 
-  const content = document.getElementById("chatPanel") || document.getElementById("content");
-  content.innerHTML = `
+  // Sempre renderiza dentro do chatPanel (painel direito da aba mensagens)
+  const panel = document.getElementById("chatPanel");
+  if (!panel) return;
+
+  panel.innerHTML = `
     <div class="chat-header">
-      <button class="btn-secondary" onclick="voltarFeed()">←</button>
+      <button class="btn-secondary btn-voltar-chat" onclick="voltarParaLista()">←</button>
       <h2 id="chatTitulo">Chat</h2>
     </div>
 
@@ -167,7 +184,7 @@ function abrirChat(id, jaNaAbaMensagens = false) {
     });
 }
 
-function voltarFeed() {
+function voltarParaLista() {
   if (window.chatUnsubscribe) {
     window.chatUnsubscribe();
     window.chatUnsubscribe = null;
@@ -182,11 +199,13 @@ function voltarFeed() {
         Selecione um contato para continuar a conversa
       </div>
     `;
-    carregarConversas();
-    return;
   }
+  carregarConversas();
+}
 
-  loadPage("mensagens");
+// Mantido para compatibilidade com chamadas externas
+function voltarFeed() {
+  voltarParaLista();
 }
 
 async function enviarMsg(id) {
@@ -255,4 +274,5 @@ window.iniciarChatDaCarona = iniciarChatDaCarona;
 window.abrirAbaMensagens = abrirAbaMensagens;
 window.abrirChat = abrirChat;
 window.voltarFeed = voltarFeed;
+window.voltarParaLista = voltarParaLista;
 window.enviarMsg = enviarMsg;
