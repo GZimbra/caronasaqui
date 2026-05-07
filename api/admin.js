@@ -192,11 +192,23 @@ function decodeDocument(doc) {
 async function listCollection(projectId, collection) {
   const sa = loadServiceAccount();
   const token = sa ? await getAccessToken() : await getFirebaseUserToken();
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collection}?pageSize=300`;
-  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  if (!response.ok) throw new Error(`Firestore ${collection}: ${response.status}`);
-  const data = await response.json();
-  return (data.documents || []).map(decodeDocument);
+  const documents = [];
+  let pageToken = "";
+
+  do {
+    const params = new URLSearchParams({ pageSize: "300" });
+    if (pageToken) params.set("pageToken", pageToken);
+
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collection}?${params}`;
+    const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) throw new Error(`Firestore ${collection}: ${response.status}`);
+
+    const data = await response.json();
+    documents.push(...(data.documents || []));
+    pageToken = data.nextPageToken || "";
+  } while (pageToken);
+
+  return documents.map(decodeDocument);
 }
 
 async function listCollectionOptional(projectId, collection) {

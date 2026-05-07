@@ -132,7 +132,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
 
   // ── Métricas de caronas ──
   const totalCaronas      = caronas.length;
-  const caronasFinalizadas= caronas.filter(c => c.status === "finalizada").length;
+  const caronasFinalizadas= caronas.filter(isCaronaRealizadaAdmin).length;
   const caronasCanceladas = caronas.filter(c => c.status === "cancelada").length;
   const caronasAtivas     = caronas.filter(c => ["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length;
 
@@ -172,7 +172,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
 
   // ── Distância total percorrida ──
   let distanciaTotal = 0;
-  caronas.filter(c => c.status === "finalizada").forEach(c => {
+  caronas.filter(isCaronaRealizadaAdmin).forEach(c => {
     distanciaTotal += parseFloat(c.distancia || 0);
   });
 
@@ -192,7 +192,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
       contagemMotoristas[c.motoristaId] = { nome, total: 0, finalizadas: 0 };
     }
     contagemMotoristas[c.motoristaId].total++;
-    if (c.status === "finalizada") contagemMotoristas[c.motoristaId].finalizadas++;
+    if (isCaronaRealizadaAdmin(c)) contagemMotoristas[c.motoristaId].finalizadas++;
   });
   const topMotoristas = Object.values(contagemMotoristas)
     .sort((a, b) => b.total - a.total)
@@ -239,7 +239,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     .sort((a, b) => (a.nome || "").localeCompare(b.nome || "", "pt-BR"));
 
   const caronasRealizadas = [...caronas]
-    .filter(c => c.status === "finalizada")
+    .filter(isCaronaRealizadaAdmin)
     .sort((a, b) => obterMillisAdmin(b.finalizadoEm || b.atualizadoEm || b.criadoEm) - obterMillisAdmin(a.finalizadoEm || a.atualizadoEm || a.criadoEm));
 
   const caronasMarcadas = [...caronas]
@@ -308,6 +308,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     </div>
 
     <div class="section-label">graficos</div>
+    ${renderGraficoFirebaseAdmin(usuarios.length, caronasRealizadas.length)}
     ${renderGraficoResumoVisualAdmin(graficoResumoCaronas)}
     <div class="charts-grid">
       ${renderGraficoBarrasAdmin("Corridas por status", Object.entries(statusCount)
@@ -508,6 +509,14 @@ function renderGraficoBarrasAdmin(titulo, itens, totalReferencia) {
   `;
 }
 
+function renderGraficoFirebaseAdmin(totalUsuarios, corridasRealizadas) {
+  const maiorValor = Math.max(totalUsuarios, corridasRealizadas, 1);
+  return renderGraficoBarrasAdmin("Dados do Firebase", [
+    ["Usuarios cadastrados", totalUsuarios, "var(--accent)"],
+    ["Corridas realizadas", corridasRealizadas, "var(--info)"],
+  ], maiorValor);
+}
+
 function renderGraficoResumoVisualAdmin(itens) {
   const total = itens.reduce((acc, [, count]) => acc + Number(count || 0), 0);
   const validos = itens.filter(([, count]) => Number(count) > 0);
@@ -619,7 +628,7 @@ function renderTabelaCaronasMarcadasAdmin(caronas) {
 function exportarCSV() {
   if (!dadosGlobais) return;
   const { usuarios, caronas, solicitacoes, chats } = dadosGlobais;
-  const caronasRealizadas = caronas.filter(c => c.status === "finalizada");
+  const caronasRealizadas = caronas.filter(isCaronaRealizadaAdmin);
   const caronasMarcadas = caronas.filter(c => ["aberta", "lotada", "a_caminho", "em_andamento", "chegou"].includes(c.status || "aberta"));
 
   const sheets = [
@@ -693,7 +702,7 @@ function exportarCSV() {
       linhas: [
         ["Total de usuarios", usuarios.length],
         ["Total de caronas", caronas.length],
-        ["Caronas finalizadas", caronas.filter(c=>c.status==="finalizada").length],
+        ["Caronas finalizadas", caronas.filter(isCaronaRealizadaAdmin).length],
         ["Caronas canceladas", caronas.filter(c=>c.status==="cancelada").length],
         ["Caronas ativas", caronas.filter(c=>["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length],
         ["Total de solicitacoes", solicitacoes.length],
@@ -739,6 +748,10 @@ function contarPassageiros(carona) {
   const passageiros = Array.isArray(carona?.passageiros) ? carona.passageiros.length : 0;
   const participantes = Array.isArray(carona?.participantes) ? carona.participantes.length : 0;
   return Math.max(passageiros, participantes);
+}
+
+function isCaronaRealizadaAdmin(carona) {
+  return ["finalizada", "realizada", "completed"].includes(String(carona?.status || "").toLowerCase());
 }
 
 function formatarData(ts) {
