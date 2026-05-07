@@ -10,6 +10,14 @@
       "destination": "/admin/index.html"
     },
     {
+      "source": "/admin/css/:path*",
+      "destination": "/admin/css/:path*"
+    },
+    {
+      "source": "/admin/js/:path*",
+      "destination": "/admin/js/:path*"
+    },
+    {
       "source": "/admin/login",
       "destination": "/api/admin?action=login"
     },
@@ -59,6 +67,19 @@
     }
   ],
   "headers": [
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

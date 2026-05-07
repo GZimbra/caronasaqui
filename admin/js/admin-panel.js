@@ -240,6 +240,18 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     .filter(c => ["aberta", "lotada", "a_caminho", "em_andamento", "chegou"].includes(c.status || "aberta"))
     .sort((a, b) => obterMillisAdmin(b.criadoEm || b.atualizadoEm) - obterMillisAdmin(a.criadoEm || a.atualizadoEm));
 
+  const graficoResumoCaronas = [
+    ["Realizadas", caronasRealizadas.length, "var(--accent)"],
+    ["Marcadas", caronasMarcadas.length, "var(--info)"],
+    ["Canceladas", caronasCanceladas, "var(--danger)"],
+  ];
+
+  const graficoSolicitacoes = [
+    ["Aceitas", solicitacoesAceitas, "var(--accent)"],
+    ["Pendentes", solicitacoesPendentes, "var(--warn)"],
+    ["Recusadas", solicitacoesRecusadas, "var(--danger)"],
+  ];
+
   // ════ RENDER ════
   const el = document.getElementById("conteudo");
   el.innerHTML = `
@@ -289,6 +301,17 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
       </div>
     </div>
 
+    <div class="section-label">graficos</div>
+    ${renderGraficoResumoVisualAdmin(graficoResumoCaronas)}
+    <div class="charts-grid">
+      ${renderGraficoBarrasAdmin("Corridas por status", Object.entries(statusCount)
+        .sort((a, b) => b[1] - a[1])
+        .map(([status, count]) => [labelStatus(status), count, "var(--accent)"]), totalCaronas)}
+      ${renderGraficoBarrasAdmin("Realizadas x Marcadas", graficoResumoCaronas, Math.max(totalCaronas, 1))}
+      ${renderGraficoBarrasAdmin("Solicitacoes", graficoSolicitacoes, Math.max(solicitacoes.length, 1))}
+      ${renderGraficoBarrasAdmin("Caronas por horario", horariosPico.map(([h, count]) => [h, count, "var(--info)"]), horariosPico[0]?.[1] || 1)}
+    </div>
+
     <div class="section-label">dados do banco</div>
 
     ${renderTabelaUsuariosAdmin(usuariosOrdenados)}
@@ -320,11 +343,8 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
       </div>
     </div>
 
-    <!-- TABELAS -->
     <div class="section-label">análises</div>
     <div class="two-col">
-
-      <!-- Top Motoristas -->
       <div class="table-card">
         <div class="table-header">
           <h3>Top Motoristas</h3>
@@ -353,51 +373,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
         </table>
         ` : `<table><tbody><tr class="empty-row"><td>Nenhum motorista ainda</td></tr></tbody></table>`}
       </div>
-
-      <!-- Status das Caronas -->
-      <div class="table-card">
-        <div class="table-header">
-          <h3>Status das Caronas</h3>
-          <span>${totalCaronas} total</span>
-        </div>
-        ${Object.keys(statusCount).length ? `
-          ${Object.entries(statusCount)
-            .sort((a, b) => b[1] - a[1])
-            .map(([status, count]) => `
-              <div class="bar-row">
-                <span class="bar-label">${labelStatus(status)}</span>
-                <div class="bar-track">
-                  <div class="bar-fill" style="width:${(count/totalCaronas*100).toFixed(1)}%"></div>
-                </div>
-                <span class="bar-count">${count}</span>
-              </div>
-            `).join("")}
-        ` : `<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px">Sem dados</div>`}
-      </div>
     </div>
-
-    <!-- Horários de pico -->
-    ${horariosPico.length ? `
-    <div class="section-label">horários de pico</div>
-    <div class="table-card">
-      <div class="table-header">
-        <h3>Caronas por Horário</h3>
-        <span>Top ${horariosPico.length} horários</span>
-      </div>
-      ${horariosPico.map(([h, count]) => {
-        const max = horariosPico[0][1];
-        return `
-          <div class="bar-row">
-            <span class="bar-label">${h}</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${(count/max*100).toFixed(1)}%;background:var(--info)"></div>
-            </div>
-            <span class="bar-count">${count}</span>
-          </div>
-        `;
-      }).join("")}
-    </div>
-    ` : ""}
 
     <!-- Tabelas de registros recentes -->
     <div class="section-label">registros recentes</div>
@@ -493,6 +469,68 @@ function renderTabelaUsuariosAdmin(usuarios) {
             `).join("") : `<tr class="empty-row"><td colspan="8">Nenhum usuario registrado.</td></tr>`}
           </tbody>
         </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderGraficoBarrasAdmin(titulo, itens, totalReferencia) {
+  const validos = itens.filter(([, count]) => Number(count) > 0);
+  return `
+    <div class="chart-card">
+      <div class="table-header">
+        <h3>${esc(titulo)}</h3>
+        <span>${validos.reduce((acc, [, count]) => acc + Number(count || 0), 0)} registros</span>
+      </div>
+      <div class="chart-body">
+        ${validos.length ? validos.map(([label, count, color]) => {
+          const percent = totalReferencia > 0 ? Math.max((Number(count) / totalReferencia) * 100, 3) : 0;
+          return `
+            <div class="chart-row">
+              <div class="chart-row-top">
+                <span>${esc(label)}</span>
+                <strong>${count}</strong>
+              </div>
+              <div class="chart-track">
+                <div class="chart-fill" style="width:${percent.toFixed(1)}%;background:${color || "var(--accent)"}"></div>
+              </div>
+            </div>
+          `;
+        }).join("") : `<div class="chart-empty">Sem dados para este grafico.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderGraficoResumoVisualAdmin(itens) {
+  const total = itens.reduce((acc, [, count]) => acc + Number(count || 0), 0);
+  const validos = itens.filter(([, count]) => Number(count) > 0);
+  return `
+    <div class="chart-card chart-card-main">
+      <div class="table-header">
+        <h3>Resumo visual de corridas</h3>
+        <span>${total} registros</span>
+      </div>
+      <div class="donut-layout">
+        <div class="donut-bars">
+          ${validos.length ? validos.map(([label, count, color]) => {
+            const percent = total > 0 ? (Number(count) / total) * 100 : 0;
+            return `
+              <div class="donut-segment" style="height:${Math.max(percent, 8).toFixed(1)}%;background:${color}">
+                <span>${count}</span>
+              </div>
+            `;
+          }).join("") : `<div class="chart-empty">Sem corridas registradas.</div>`}
+        </div>
+        <div class="donut-legend">
+          ${itens.map(([label, count, color]) => `
+            <div class="legend-row">
+              <span class="legend-dot" style="background:${color}"></span>
+              <span>${esc(label)}</span>
+              <strong>${count}</strong>
+            </div>
+          `).join("")}
+        </div>
       </div>
     </div>
   `;

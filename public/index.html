@@ -75,20 +75,10 @@
             <p id="faculdadeInfo" class="field-hint"></p>
             <p id="erroFaculdadeUsuario" class="field-error" aria-live="polite"></p>
 
-            <label class="form-label" for="confirmarSenha">Confirmar senha</label>
-            <div class="senha-wrapper">
-              <input id="confirmarSenha" type="password" placeholder="Confirmar senha" autocomplete="new-password">
-              <button type="button" class="btn-olho" id="btnOlhoConfirmar" aria-label="Mostrar confirmação de senha">
-                <svg id="iconeOlhoConfirmar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
 
-        <label class="form-label sr-only" for="senha">Senha</label>
+        <label class="form-label" for="senha">Senha</label>
         <div class="senha-wrapper">
           <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required>
           <button type="button" class="btn-olho" id="btnOlho" aria-label="Mostrar senha">
@@ -99,6 +89,21 @@
           </button>
         </div>
         <p id="erroSenha" class="field-error" aria-live="polite"></p>
+
+        <div class="campos-extras" id="campoConfirmarSenha">
+          <div class="campos-extras-inner">
+            <label class="form-label" for="confirmarSenha">Confirmar senha</label>
+            <div class="senha-wrapper">
+              <input id="confirmarSenha" type="password" placeholder="Confirmar senha" autocomplete="new-password">
+              <button type="button" class="btn-olho" id="btnOlhoConfirmar" aria-label="Mostrar confirmacao de senha">
+                <svg id="iconeOlhoConfirmar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       </form>
       <p id="authFeedback" class="form-status auth-feedback" aria-live="polite"></p>

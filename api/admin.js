@@ -118,6 +118,7 @@ function loadFirebaseClientConfig() {
   return {
     apiKey: "AIzaSyCxpm0fU6_6Fr_6-S5G84fv-bCSoA03mfM",
     projectId: "caronas-aqui",
+    measurementId: "G-YENXSWMG5Y",
   };
 }
 

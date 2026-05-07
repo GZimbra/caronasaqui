@@ -74,6 +74,9 @@ function mostrarLogin(animar) {
   limparErrosAuth();
 
   const extras = document.getElementById("camposExtras");
+  const confirmar = document.getElementById("campoConfirmarSenha");
+  confirmar?.classList.remove("campos-abertos");
+
   if (!extras) return;
 
   extras.classList.remove("campos-abertos");
@@ -93,6 +96,7 @@ function mostrarRegistro() {
   document.getElementById("tabRegister").classList.add("active");
   document.getElementById("senha")?.setAttribute("autocomplete", "new-password");
   document.getElementById("camposExtras")?.classList.add("campos-abertos");
+  document.getElementById("campoConfirmarSenha")?.classList.add("campos-abertos");
   limparErrosAuth();
 }
 

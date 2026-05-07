@@ -4,5 +4,6 @@ window.CARONAS_FIREBASE_CONFIG = {
   projectId: "preencha",
   storageBucket: "preencha.firebasestorage.app",
   messagingSenderId: "preencha",
-  appId: "preencha"
+  appId: "preencha",
+  measurementId: "preencha"
 };
