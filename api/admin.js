@@ -5,6 +5,10 @@ const path = require("path");
 let cachedToken = null;
 let cachedFirebaseUserToken = null;
 
+const DEFAULT_ADMIN_USERNAME = "admin";
+const DEFAULT_ADMIN_PASSWORD = "AEDB2025";
+const DEFAULT_ADMIN_SESSION_SECRET = "caronas-aqui-admin-session";
+
 function requiredEnv(name) {
   const value = process.env[name];
   if (!value) {
@@ -15,6 +19,15 @@ function requiredEnv(name) {
   return value;
 }
 
+function adminEnv(name) {
+  const defaults = {
+    ADMIN_USERNAME: DEFAULT_ADMIN_USERNAME,
+    ADMIN_PASSWORD: DEFAULT_ADMIN_PASSWORD,
+    ADMIN_SESSION_SECRET: DEFAULT_ADMIN_SESSION_SECRET,
+  };
+  return process.env[name] || defaults[name] || requiredEnv(name);
+}
+
 function parseCookies(req) {
   return Object.fromEntries((req.headers.cookie || "").split(";").filter(Boolean).map(part => {
     const index = part.indexOf("=");
@@ -23,7 +36,7 @@ function parseCookies(req) {
 }
 
 function sign(value) {
-  return crypto.createHmac("sha256", requiredEnv("ADMIN_SESSION_SECRET")).update(value).digest("hex");
+  return crypto.createHmac("sha256", adminEnv("ADMIN_SESSION_SECRET")).update(value).digest("hex");
 }
 
 function createSession() {
@@ -132,14 +145,14 @@ async function getFirebaseUserToken() {
   }
 
   const config = loadFirebaseClientConfig();
-  const username = process.env.ADMIN_USERNAME || "admin";
+  const username = adminEnv("ADMIN_USERNAME");
   const email = process.env.ADMIN_FIREBASE_EMAIL || `${username}@caronasaqui.internal`;
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${config.apiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email,
-      password: requiredEnv("ADMIN_PASSWORD"),
+      password: adminEnv("ADMIN_PASSWORD"),
       returnSecureToken: true,
     }),
   });
@@ -218,7 +231,7 @@ module.exports = async function handler(req, res) {
   try {
     if (req.method === "POST" && action === "login") {
       const body = JSON.parse(await readBody(req) || "{}");
-      if (!safeCompare(body.username, requiredEnv("ADMIN_USERNAME")) || !safeCompare(body.password, requiredEnv("ADMIN_PASSWORD"))) {
+      if (!safeCompare(body.username, adminEnv("ADMIN_USERNAME")) || !safeCompare(body.password, adminEnv("ADMIN_PASSWORD"))) {
         sendJson(res, 401, { ok: false });
         return;
       }

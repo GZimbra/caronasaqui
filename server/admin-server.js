@@ -9,9 +9,9 @@ loadEnvFile();
 
 const HOST = process.env.ADMIN_HOST || "0.0.0.0";
 const PORT = Number(process.env.ADMIN_PORT || process.env.PORT || 4174);
-const ADMIN_USERNAME = requiredEnv("ADMIN_USERNAME");
-const ADMIN_PASSWORD = requiredEnv("ADMIN_PASSWORD");
-const SESSION_SECRET = requiredEnv("ADMIN_SESSION_SECRET");
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "AEDB2025";
+const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "caronas-aqui-admin-session";
 const ROOT = PROJECT_ROOT;
 let cachedToken = null;
 let cachedFirebaseUserToken = null;
