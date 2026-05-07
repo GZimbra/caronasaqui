@@ -188,12 +188,13 @@ async function listarColecaoFirebaseOpcional(nome) {
 // 🖥️ RENDERIZAÇÃO
 // ════════════════════════════════════════════════════
 function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
+  const dadosCsv = montarDadosCsvAdmin({ usuarios, caronas, solicitacoes, chats });
 
   // ── Métricas de caronas ──
   const totalCaronas      = caronas.length;
   const caronasFinalizadas= caronas.filter(isCaronaRealizadaAdmin).length;
   const caronasCanceladas = caronas.filter(c => c.status === "cancelada").length;
-  const caronasAtivas     = caronas.filter(c => ["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length;
+  const caronasAtivas     = caronas.filter(isCaronaAtivaAdmin).length;
 
   // ── Passageiros únicos ──
   const passageirosSet = new Set();
@@ -367,6 +368,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     </div>
 
     <div class="section-label">graficos</div>
+    ${renderGraficosCsvAdmin(dadosCsv)}
     <div class="charts-grid">
       ${renderGraficoFirebaseAdmin(usuarios.length, caronasRealizadas.length)}
       ${renderGraficoBarrasAdmin("Corridas realizadas", graficoResumoCaronas, Math.max(totalCaronas, 1))}
@@ -538,6 +540,107 @@ function renderTabelaUsuariosAdmin(usuarios) {
       </div>
     </div>
   `;
+}
+
+function montarDadosCsvAdmin({ usuarios, caronas, solicitacoes, chats }) {
+  const linhasUsuarios = usuarios.map(u => ({
+    id: u.id || "",
+    nome: u.nome || "",
+    email: u.email || "",
+    faculdade: u.faculdadeNome || "",
+    criadoEm: formatarData(u.criadoEm),
+  }));
+
+  const linhasCorridas = caronas.map(c => {
+    const status = String(c.status || "aberta").toLowerCase();
+    return {
+      id: c.id || "",
+      motorista: c.motoristaNome || c.motorista || "",
+      status,
+      statusLabel: labelStatus(status),
+      ativa: isCaronaAtivaAdmin(c),
+      realizada: isCaronaRealizadaAdmin(c),
+      dataBase: parseDataAdmin(c.finalizadoEm || c.atualizadoEm || c.criadoEm),
+    };
+  });
+
+  return {
+    usuarios: linhasUsuarios,
+    corridas: linhasCorridas,
+    resumo: {
+      usuarios: linhasUsuarios.length,
+      corridasTotal: linhasCorridas.length,
+      corridasAtivas: linhasCorridas.filter(c => c.ativa).length,
+      corridasRealizadas: linhasCorridas.filter(c => c.realizada).length,
+      solicitacoes: solicitacoes.length,
+      chats: chats.length,
+    },
+  };
+}
+
+function renderGraficosCsvAdmin(dadosCsv) {
+  const resumo = dadosCsv.resumo;
+  const escalaResumo = Math.max(resumo.usuarios, resumo.corridasAtivas, resumo.corridasRealizadas, 1);
+  const historico = gerarHistoricoCorridasRealizadasAdmin(dadosCsv.corridas);
+
+  return `
+    <div class="csv-charts">
+      <div class="csv-chart-card">
+        <div class="table-header">
+          <h3>Resumo do banco</h3>
+          <span>base CSV interna</span>
+        </div>
+        <div class="csv-bars">
+          ${renderBarraCsvAdmin("Usuarios cadastrados", resumo.usuarios, escalaResumo, "var(--accent)")}
+          ${renderBarraCsvAdmin("Corridas ativas agora", resumo.corridasAtivas, escalaResumo, "var(--info)")}
+          ${renderBarraCsvAdmin("Corridas realizadas", resumo.corridasRealizadas, escalaResumo, "var(--warn)")}
+        </div>
+      </div>
+      <div class="csv-chart-card">
+        <div class="table-header">
+          <h3>Historico de corridas realizadas</h3>
+          <span>${resumo.corridasRealizadas} realizadas</span>
+        </div>
+        <div class="csv-bars">
+          ${historico.length
+            ? historico.map(item => renderBarraCsvAdmin(item.label, item.count, Math.max(...historico.map(h => h.count), 1), "var(--accent)")).join("")
+            : renderBarraCsvAdmin("Sem corridas realizadas", 0, 1, "var(--border-md)")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBarraCsvAdmin(label, valor, escala, color) {
+  const percent = valor > 0 ? Math.max((valor / Math.max(escala, 1)) * 100, 4) : 0;
+  return `
+    <div class="csv-bar-row">
+      <div class="csv-bar-top">
+        <span>${esc(label)}</span>
+        <strong>${valor}</strong>
+      </div>
+      <div class="csv-bar-track">
+        <div class="csv-bar-fill" style="width:${percent.toFixed(1)}%;background:${color}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function gerarHistoricoCorridasRealizadasAdmin(corridas) {
+  const porDia = new Map();
+  corridas.filter(c => c.realizada).forEach(c => {
+    const data = c.dataBase instanceof Date && !isNaN(c.dataBase) ? c.dataBase : null;
+    const key = data ? data.toISOString().slice(0, 10) : "sem-data";
+    porDia.set(key, (porDia.get(key) || 0) + 1);
+  });
+
+  return [...porDia.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-10)
+    .map(([key, count]) => ({
+      label: key === "sem-data" ? "Sem data" : key.split("-").reverse().join("/"),
+      count,
+    }));
 }
 
 function renderGraficoBarrasAdmin(titulo, itens, totalReferencia) {
@@ -813,6 +916,10 @@ function contarPassageiros(carona) {
 
 function isCaronaRealizadaAdmin(carona) {
   return ["finalizada", "realizada", "completed"].includes(String(carona?.status || "").toLowerCase());
+}
+
+function isCaronaAtivaAdmin(carona) {
+  return ["aberta", "a_caminho", "em_andamento", "lotada", "chegou"].includes(String(carona?.status || "aberta").toLowerCase());
 }
 
 function formatarData(ts) {

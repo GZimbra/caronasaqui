@@ -306,6 +306,60 @@ body {
     gap: 14px;
   }
 
+  .csv-charts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .csv-chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .csv-bars {
+    padding: 18px 20px 20px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .csv-bar-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .csv-bar-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .csv-bar-top strong {
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 15px;
+  }
+
+  .csv-bar-track {
+    height: 18px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+  }
+
+  .csv-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    box-shadow: 0 0 18px rgba(47, 255, 164, 0.18);
+    transition: width 0.5s ease;
+  }
+
   .chart-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -573,6 +627,7 @@ body {
     main { padding: 16px; }
     header { padding: 14px 16px; }
     .charts-grid { grid-template-columns: 1fr; }
+    .csv-charts { grid-template-columns: 1fr; }
     .donut-layout { grid-template-columns: 1fr; }
     .two-col { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
