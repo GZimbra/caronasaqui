@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caronas Aqui — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     TELA DE LOGIN
+══════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">Caronas Aqui</div>
+    <h1>Painel Admin</h1>
+    <p>Acesso restrito a administradores.</p>
+
+    <label for="adminUser">Usuario</label>
+    <div class="pw-wrapper">
+      <input type="text" id="adminUser" placeholder="admin" autocomplete="username"
+            >
+    </div>
+
+    <label for="adminPw">Senha de acesso</label>
+    <div class="pw-wrapper">
+      <input type="password" id="adminPw" placeholder="Senha" autocomplete="current-password"
+            >
+      <button class="eye" id="adminTogglePw" aria-label="Mostrar senha">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <button class="btn-login" id="adminLoginBtn">ENTRAR</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════ -->
+<div id="dashboard">
+  <header>
+    <div class="header-left">
+      <span class="header-logo">Caronas Aqui</span>
+      <span class="header-title">Painel de Administração</span>
+    </div>
+    <div class="header-right">
+      <span id="lastUpdate">—</span>
+      <button class="btn-refresh" id="adminRefreshBtn">↻ Atualizar</button>
+      <button class="btn-export" id="adminExportBtn">↓ Exportar CSV</button>
+      <button class="btn-logout" id="adminLogoutBtn">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="loadingState">
+      <div class="spinner"></div>
+      <p>CARREGANDO DADOS...</p>
+    </div>
+
+    <div id="conteudo" class="is-hidden"></div>
+  </main>
+</div>
+
+<script src="/admin/js/admin-panel.js"></script>
+</body>
+</html>

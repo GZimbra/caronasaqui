@@ -636,8 +636,14 @@ async function usarLocalAtual() {
   }
 }
 
-function usarDomBosco() {
-  const local = window.LOCAL_DOM_BOSCO;
+function usarFaculdadeSelecionada() {
+  const faculdadeId = document.getElementById("faculdadeCarona")?.value || usuarioLogado?.faculdadeId || "";
+  const local = obterFaculdadePorId(faculdadeId);
+
+  if (!local?.lat || !local?.lng) {
+    showToast("Selecione uma faculdade com localizacao configurada.", "aviso");
+    return;
+  }
 
   window.destino = {
     lat: local.lat,
@@ -652,11 +658,11 @@ function usarDomBosco() {
 
   window.destinoMarker = L.marker([local.lat, local.lng])
     .addTo(window.mapaPopup)
-    .bindPopup("Dom Bosco")
+    .bindPopup(`${local.nome} - ${local.campus}`)
     .openPopup();
 
   document.getElementById("destinoTxt").innerText =
-    local.nome;
+    `${local.nome} - ${local.campus}`;
 
   window.modo = null;
   window.atualizarModoSelecao?.();
@@ -666,12 +672,11 @@ function usarDomBosco() {
   }
 }
 
-window.LOCAL_DOM_BOSCO = {
-  lat: -22.4829018,
-  lng: -44.472886,
-  nome: "Faculdade Dom Bosco"
-};
+function usarDomBosco() {
+  usarFaculdadeSelecionada();
+}
 
 window.pegarEndereco = pegarEndereco;
 window.usarLocalAtual = usarLocalAtual;
+window.usarFaculdadeSelecionada = usarFaculdadeSelecionada;
 window.usarDomBosco = usarDomBosco;

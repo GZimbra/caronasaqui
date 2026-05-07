@@ -1,492 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Caronas Aqui — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:        #0d0f12;
-    --bg-card:   #13161b;
-    --bg-hover:  #1a1e25;
-    --border:    #23272f;
-    --border-md: #2e333d;
-    --accent:    #4fffb0;
-    --accent-dim:#1a4a35;
-    --danger:    #ff4f6a;
-    --warn:      #ffc94f;
-    --info:      #4fa8ff;
-    --text:      #e8ecf0;
-    --text-muted:#6b7280;
-    --text-dim:  #9ca3af;
-    --mono:      'IBM Plex Mono', monospace;
-    --sans:      'IBM Plex Sans', sans-serif;
-    --radius:    8px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── LOGIN ── */
-  #loginScreen {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: var(--bg);
-  }
-
-  .login-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border-md);
-    border-radius: 12px;
-    padding: 48px 40px;
-    width: 360px;
-    box-shadow: 0 0 60px rgba(79,255,176,0.06);
-  }
-
-  .login-box .logo {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .login-box h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .login-box p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-  }
-
-  .login-box label {
-    display: block;
-    font-size: 11px;
-    font-family: var(--mono);
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .pw-wrapper {
-    position: relative;
-    margin-bottom: 20px;
-  }
-
-  .pw-wrapper input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border-md);
-    border-radius: var(--radius);
-    padding: 11px 40px 11px 14px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .pw-wrapper input:focus { border-color: var(--accent); }
-
-  .pw-wrapper button.eye {
-    position: absolute; right: 10px; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); padding: 4px;
-    display: flex; align-items: center;
-  }
-
-  .pw-wrapper button.eye:hover { color: var(--text); }
-
-  .btn-login {
-    width: 100%;
-    background: var(--accent);
-    color: #0d0f12;
-    border: none;
-    border-radius: var(--radius);
-    padding: 12px;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .btn-login:hover { opacity: 0.85; }
-
-  .login-error {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--danger);
-    text-align: center;
-    min-height: 18px;
-  }
-
-  /* ── DASHBOARD ── */
-  #dashboard { display: none; }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 32px;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 10;
-    background: rgba(13,15,18,0.92);
-    backdrop-filter: blur(12px);
-  }
-
-  .header-left { display: flex; align-items: center; gap: 16px; }
-
-  .header-logo {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-  }
-
-  .header-title {
-    font-size: 14px;
-    color: var(--text-dim);
-    padding-left: 16px;
-    border-left: 1px solid var(--border-md);
-  }
-
-  .header-right { display: flex; align-items: center; gap: 12px; }
-
-  #lastUpdate {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .btn-refresh, .btn-export, .btn-logout {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    padding: 7px 14px;
-    border-radius: 6px;
-    border: 1px solid var(--border-md);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn-refresh { background: var(--bg-card); color: var(--text-dim); }
-  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
-
-  .btn-export { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-dim); }
-  .btn-export:hover { background: var(--accent); color: #0d0f12; }
-
-  .btn-logout { background: none; color: var(--text-muted); }
-  .btn-logout:hover { color: var(--danger); border-color: var(--danger); }
-
-  main { padding: 32px; max-width: 1300px; margin: 0 auto; }
-
-  /* ── LOADING ── */
-  #loadingState {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 16px;
-    padding: 80px 0;
-  }
-
-  .spinner {
-    width: 36px; height: 36px;
-    border: 2px solid var(--border-md);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  #loadingState p {
-    font-family: var(--mono); font-size: 12px; color: var(--text-muted);
-    letter-spacing: 1px;
-  }
-
-  /* ── SEÇÃO ── */
-  .section-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    margin-top: 36px;
-    display: flex; align-items: center; gap: 10px;
-  }
-
-  .section-label::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* ── KPI GRID ── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-  }
-
-  .kpi-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: border-color 0.2s;
-  }
-
-  .kpi-card:hover { border-color: var(--border-md); }
-
-  .kpi-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .kpi-value {
-    font-family: var(--mono);
-    font-size: 32px;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .kpi-value.accent { color: var(--accent); }
-  .kpi-value.danger { color: var(--danger); }
-  .kpi-value.warn   { color: var(--warn); }
-  .kpi-value.info   { color: var(--info); }
-
-  .kpi-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  /* ── TABELAS ── */
-  .table-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .table-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .table-header h3 {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  .table-header span {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  table { width: 100%; border-collapse: collapse; }
-
-  th {
-    text-align: left;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.01);
-  }
-
-  td {
-    padding: 12px 20px;
-    font-size: 13px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-dim);
-  }
-
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg-hover); }
-
-  td.mono { font-family: var(--mono); font-size: 12px; }
-
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.5px;
-  }
-
-  .badge-green  { background: var(--accent-dim); color: var(--accent); }
-  .badge-red    { background: rgba(255,79,106,0.15); color: var(--danger); }
-  .badge-yellow { background: rgba(255,201,79,0.15); color: var(--warn); }
-  .badge-blue   { background: rgba(79,168,255,0.15); color: var(--info); }
-  .badge-gray   { background: var(--bg-hover); color: var(--text-muted); }
-
-  /* ── GRID DE TABELAS ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-  /* ── BARRA HORIZONTAL ── */
-  .bar-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .bar-row:last-child { border-bottom: none; }
-
-  .bar-label {
-    font-size: 12px;
-    color: var(--text-dim);
-    width: 130px;
-    flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .bar-track {
-    flex: 1;
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    transition: width 0.6s cubic-bezier(.4,0,.2,1);
-  }
-
-  .bar-count {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
-    width: 30px;
-    text-align: right;
-  }
-
-  /* ── EMPTY ── */
-  .empty-row td {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 12px;
-    padding: 28px;
-  }
-
-  /* ── RESPONSIVO ── */
-  @media (max-width: 768px) {
-    main { padding: 16px; }
-    header { padding: 14px 16px; }
-    .two-col { grid-template-columns: 1fr; }
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .header-title { display: none; }
-  }
-</style>
-</head>
-<body>
-
-<!-- ══════════════════════════════════════════
-     TELA DE LOGIN
-══════════════════════════════════════════ -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="logo">Caronas Aqui</div>
-    <h1>Painel Admin</h1>
-    <p>Acesso restrito a administradores.</p>
-
-    <label for="adminPw">Senha de acesso</label>
-    <div class="pw-wrapper">
-      <input type="password" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
-      <button class="eye" onclick="togglePwAdmin()" aria-label="Mostrar senha">
-        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
-    </div>
-
-    <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     DASHBOARD
-══════════════════════════════════════════ -->
-<div id="dashboard">
-  <header>
-    <div class="header-left">
-      <span class="header-logo">Caronas Aqui</span>
-      <span class="header-title">Painel de Administração</span>
-    </div>
-    <div class="header-right">
-      <span id="lastUpdate">—</span>
-      <button class="btn-refresh" onclick="carregarDados()">↻ Atualizar</button>
-      <button class="btn-export" onclick="exportarCSV()">↓ Exportar CSV</button>
-      <button class="btn-logout" onclick="sair()">Sair</button>
-    </div>
-  </header>
-
-  <main>
-    <div id="loadingState">
-      <div class="spinner"></div>
-      <p>CARREGANDO DADOS...</p>
-    </div>
-
-    <div id="conteudo" style="display:none"></div>
-  </main>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-<script src="js/services/firebase.js"></script>
-
-<script>
-// ════════════════════════════════════════════════════
-// ⚙️  CONFIGURAÇÃO
-// Troque a senha abaixo por uma senha forte!
-// Dica: use letras, números e símbolos (ex: "Adm!n@2025")
-// ════════════════════════════════════════════════════
-const ADMIN_PASSWORD = "admin123";
-
+// Admin panel.
+// Credenciais e segredo de sessao ficam no processo local admin-server.js via .env.
 // ════════════════════════════════════════════════════
 // 🔒 AUTENTICAÇÃO
 // ════════════════════════════════════════════════════
@@ -503,28 +16,72 @@ function togglePwAdmin() {
     : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 }
 
-function fazerLogin() {
+async function fazerLogin() {
+  const username = document.getElementById("adminUser").value.trim();
   const pw = document.getElementById("adminPw").value;
   const err = document.getElementById("loginError");
 
-  if (pw === ADMIN_PASSWORD) {
+  try {
+    const res = await fetch("/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ username, password: pw })
+    });
+
+    if (!res.ok) throw new Error("unauthorized");
+
     autenticado = true;
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
     carregarDados();
-  } else {
-    err.textContent = "Senha incorreta. Tente novamente.";
+  } catch {
+    err.textContent = "Usuario ou senha incorretos.";
     document.getElementById("adminPw").value = "";
     setTimeout(() => err.textContent = "", 3000);
   }
 }
 
-function sair() {
+async function sair() {
+  await fetch("/admin/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
   autenticado = false;
   document.getElementById("dashboard").style.display = "none";
   document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("adminUser").value = "";
   document.getElementById("adminPw").value = "";
 }
+
+async function verificarSessaoAdmin() {
+  try {
+    const res = await fetch("/admin/session", { credentials: "same-origin" });
+    if (!res.ok) return;
+    autenticado = true;
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    carregarDados();
+  } catch {}
+}
+
+function inicializarEventosAdmin() {
+  document.getElementById("adminTogglePw")?.addEventListener("click", togglePwAdmin);
+  document.getElementById("adminLoginBtn")?.addEventListener("click", fazerLogin);
+  document.getElementById("adminRefreshBtn")?.addEventListener("click", carregarDados);
+  document.getElementById("adminExportBtn")?.addEventListener("click", exportarCSV);
+  document.getElementById("adminLogoutBtn")?.addEventListener("click", sair);
+
+  document.getElementById("adminUser")?.addEventListener("keydown", event => {
+    if (event.key === "Enter") document.getElementById("adminPw")?.focus();
+  });
+
+  document.getElementById("adminPw")?.addEventListener("keydown", event => {
+    if (event.key === "Enter") fazerLogin();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarEventosAdmin();
+  verificarSessaoAdmin();
+});
 
 // ════════════════════════════════════════════════════
 // 📊 COLETA DE DADOS
@@ -536,17 +93,10 @@ async function carregarDados() {
   document.getElementById("conteudo").style.display = "none";
 
   try {
-    const [snapUsuarios, snapCaronas, snapSolicitacoes, snapChats] = await Promise.all([
-      db.collection("usuarios").get(),
-      db.collection("caronas").get(),
-      db.collection("solicitacoes").get(),
-      db.collection("chats").get()
-    ]);
+    const response = await fetch("/admin/data", { credentials: "same-origin" });
+    if (!response.ok) throw new Error("Falha ao carregar dados administrativos");
 
-    const usuarios    = snapUsuarios.docs.map(d => ({ id: d.id, ...d.data() }));
-    const caronas     = snapCaronas.docs.map(d => ({ id: d.id, ...d.data() }));
-    const solicitacoes= snapSolicitacoes.docs.map(d => ({ id: d.id, ...d.data() }));
-    const chats       = snapChats.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { usuarios, caronas, solicitacoes, chats } = await response.json();
 
     dadosGlobais = { usuarios, caronas, solicitacoes, chats };
 
@@ -589,9 +139,9 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
   });
 
   // ── Solicitações ──
-  const solicitacoesAceitas  = solicitacoes.filter(s => s.status === "aceita").length;
-  const solicitacoesPendentes= solicitacoes.filter(s => s.status === "pendente").length;
-  const solicitacoesRecusadas= solicitacoes.filter(s => s.status === "recusada").length;
+  const solicitacoesAceitas  = solicitacoes.filter(s => ["approved","aceita"].includes(s.status)).length;
+  const solicitacoesPendentes= solicitacoes.filter(s => ["pending","pendente"].includes(s.status)).length;
+  const solicitacoesRecusadas= solicitacoes.filter(s => ["rejected","recusada"].includes(s.status)).length;
 
   // ── Taxa de conclusão ──
   const taxaConclusao = totalCaronas > 0
@@ -647,8 +197,8 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
   const horaCount = {};
   caronas.forEach(c => {
     let hora = null;
-    if (c.criadoEm?.toDate) hora = c.criadoEm.toDate().getHours();
-    else if (c.criadoEm instanceof Date) hora = c.criadoEm.getHours();
+    const criadoEm = parseDataAdmin(c.criadoEm);
+    if (criadoEm) hora = criadoEm.getHours();
     if (hora !== null) {
       const label = `${String(hora).padStart(2,"0")}h`;
       horaCount[label] = (horaCount[label] || 0) + 1;
@@ -667,8 +217,8 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
   // ── Caronas recentes ──
   const caronasRecentes = [...caronas]
     .sort((a, b) => {
-      const ta = a.criadoEm?.seconds || 0;
-      const tb = b.criadoEm?.seconds || 0;
+      const ta = obterMillisAdmin(a.criadoEm);
+      const tb = obterMillisAdmin(b.criadoEm);
       return tb - ta;
     })
     .slice(0, 8);
@@ -865,18 +415,20 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
         </div>
         <table>
           <thead>
-            <tr><th>Motorista</th><th>Origem</th><th>Status</th></tr>
+            <tr><th>Motorista</th><th>Faculdade</th><th>Partida</th><th>Origem</th><th>Status</th></tr>
           </thead>
           <tbody>
             ${caronasRecentes.length
               ? caronasRecentes.map(c => `
                 <tr>
                   <td>${esc(c.motoristaNome || c.motorista || "—")}</td>
+                  <td style="color:var(--text-muted);font-size:11px">${esc([c.faculdadeNome, c.faculdadeCampus].filter(Boolean).join(" - ") || "—")}</td>
+                  <td style="color:var(--text-muted);font-size:11px">${esc(c.partidaLivre || "—")}</td>
                   <td style="color:var(--text-muted);font-size:11px">${esc(resumirEndereco(c.origemEndereco))}</td>
                   <td>${badgeStatus(c.status)}</td>
                 </tr>
               `).join("")
-              : `<tr class="empty-row"><td colspan="3">Nenhuma carona</td></tr>`
+              : `<tr class="empty-row"><td colspan="5">Nenhuma carona</td></tr>`
             }
           </tbody>
         </table>
@@ -898,16 +450,19 @@ function exportarCSV() {
   const sheets = [
     {
       nome: "Usuarios",
-      colunas: ["ID", "Nome", "Email", "Celular", "Curso", "Tem Foto"],
-      linhas: usuarios.map(u => [u.id, u.nome, u.email, u.celular, u.curso, u.foto ? "Sim" : "Não"])
+      colunas: ["ID", "Nome", "Email", "Celular", "Faculdade", "Campus", "Matricula Final", "Tem Foto"],
+      linhas: usuarios.map(u => [u.id, u.nome, u.email, u.celular, u.faculdadeNome || u.curso, u.faculdadeCampus, u.matriculaLast4, u.foto ? "Sim" : "Não"])
     },
     {
       nome: "Caronas",
-      colunas: ["ID", "Motorista", "Status", "Origem", "Destino", "Vagas", "Passageiros", "Distancia (km)", "Preco", "Criado Em"],
+      colunas: ["ID", "Motorista", "Status", "Faculdade", "Campus", "Local Partida", "Origem", "Destino", "Vagas", "Passageiros", "Distancia (km)", "Preco", "Criado Em"],
       linhas: caronas.map(c => [
         c.id,
         c.motoristaNome || c.motorista,
         c.status,
+        c.faculdadeNome || "",
+        c.faculdadeCampus || "",
+        c.partidaLivre || "",
         c.origemEndereco || "",
         c.destinoEndereco || "",
         c.vagasTotais || 4,
@@ -934,7 +489,7 @@ function exportarCSV() {
         ["Caronas canceladas", caronas.filter(c=>c.status==="cancelada").length],
         ["Caronas ativas", caronas.filter(c=>["aberta","a_caminho","em_andamento","lotada"].includes(c.status)).length],
         ["Total de solicitacoes", solicitacoes.length],
-        ["Solicitacoes aceitas", solicitacoes.filter(s=>s.status==="aceita").length],
+        ["Solicitacoes aceitas", solicitacoes.filter(s=>["approved","aceita"].includes(s.status)).length],
         ["Conversas abertas", chats.length],
         ["Data de exportacao", new Date().toLocaleString("pt-BR")]
       ]
@@ -974,9 +529,24 @@ function resumirEndereco(end) {
 
 function formatarData(ts) {
   if (!ts) return "—";
-  const d = ts?.toDate ? ts.toDate() : ts;
+  const d = parseDataAdmin(ts);
   if (!(d instanceof Date) || isNaN(d)) return "—";
   return d.toLocaleString("pt-BR");
+}
+
+function parseDataAdmin(ts) {
+  if (!ts) return null;
+  if (ts?.toDate) return ts.toDate();
+  if (ts instanceof Date) return ts;
+  if (typeof ts === "string") return new Date(ts);
+  if (typeof ts === "number") return new Date(ts);
+  if (typeof ts.seconds === "number") return new Date(ts.seconds * 1000);
+  return null;
+}
+
+function obterMillisAdmin(ts) {
+  const d = parseDataAdmin(ts);
+  return d instanceof Date && !isNaN(d) ? d.getTime() : 0;
 }
 
 function labelStatus(s) {
@@ -996,6 +566,3 @@ function badgeStatus(s) {
   };
   return `<span class="badge ${map[s] || "badge-gray"}">${labelStatus(s)}</span>`;
 }
-</script>
-</body>
-</html>

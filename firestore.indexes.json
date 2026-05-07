@@ -51,6 +51,20 @@
       ]
     },
     {
+      "collectionGroup": "solicitacoes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "passageiroId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "mensagens",
       "queryScope": "COLLECTION_GROUP",
       "fields": [

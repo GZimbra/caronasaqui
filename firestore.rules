@@ -3,16 +3,46 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /usuarios/{userId} {
-      allow list: if true;
+      allow list: if request.auth != null;
       allow get: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 3
+        && request.resource.data.matriculaHash is string
+        && request.resource.data.matriculaHash.matches('^[a-f0-9]{64}$')
+        && request.resource.data.matriculaLast4 is string
+        && request.resource.data.matriculaLast4.matches('^[0-9]{4}$')
+        && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"];
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && (!("nome" in request.resource.data) || request.resource.data.nome.size() >= 3)
+        && (!("email" in request.resource.data) || request.resource.data.email is string)
+        && (!("celular" in request.resource.data) || request.resource.data.celular is string)
+        && (!("curso" in request.resource.data) || request.resource.data.curso is string)
+        && (!("foto" in request.resource.data) || request.resource.data.foto is string)
+        && (!("matriculaHash" in request.resource.data) || request.resource.data.matriculaHash == resource.data.matriculaHash)
+        && (!("faculdadeId" in request.resource.data) || request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]);
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
     match /caronas/{caronaId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null
+      allow create: if request.auth != null
+        && request.resource.data.motoristaId == request.auth.uid
+        && request.resource.data.partidaLivre is string
+        && request.resource.data.partidaLivre.matches('^[^<>]{3,140}$')
+        && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]
+        && request.resource.data.faculdadeLat is number
+        && request.resource.data.faculdadeLng is number;
+      allow update: if request.auth != null
+        && request.auth.uid == resource.data.motoristaId
+        && (!("partidaLivre" in request.resource.data)
+          || (request.resource.data.partidaLivre is string
+            && request.resource.data.partidaLivre.matches('^[^<>]{3,140}$')))
+        && (!("faculdadeId" in request.resource.data)
+          || request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]);
+      allow delete: if request.auth != null
         && request.auth.uid == resource.data.motoristaId;
 
       match /localizacoes/{passageiroId} {
@@ -25,10 +55,14 @@ service cloud.firestore {
       allow read: if request.auth != null
         && (request.auth.uid == resource.data.passageiroId
          || request.auth.uid == resource.data.motoristaId);
-      allow create: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.passageiroId == request.auth.uid
+        && request.resource.data.status in ["pending", "pendente"];
       allow update: if request.auth != null
         && (request.auth.uid == resource.data.passageiroId
-         || request.auth.uid == resource.data.motoristaId);
+         || request.auth.uid == resource.data.motoristaId)
+        && (!("status" in request.resource.data)
+          || request.resource.data.status in ["pending", "pendente", "approved", "aceita", "rejected", "recusada"]);
       allow delete: if request.auth != null
         && request.auth.uid == resource.data.passageiroId;
     }

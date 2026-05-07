@@ -1,232 +1,276 @@
-// =============================================================
-// AUTH — identificador: nome de usuário + senha
-// Firebase Auth exige email → geramos um email sintético
-// invisível ao usuário: nomeSlug@caronasaqui.internal
-// =============================================================
+// Auth por matricula institucional + senha.
+// Compatibilidade: login antigo por nome de usuario continua aceito.
+
+const MATRICULA_REGEX = /^\d{8,12}$/;
 
 function _slugNome(nome) {
-  return nome.trim().toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
+  return nome.trim().toLowerCase().replace(/\s+/g, ".").replace(/[^a-z0-9.]/g, "");
 }
 
 function _emailSintetico(nome) {
-  return _slugNome(nome) + '@caronasaqui.internal';
+  return _slugNome(nome) + "@caronasaqui.internal";
 }
 
-// =============================================================
-// TROCA DE ABA (login ↔ registro)
-// =============================================================
+function normalizarMatricula(valor) {
+  return String(valor || "").replace(/\D/g, "");
+}
+
+async function sha256Hex(valor) {
+  const bytes = new TextEncoder().encode(valor);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function _emailMatricula(matricula) {
+  const hash = await sha256Hex(normalizarMatricula(matricula));
+  return `${hash}@matricula.caronasaqui.internal`;
+}
+
+function setAuthFeedback(msg, tipo = "erro") {
+  const el = document.getElementById("authFeedback");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.className = `form-status auth-feedback ${tipo}`;
+}
+
+function setFieldError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg || "";
+}
+
+function limparErrosAuth() {
+  ["erroNomeUsuario", "erroMatriculaUsuario", "erroFaculdadeUsuario", "erroSenha"].forEach(id => setFieldError(id, ""));
+  setAuthFeedback("");
+}
+
+function atualizarInfoFaculdade() {
+  const select = document.getElementById("faculdadeUsuario");
+  const info = document.getElementById("faculdadeInfo");
+  const faculdade = obterFaculdadePorId(select?.value || "");
+  if (!info) return;
+  info.textContent = faculdade ? `${faculdade.campus} - ${faculdade.endereco}` : "";
+}
+
+function initFaculdadesAuth() {
+  const select = document.getElementById("faculdadeUsuario");
+  popularSelectFaculdades(select);
+  select?.addEventListener("change", atualizarInfoFaculdade);
+
+  const matricula = document.getElementById("matriculaUsuario");
+  matricula?.addEventListener("input", () => {
+    matricula.value = normalizarMatricula(matricula.value).slice(0, 12);
+  });
+}
 
 function mostrarLogin(animar) {
-  window.modo = 'login';
-  document.getElementById('titulo').innerText   = 'Entrar';
-  document.getElementById('btnAcao').innerText  = 'Entrar';
-  document.getElementById('tabLogin').classList.add('active');
-  document.getElementById('tabRegister').classList.remove('active');
+  window.modo = "login";
+  document.getElementById("titulo").innerText = "Entrar";
+  document.getElementById("btnAcao").innerText = "Entrar";
+  document.getElementById("labelIdentificador").innerText = "Matricula ou usuario";
+  document.getElementById("nomeUsuario").placeholder = "Ex: 2024123456";
+  document.getElementById("tabLogin").classList.add("active");
+  document.getElementById("tabRegister").classList.remove("active");
+  document.getElementById("senha")?.setAttribute("autocomplete", "current-password");
+  limparErrosAuth();
 
-  const extras = document.getElementById('camposExtras');
-  if (extras) {
-    if (animar) {
-      extras.classList.remove('campos-abertos');
-    } else {
-      extras.classList.remove('campos-abertos');
-      extras.style.transition = 'none';
-      requestAnimationFrame(() => { extras.style.transition = ''; });
-    }
+  const extras = document.getElementById("camposExtras");
+  if (!extras) return;
+
+  extras.classList.remove("campos-abertos");
+  if (!animar) {
+    extras.style.transition = "none";
+    requestAnimationFrame(() => { extras.style.transition = ""; });
   }
 }
 
 function mostrarRegistro() {
-  window.modo = 'registro';
-  document.getElementById('titulo').innerText   = 'Cadastro';
-  document.getElementById('btnAcao').innerText  = 'Registrar';
-  document.getElementById('tabLogin').classList.remove('active');
-  document.getElementById('tabRegister').classList.add('active');
-
-  const extras = document.getElementById('camposExtras');
-  if (extras) extras.classList.add('campos-abertos');
+  window.modo = "registro";
+  document.getElementById("titulo").innerText = "Cadastro";
+  document.getElementById("btnAcao").innerText = "Registrar";
+  document.getElementById("labelIdentificador").innerText = "Nome completo";
+  document.getElementById("nomeUsuario").placeholder = "Ex: Gabriel Silva";
+  document.getElementById("tabLogin").classList.remove("active");
+  document.getElementById("tabRegister").classList.add("active");
+  document.getElementById("senha")?.setAttribute("autocomplete", "new-password");
+  document.getElementById("camposExtras")?.classList.add("campos-abertos");
+  limparErrosAuth();
 }
 
 function acaoAuth() {
-  if (window.modo === 'login') login();
+  if (window.modo === "login") login();
   else registrar();
 }
 
-// =============================================================
-// LOGIN
-// =============================================================
+function validarSenhaForte(senha) {
+  return senha.length >= 8 && /[A-Za-z]/.test(senha) && /\d/.test(senha);
+}
+
+function validarRegistro({ nome, matricula, senha, confirma, faculdadeId }) {
+  let ok = true;
+
+  if (nome.length < 3) {
+    setFieldError("erroNomeUsuario", "Informe o nome completo.");
+    ok = false;
+  }
+  if (!MATRICULA_REGEX.test(matricula)) {
+    setFieldError("erroMatriculaUsuario", "Matricula deve ter 8 a 12 digitos.");
+    ok = false;
+  }
+  if (!obterFaculdadePorId(faculdadeId)) {
+    setFieldError("erroFaculdadeUsuario", "Selecione uma faculdade valida.");
+    ok = false;
+  }
+  if (!validarSenhaForte(senha)) {
+    setFieldError("erroSenha", "Senha minima: 8 caracteres, com letras e numeros.");
+    ok = false;
+  } else if (senha !== confirma) {
+    setFieldError("erroSenha", "A confirmacao da senha nao confere.");
+    ok = false;
+  }
+
+  return ok;
+}
 
 async function login() {
-  const nome  = (document.getElementById('nomeUsuario')?.value || '').trim();
-  const senha = (document.getElementById('senha')?.value       || '').trim();
+  limparErrosAuth();
 
-  if (!nome || !senha) {
-    showToast('Preencha o nome de usuário e a senha.', 'aviso');
+  const identificador = (document.getElementById("nomeUsuario")?.value || "").trim();
+  const senha = (document.getElementById("senha")?.value || "").trim();
+
+  if (!identificador || !senha) {
+    const msg = "Preencha a matricula/usuario e a senha.";
+    setAuthFeedback(msg, "aviso");
+    showToast(msg, "aviso");
     return;
   }
 
-  const btn = document.getElementById('btnAcao');
+  const btn = document.getElementById("btnAcao");
   btn.disabled = true;
-  btn.innerText = 'Entrando...';
+  btn.innerText = "Entrando...";
 
   try {
-    const email = _emailSintetico(nome);
-    const res   = await auth.signInWithEmailAndPassword(email, senha);
-    const uid   = res.user.uid;
+    const matricula = normalizarMatricula(identificador);
+    const email = MATRICULA_REGEX.test(matricula)
+      ? await _emailMatricula(matricula)
+      : _emailSintetico(identificador);
 
-    const docSnap = await db.collection('usuarios').doc(uid).get();
+    const res = await auth.signInWithEmailAndPassword(email, senha);
+    const uid = res.user.uid;
+
+    const docSnap = await db.collection("usuarios").doc(uid).get();
     if (!docSnap.exists) {
-      showToast('Usuário não encontrado.', 'erro');
-      btn.disabled = false; btn.innerText = 'Entrar';
+      const msg = "Usuario nao encontrado.";
+      setAuthFeedback(msg);
+      showToast(msg, "erro");
       return;
     }
 
     const data = docSnap.data();
-    localStorage.setItem('user', JSON.stringify({
-      id:      uid,
-      nome:    data.nome,
-      email:   data.email || email,
-      celular: data.celular || '',
-      curso:   data.curso   || '',
-      foto:    data.foto    || ''
+    localStorage.setItem("user", JSON.stringify({
+      id: uid,
+      nome: data.nome,
+      email: data.email || "",
+      celular: data.celular || "",
+      faculdadeId: data.faculdadeId || "",
+      faculdadeNome: data.faculdadeNome || "",
+      faculdadeCampus: data.faculdadeCampus || "",
+      faculdadeEndereco: data.faculdadeEndereco || "",
+      matriculaLast4: data.matriculaLast4 || "",
+      curso: data.curso || "",
+      foto: data.foto || "",
     }));
-    window.location.replace('app.html');
-
+    window.location.replace("app.html");
   } catch (e) {
-    showToast(_traduzirErro(e.code) || 'Nome ou senha incorretos.', 'erro');
-    btn.disabled = false; btn.innerText = 'Entrar';
-  }
-}
-
-// =============================================================
-// REGISTRO
-// =============================================================
-
-async function registrar() {
-  const nome     = (document.getElementById('nomeUsuario')?.value    || '').trim();
-  const senha    = (document.getElementById('senha')?.value          || '').trim();
-  const confirma = (document.getElementById('confirmarSenha')?.value || '').trim();
-
-  if (!nome || !senha || !confirma) {
-    showToast('Preencha todos os campos.', 'aviso');
-    return;
-  }
-  if (senha !== confirma) {
-    showToast('As senhas não coincidem.', 'aviso');
-    return;
-  }
-  if (senha.length < 6) {
-    showToast('A senha precisa ter ao menos 6 caracteres.', 'aviso');
-    return;
-  }
-
-  const btn = document.getElementById('btnAcao');
-  btn.disabled = true;
-  btn.innerText = 'Criando conta...';
-
-  const email = _emailSintetico(nome);
-  const slug  = _slugNome(nome);
-
-  try {
-    console.log('[REGISTRO] Iniciando para:', nome, email);
-
-    // Verifica se nome já está em uso no Firestore
-    let uid;
-    try {
-      console.log('[REGISTRO] Criando conta no Firebase Auth...');
-      const res = await auth.createUserWithEmailAndPassword(email, senha);
-      uid = res.user.uid;
-      console.log('[REGISTRO] Conta Auth criada! UID:', uid);
-    } catch (authErr) {
-      console.error('[REGISTRO] Erro no Auth:', authErr.code, authErr.message);
-      if (authErr.code === 'auth/email-already-in-use') {
-        console.log('[REGISTRO] Email já existe no Auth, tentando login para recuperar uid...');
-        try {
-          const res = await auth.signInWithEmailAndPassword(email, senha);
-          uid = res.user.uid;
-          console.log('[REGISTRO] Login de recuperação OK. UID:', uid);
-        } catch (loginErr) {
-          console.error('[REGISTRO] Login de recuperação falhou:', loginErr.code);
-          showToast('Nome de usuário já está em uso. Escolha outro.', 'aviso');
-          btn.disabled = false; btn.innerText = 'Registrar';
-          return;
-        }
-      } else {
-        throw authErr;
-      }
-    }
-
-    // Agora autenticado — verifica se nome já está em uso
-    console.log('[REGISTRO] Verificando nome no Firestore (agora autenticado)...');
-    const jaExiste = await db.collection('usuarios').where('nomeSlug', '==', slug).get();
-    if (!jaExiste.empty) {
-      // Nome em uso — apaga a conta Auth recém criada para não deixar lixo
-      await auth.currentUser?.delete();
-      showToast('Nome de usuário já está em uso. Escolha outro.', 'aviso');
-      btn.disabled = false; btn.innerText = 'Registrar';
-      return;
-    }
-    console.log('[REGISTRO] Nome disponível.');
-
-    // Cria o documento no Firestore
-    console.log('[REGISTRO] Salvando documento no Firestore...');
-    await db.collection('usuarios').doc(uid).set({
-      nome,
-      nomeSlug: slug,
-      email,
-      celular: '',
-      curso:   '',
-      foto:    ''
-    });
-    console.log('[REGISTRO] Documento salvo com sucesso!');
-
-    showToast('Conta criada! Faça login para continuar.', 'sucesso', 4000);
-    mostrarLogin(true);
-
-  } catch (e) {
-    console.error('[REGISTRO] ERRO FINAL:', e.code, e.message, e);
-    showToast(_traduzirErro(e.code) || 'Não foi possível criar a conta. Erro: ' + (e.code || e.message), 'erro');
+    const msg = _traduzirErro(e.code) || "Matricula/usuario ou senha incorretos.";
+    setAuthFeedback(msg);
+    showToast(msg, "erro");
   } finally {
     btn.disabled = false;
-    btn.innerText = 'Registrar';
+    btn.innerText = "Entrar";
   }
 }
 
-// =============================================================
-// LOGOUT
-// =============================================================
+async function registrar() {
+  limparErrosAuth();
+
+  const nome = (document.getElementById("nomeUsuario")?.value || "").trim();
+  const matricula = normalizarMatricula(document.getElementById("matriculaUsuario")?.value || "");
+  const faculdadeId = document.getElementById("faculdadeUsuario")?.value || "";
+  const senha = (document.getElementById("senha")?.value || "").trim();
+  const confirma = (document.getElementById("confirmarSenha")?.value || "").trim();
+
+  if (!validarRegistro({ nome, matricula, senha, confirma, faculdadeId })) {
+    setAuthFeedback("Corrija os campos destacados.", "aviso");
+    return;
+  }
+
+  const dadosFaculdade = montarDadosFaculdade(faculdadeId);
+  const btn = document.getElementById("btnAcao");
+  btn.disabled = true;
+  btn.innerText = "Criando conta...";
+
+  try {
+    const matriculaHash = await sha256Hex(matricula);
+    const emailAuth = `${matriculaHash}@matricula.caronasaqui.internal`;
+    const res = await auth.createUserWithEmailAndPassword(emailAuth, senha);
+    const uid = res.user.uid;
+
+    await db.collection("usuarios").doc(uid).set({
+      nome,
+      nomeSlug: _slugNome(nome),
+      email: "",
+      celular: "",
+      foto: "",
+      matriculaHash,
+      matriculaLast4: matricula.slice(-4),
+      ...dadosFaculdade,
+      criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    setAuthFeedback("Conta criada. Faca login com sua matricula.", "sucesso");
+    showToast("Conta criada. Faca login com sua matricula.", "sucesso", 4000);
+    await auth.signOut();
+    mostrarLogin(true);
+  } catch (e) {
+    const msg = e.code === "auth/email-already-in-use"
+      ? "Matricula ja cadastrada."
+      : (_traduzirErro(e.code) || "Nao foi possivel criar a conta.");
+    setAuthFeedback(msg);
+    showToast(msg, "erro");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = window.modo === "registro" ? "Registrar" : "Entrar";
+  }
+}
 
 function logout() {
   auth.signOut().then(() => {
-    localStorage.removeItem('user');
-    window.location.replace('index.html');
+    localStorage.removeItem("user");
+    window.location.replace("index.html");
   });
 }
 
-// =============================================================
-// ERROS FIREBASE
-// =============================================================
-
 function _traduzirErro(code) {
   const map = {
-    'auth/user-not-found':         'Usuário não encontrado.',
-    'auth/wrong-password':         'Senha incorreta.',
-    'auth/invalid-email':          'Nome de usuário inválido.',
-    'auth/email-already-in-use':   'Nome de usuário já cadastrado.',
-    'auth/weak-password':          'Senha muito fraca. Use ao menos 6 caracteres.',
-    'auth/too-many-requests':      'Muitas tentativas. Aguarde alguns minutos.',
-    'auth/network-request-failed': 'Sem conexão com a internet.',
-    'auth/invalid-credential':     'Nome ou senha incorretos.',
+    "auth/user-not-found": "Usuario nao encontrado.",
+    "auth/wrong-password": "Senha incorreta.",
+    "auth/invalid-email": "Identificador invalido.",
+    "auth/email-already-in-use": "Identificador ja cadastrado.",
+    "auth/weak-password": "Senha muito fraca. Use ao menos 8 caracteres.",
+    "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos.",
+    "auth/network-request-failed": "Sem conexao com a internet.",
+    "auth/invalid-credential": "Matricula/usuario ou senha incorretos.",
   };
   return map[code] || null;
 }
 
-// =============================================================
-// INIT
-// =============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  initFaculdadesAuth();
+  mostrarLogin(false);
+});
 
-document.addEventListener('DOMContentLoaded', () => mostrarLogin(false));
-
-window.mostrarLogin    = mostrarLogin;
+window.mostrarLogin = mostrarLogin;
 window.mostrarRegistro = mostrarRegistro;
-window.acaoAuth        = acaoAuth;
-window.logout          = logout;
+window.acaoAuth = acaoAuth;
+window.logout = logout;

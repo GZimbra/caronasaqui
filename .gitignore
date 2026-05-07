@@ -64,6 +64,10 @@ node_modules/
 
 # dotenv environment variables file
 .env
+.env.*
+!.env.example
+.codex-dev-server.pid
+js/config/firebase-config.js
 
 # dataconnect generated files
 .dataconnect

@@ -49,6 +49,203 @@ function atualizarAvataresDoUsuario() {
   }
 }
 
+function preencherFormularioPerfil(dados) {
+  const campos = {
+    perfilNome: dados.nome || "",
+    perfilEmail: dados.email || "",
+    perfilCelular: dados.celular || "",
+  };
+
+  Object.entries(campos).forEach(([id, valor]) => {
+    const input = document.getElementById(id);
+    if (input) input.value = valor;
+  });
+
+  popularSelectFaculdades(document.getElementById("perfilFaculdade"), dados.faculdadeId || "");
+  atualizarInfoFaculdadePerfil();
+}
+
+function atualizarInfoFaculdadePerfil() {
+  const faculdade = obterFaculdadePorId(document.getElementById("perfilFaculdade")?.value || "");
+  const info = document.getElementById("perfilFaculdadeInfo");
+  if (info) info.textContent = faculdade ? `${faculdade.campus} - ${faculdade.endereco}` : "";
+}
+
+async function carregarPerfilAutenticado() {
+  if (!window.usuarioLogado?.id) return;
+
+  const status = document.getElementById("perfilFormStatus");
+  try {
+    if (status) status.textContent = "Carregando dados atualizados...";
+
+    const snap = await db.collection("usuarios").doc(usuarioLogado.id).get();
+    if (!snap.exists) {
+      if (status) status.textContent = "Perfil nao encontrado.";
+      return;
+    }
+
+    const dados = snap.data();
+    atualizarUsuarioLocal({
+      nome: dados.nome || usuarioLogado.nome,
+      email: dados.email || usuarioLogado.email,
+      celular: dados.celular || "",
+      faculdadeId: dados.faculdadeId || "",
+      faculdadeNome: dados.faculdadeNome || "",
+      faculdadeCampus: dados.faculdadeCampus || "",
+      faculdadeEndereco: dados.faculdadeEndereco || "",
+      matriculaLast4: dados.matriculaLast4 || usuarioLogado.matriculaLast4 || "",
+      curso: dados.curso || "",
+      foto: dados.foto || "",
+    });
+
+    preencherFormularioPerfil(window.usuarioLogado);
+    atualizarAvataresDoUsuario();
+
+    const titulo = document.querySelector(".perfil-topo h2");
+    const email = document.querySelector(".perfil-topo p");
+    if (titulo) titulo.textContent = window.usuarioLogado.nome || "Usuario";
+    if (email) email.textContent = window.usuarioLogado.email || "";
+
+    if (status) status.textContent = "";
+  } catch {
+    if (status) status.textContent = "Nao foi possivel carregar os dados atuais.";
+  }
+}
+
+function validarDadosPerfil(dados) {
+  if (dados.nome.length < 3) return "Nome deve ter ao menos 3 caracteres.";
+  if (dados.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email)) return "Email invalido.";
+  if (dados.celular && !/^\+?[\d\s().-]{10,20}$/.test(dados.celular)) return "Celular invalido.";
+  if (!obterFaculdadePorId(dados.faculdadeId)) return "Selecione uma faculdade valida.";
+  return "";
+}
+
+async function salvarDadosPerfil(event) {
+  event?.preventDefault();
+
+  const btn = document.getElementById("btnSalvarPerfil");
+  const status = document.getElementById("perfilFormStatus");
+  const dados = {
+    nome: (document.getElementById("perfilNome")?.value || "").trim(),
+    email: (document.getElementById("perfilEmail")?.value || "").trim(),
+    celular: (document.getElementById("perfilCelular")?.value || "").trim(),
+    faculdadeId: document.getElementById("perfilFaculdade")?.value || "",
+  };
+
+  const erro = validarDadosPerfil(dados);
+  if (erro) {
+    if (status) status.textContent = erro;
+    showToast(erro, "aviso");
+    return;
+  }
+
+  const dadosFaculdade = montarDadosFaculdade(dados.faculdadeId);
+
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Salvando...";
+    }
+    if (status) status.textContent = "";
+
+    await db.collection("usuarios").doc(usuarioLogado.id).set({
+      ...dados,
+      ...dadosFaculdade,
+      atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    atualizarUsuarioLocal({ ...dados, ...dadosFaculdade });
+    atualizarAvataresDoUsuario();
+
+    const userLabel = document.querySelector(".user span");
+    const titulo = document.querySelector(".perfil-topo h2");
+    const email = document.querySelector(".perfil-topo p");
+    if (userLabel) userLabel.textContent = dados.nome;
+    if (titulo) titulo.textContent = dados.nome;
+    if (email) email.textContent = dados.email;
+
+    if (status) status.textContent = "Perfil atualizado.";
+    showToast("Perfil atualizado com sucesso.", "sucesso");
+  } catch {
+    if (status) status.textContent = "Nao foi possivel salvar o perfil.";
+    showToast("Nao foi possivel salvar o perfil.", "erro");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Salvar perfil";
+    }
+  }
+}
+
+function obterUsuarioFirebaseAtual() {
+  if (auth.currentUser) return Promise.resolve(auth.currentUser);
+
+  return new Promise(resolve => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
+
+function validarNovaSenha(senha, confirma) {
+  if (senha.length < 8) return "A nova senha deve ter ao menos 8 caracteres.";
+  if (!/[A-Za-z]/.test(senha) || !/\d/.test(senha)) return "Use letras e numeros na nova senha.";
+  if (senha !== confirma) return "A confirmacao da senha nao confere.";
+  return "";
+}
+
+async function alterarSenhaPerfil(event) {
+  event?.preventDefault();
+
+  const atual = document.getElementById("senhaAtualPerfil")?.value || "";
+  const nova = document.getElementById("novaSenhaPerfil")?.value || "";
+  const confirma = document.getElementById("confirmarNovaSenhaPerfil")?.value || "";
+  const btn = document.getElementById("btnAlterarSenha");
+  const status = document.getElementById("senhaPerfilStatus");
+
+  const erro = validarNovaSenha(nova, confirma);
+  if (erro) {
+    if (status) status.textContent = erro;
+    showToast(erro, "aviso");
+    return;
+  }
+
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Alterando...";
+    }
+    if (status) status.textContent = "";
+
+    const user = await obterUsuarioFirebaseAtual();
+    if (!user) throw new Error("Sessao expirada");
+
+    const credential = firebase.auth.EmailAuthProvider.credential(user.email, atual);
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(nova);
+
+    ["senhaAtualPerfil", "novaSenhaPerfil", "confirmarNovaSenhaPerfil"].forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.value = "";
+    });
+
+    if (status) status.textContent = "Senha alterada com sucesso.";
+    showToast("Senha alterada com sucesso.", "sucesso");
+  } catch (error) {
+    const msg = error?.code === "auth/wrong-password" || error?.code === "auth/invalid-credential"
+      ? "Senha atual incorreta."
+      : "Nao foi possivel alterar a senha.";
+    if (status) status.textContent = msg;
+    showToast(msg, "erro");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Alterar senha";
+    }
+  }
+}
+
 function toggleMenuFotoPerfil(event) {
   event?.preventDefault();
   event?.stopPropagation();
@@ -71,6 +268,10 @@ document.addEventListener("click", event => {
   const area = document.getElementById("perfilFotoArea");
   if (!area || area.contains(event.target)) return;
   fecharMenuFotoPerfil();
+});
+
+document.addEventListener("change", event => {
+  if (event.target?.id === "perfilFaculdade") atualizarInfoFaculdadePerfil();
 });
 
 // =========================
@@ -180,6 +381,9 @@ async function removerFotoPerfil() {
 
 window.criarAvatarHTML = criarAvatarHTML;
 window.atualizarAvataresDoUsuario = atualizarAvataresDoUsuario;
+window.carregarPerfilAutenticado = carregarPerfilAutenticado;
+window.salvarDadosPerfil = salvarDadosPerfil;
+window.alterarSenhaPerfil = alterarSenhaPerfil;
 window.salvarFotoPerfil = salvarFotoPerfil;
 window.removerFotoPerfil = removerFotoPerfil;
 window.toggleMenuFotoPerfil = toggleMenuFotoPerfil;

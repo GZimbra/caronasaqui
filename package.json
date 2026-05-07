@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node dev-server.js",
+    "admin": "node admin-server.js",
+    "check": "node --check admin-server.js && node --check dev-server.js && node --check admin/js/admin-panel.js && node --check js/config/faculdades.js && node --check js/config/firebase-config.example.js && node --check js/services/firebase.js && node --check js/core/login-page.js && node --check js/core/app-guard.js && node --check js/core/auth.js && node --check js/core/app.js && node --check js/features/feed.js && node --check js/features/minha-carona.js && node --check js/features/solicitacoes.js && node --check js/features/sidebar.js && node --check js/features/profile.js"
   },
   "keywords": [],
   "author": "",

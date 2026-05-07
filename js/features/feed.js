@@ -52,6 +52,8 @@ function _criarCardCarona(id, d) {
   const motoristaFoto = eh(d.motoristaFoto || '');
   const origemTexto   = eh(_fmtEndereco(d.origemEndereco));
   const destinoTexto  = eh(_fmtEndereco(d.destinoEndereco));
+  const partidaLivre  = eh(d.partidaLivre || '');
+  const faculdadeTexto = eh([d.faculdadeNome, d.faculdadeCampus].filter(Boolean).join(' - '));
   const descricao     = eh(d.descricao || 'Sem descrição');
   const horario       = d.horario ? ' · ' + eh(d.horario) : '';
 
@@ -85,6 +87,8 @@ function _criarCardCarona(id, d) {
       </div>
       <div class="ride-info">
         <span class="time">${ICONS.car} Ativa${horario}</span>
+        ${faculdadeTexto ? `<p class="descricao">${ICONS.graduation} ${faculdadeTexto}</p>` : ''}
+        ${partidaLivre ? `<p class="descricao">${ICONS.pin} Partida: ${partidaLivre}</p>` : ''}
         <h3>${origemTexto}</h3>
         <p class="destino">${destinoTexto}</p>
         <p class="descricao">${ICONS.message} ${descricao}</p>

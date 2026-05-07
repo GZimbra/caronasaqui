@@ -234,6 +234,8 @@ function obterDadosMinhaCarona(carona) {
   const motoristaFoto = carona.motoristaFoto || usuarioLogado.foto || "";
   const origem = formatarEnderecoCarona(carona, "origem");
   const destino = formatarEnderecoCarona(carona, "destino");
+  const partidaLivre = carona.partidaLivre || "";
+  const faculdadeTexto = [carona.faculdadeNome, carona.faculdadeCampus].filter(Boolean).join(" - ");
 
   return {
     carona,
@@ -244,7 +246,9 @@ function obterDadosMinhaCarona(carona) {
     motoristaNome,
     motoristaFoto,
     origem,
-    destino
+    destino,
+    partidaLivre,
+    faculdadeTexto
   };
 }
 
@@ -254,6 +258,16 @@ function renderDetalhesMinhaCarona(dados) {
       <div class="my-ride-item">
         <span>Origem</span>
         <strong>${esc(dados.origem)}</strong>
+      </div>
+
+      <div class="my-ride-item">
+        <span>Local de partida</span>
+        <strong>${esc(dados.partidaLivre || "Nao informado")}</strong>
+      </div>
+
+      <div class="my-ride-item">
+        <span>Faculdade</span>
+        <strong>${esc(dados.faculdadeTexto || "Nao informada")}</strong>
       </div>
 
       <div class="my-ride-item">

@@ -198,21 +198,63 @@ function renderPerfil(content) {
           </div>
         </div>
         <div>
-          <h2>${usuarioLogado.nome}</h2>
-          <p>${usuarioLogado.email}</p>
+          <h2>${esc(usuarioLogado.nome || '')}</h2>
+          <p>${esc(usuarioLogado.email || '')}</p>
         </div>
       </div>
 
       <input id="fotoPerfilInput" type="file" accept="image/*" hidden onchange="salvarFotoPerfil(event)">
       <p id="perfilFotoStatus" class="perfil-status">Clique na foto para abrir o menu.</p>
 
-      <p><b>Nome:</b> ${usuarioLogado.nome}</p>
-      <p><b>Email:</b> ${usuarioLogado.email}</p>
-      <p><b>Celular:</b> ${_fmtCelular(usuarioLogado.celular || '—')}</p>
-      <p><b>Curso:</b> ${usuarioLogado.curso || '—'}</p>
+      <form class="profile-form" onsubmit="salvarDadosPerfil(event)">
+        <div class="form-grid">
+          <div>
+            <label class="form-label" for="perfilNome">Nome</label>
+            <input id="perfilNome" value="${esc(usuarioLogado.nome || '')}" autocomplete="name" required minlength="3">
+          </div>
+          <div>
+            <label class="form-label" for="perfilEmail">Email</label>
+            <input id="perfilEmail" value="${esc(usuarioLogado.email || '')}" autocomplete="email" inputmode="email">
+          </div>
+          <div>
+            <label class="form-label" for="perfilCelular">Celular</label>
+            <input id="perfilCelular" value="${esc(usuarioLogado.celular || '')}" autocomplete="tel" inputmode="tel">
+          </div>
+          <div>
+            <label class="form-label" for="perfilFaculdade">Faculdade</label>
+            <select id="perfilFaculdade" class="input-select"></select>
+          </div>
+        </div>
+        <p id="perfilFaculdadeInfo" class="field-hint"></p>
+        <p class="field-hint">Matricula vinculada: final ${esc(usuarioLogado.matriculaLast4 || '----')}</p>
+        <p id="perfilFormStatus" class="form-status" aria-live="polite"></p>
+        <div class="popup-actions">
+          <button id="btnSalvarPerfil" class="btn-primary" type="submit">Salvar perfil</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="perfil-card">
+      <h2>Seguranca</h2>
+      <form class="profile-form" onsubmit="alterarSenhaPerfil(event)">
+        <label class="form-label" for="senhaAtualPerfil">Senha atual</label>
+        <input id="senhaAtualPerfil" type="password" autocomplete="current-password" required>
+
+        <label class="form-label" for="novaSenhaPerfil">Nova senha</label>
+        <input id="novaSenhaPerfil" type="password" autocomplete="new-password" minlength="8" required>
+
+        <label class="form-label" for="confirmarNovaSenhaPerfil">Confirmar nova senha</label>
+        <input id="confirmarNovaSenhaPerfil" type="password" autocomplete="new-password" minlength="8" required>
+
+        <p id="senhaPerfilStatus" class="form-status" aria-live="polite"></p>
+        <div class="popup-actions">
+          <button id="btnAlterarSenha" class="btn-secondary" type="submit">Alterar senha</button>
+        </div>
+      </form>
     </div>
     <button class="btn-secondary" onclick="logout()">Sair da conta</button>
   `;
+  carregarPerfilAutenticado();
 }
 
 // ── Popup — Nova Carona ──────────────────────────────────────
@@ -226,6 +268,16 @@ function abrirPopup() {
     <div class="popup-box popup-box-wide">
       <h2>Nova Carona</h2>
 
+      <label class="form-label" for="faculdadeCarona">Faculdade</label>
+      <select id="faculdadeCarona" class="input-select"></select>
+      <p id="faculdadeCaronaInfo" class="field-hint"></p>
+      <p id="faculdadeCaronaErro" class="field-error" aria-live="polite"></p>
+
+      <label class="form-label" for="localPartidaCarona">Local de partida</label>
+      <input id="localPartidaCarona" placeholder="Ex: Portao principal, bloco B ou ponto de onibus" maxlength="140">
+      <p id="localPartidaErro" class="field-error" aria-live="polite"></p>
+
+      <label class="form-label" for="descricaoCarona">Descricao</label>
       <input id="descricaoCarona" placeholder="Descrição da carona">
 
       <div class="popup-section">
@@ -247,7 +299,7 @@ function abrirPopup() {
         <p class="popup-label">Atalhos rápidos</p>
         <div class="popup-actions popup-actions-grid">
           <button class="btn-secondary" onclick="usarLocalAtual()">${ICONS.pin} Usar local atual</button>
-          <button class="btn-secondary" onclick="usarDomBosco()">${ICONS.graduation} Usar Dom Bosco</button>
+          <button id="btnUsarFaculdade" class="btn-secondary" onclick="usarFaculdadeSelecionada()">${ICONS.graduation} Usar minha faculdade</button>
         </div>
       </div>
 
@@ -275,6 +327,9 @@ function abrirPopup() {
   `;
 
   document.body.appendChild(popup);
+  popularSelectFaculdades(document.getElementById('faculdadeCarona'), usuarioLogado.faculdadeId || '');
+  atualizarInfoFaculdadeCarona();
+  document.getElementById('faculdadeCarona')?.addEventListener('change', atualizarInfoFaculdadeCarona);
   window.modo = 'origem';
   atualizarModoSelecao();
   setTimeout(initMapPopup, 100);
@@ -309,6 +364,24 @@ function atualizarModoSelecao() {
 function definirOrigem()  { window.modo = 'origem';  atualizarModoSelecao(); }
 function definirDestino() { window.modo = 'destino'; atualizarModoSelecao(); }
 
+function atualizarInfoFaculdadeCarona() {
+  const faculdade = obterFaculdadePorId(document.getElementById('faculdadeCarona')?.value || '');
+  const info = document.getElementById('faculdadeCaronaInfo');
+  if (info) info.textContent = faculdade ? `${faculdade.campus} - ${faculdade.endereco}` : '';
+
+  const btn = document.getElementById('btnUsarFaculdade');
+  if (btn) {
+    btn.innerHTML = `${ICONS.graduation} Usar ${faculdade ? faculdade.nome : 'minha faculdade'}`;
+  }
+}
+
+function sanitizarTextoLivre(valor) {
+  return String(valor || "")
+    .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 async function salvarCarona() {
   if (!window.origem || !window.destino) {
     showToast('Defina a origem e o destino no mapa.', 'aviso');
@@ -325,7 +398,27 @@ async function salvarCarona() {
     return;
   }
 
-  const descricao = document.getElementById('descricaoCarona').value.trim();
+  const partidaLivre = sanitizarTextoLivre(document.getElementById('localPartidaCarona')?.value || '');
+  const faculdadeId = document.getElementById('faculdadeCarona')?.value || '';
+  const dadosFaculdade = montarDadosFaculdade(faculdadeId);
+
+  if (!dadosFaculdade) {
+    const msg = 'Selecione uma faculdade valida.';
+    const erro = document.getElementById('faculdadeCaronaErro');
+    if (erro) erro.textContent = msg;
+    showToast(msg, 'aviso');
+    return;
+  }
+
+  if (partidaLivre.length < 3) {
+    const msg = 'Informe o local de partida com ao menos 3 caracteres.';
+    const erro = document.getElementById('localPartidaErro');
+    if (erro) erro.textContent = msg;
+    showToast(msg, 'aviso');
+    return;
+  }
+
+  const descricao = sanitizarTextoLivre(document.getElementById('descricaoCarona').value);
   const horario   = document.getElementById('horarioCarona')?.value || '';
 
   const [origemEndereco, destinoEndereco] = await Promise.all([
@@ -345,6 +438,7 @@ async function salvarCarona() {
     descricao,
     horario,
     tipo:           'oferta',
+    ...dadosFaculdade,
     vagas:          4,
     vagasTotais:    4,
     status:         'aberta',
@@ -352,6 +446,7 @@ async function salvarCarona() {
     participantes:  [],
     origem:         { lat: window.origem.lat,  lng: window.origem.lng  },
     destino:        { lat: window.destino.lat, lng: window.destino.lng },
+    partidaLivre,
     origemEndereco,
     destinoEndereco,
     distancia:      dist.toFixed(1),

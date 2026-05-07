@@ -52,23 +52,33 @@
     <div class="auth-card">
 
       <div class="tabs">
-        <button onclick="mostrarLogin(true)"    id="tabLogin"    class="active">Entrar</button>
-        <button onclick="mostrarRegistro()" id="tabRegister">Registrar</button>
+        <button id="tabLogin" class="active">Entrar</button>
+        <button id="tabRegister">Registrar</button>
       </div>
 
       <h2 id="titulo">Entrar</h2>
 
-      <form id="authForm" onsubmit="acaoAuth();return false;" style="display:contents">
+      <form id="authForm" class="contents-form" onsubmit="acaoAuth();return false;">
       <div class="auth-fields" id="authFields">
-        <!-- Campo nome: username para acessibilidade e autofill do browser -->
-        <input id="nomeUsuario" placeholder="Nome de usuário" autocapitalize="none" spellcheck="false" autocomplete="username">
+        <label class="form-label" for="nomeUsuario" id="labelIdentificador">Matricula ou usuario</label>
+        <input id="nomeUsuario" placeholder="Ex: 2024123456" autocapitalize="none" spellcheck="false" autocomplete="username" required>
+        <p id="erroNomeUsuario" class="field-error" aria-live="polite"></p>
 
-        <!-- Campo extra só no registro -->
         <div class="campos-extras" id="camposExtras">
           <div class="campos-extras-inner">
+            <label class="form-label" for="matriculaUsuario">Matricula institucional</label>
+            <input id="matriculaUsuario" placeholder="Somente numeros, 8 a 12 digitos" inputmode="numeric" autocomplete="off">
+            <p id="erroMatriculaUsuario" class="field-error" aria-live="polite"></p>
+
+            <label class="form-label" for="faculdadeUsuario">Faculdade</label>
+            <select id="faculdadeUsuario" class="input-select"></select>
+            <p id="faculdadeInfo" class="field-hint"></p>
+            <p id="erroFaculdadeUsuario" class="field-error" aria-live="polite"></p>
+
+            <label class="form-label" for="confirmarSenha">Confirmar senha</label>
             <div class="senha-wrapper">
               <input id="confirmarSenha" type="password" placeholder="Confirmar senha" autocomplete="new-password">
-              <button type="button" class="btn-olho" onclick="toggleConfirmarSenha()" id="btnOlhoConfirmar" aria-label="Mostrar confirmação de senha">
+              <button type="button" class="btn-olho" id="btnOlhoConfirmar" aria-label="Mostrar confirmação de senha">
                 <svg id="iconeOlhoConfirmar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
@@ -78,20 +88,23 @@
           </div>
         </div>
 
+        <label class="form-label sr-only" for="senha">Senha</label>
         <div class="senha-wrapper">
-          <input id="senha" type="password" placeholder="Senha" autocomplete="current-password">
-          <button type="button" class="btn-olho" onclick="toggleSenha()" id="btnOlho" aria-label="Mostrar senha">
+          <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required>
+          <button type="button" class="btn-olho" id="btnOlho" aria-label="Mostrar senha">
             <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
         </div>
+        <p id="erroSenha" class="field-error" aria-live="polite"></p>
       </div>
       </form>
+      <p id="authFeedback" class="form-status auth-feedback" aria-live="polite"></p>
 
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
-        <button class="btn-primary" onclick="acaoAuth()" id="btnAcao">Entrar</button>
+      <div class="auth-actions">
+        <button class="btn-primary" type="submit" form="authForm" id="btnAcao">Entrar</button>
 
       </div>
 
@@ -103,27 +116,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+<script src="js/config/faculdades.js"></script>
+<script src="js/config/firebase-config.js"></script>
 <script src="js/services/firebase.js"></script>
 <script src="js/utils/helpers.js"></script>
 <script src="js/core/auth.js"></script>
-
-<script>
-if (localStorage.getItem("user")) {
-  window.location.replace("app.html");
-}
-
-function _toggleInput(inputId, iconeId) {
-  const input = document.getElementById(inputId);
-  const icone = document.getElementById(iconeId);
-  const mostrar = input.type === "password";
-  input.type = mostrar ? "text" : "password";
-  icone.innerHTML = mostrar
-    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
-    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-}
-function toggleSenha() { _toggleInput("senha", "iconeOlho"); }
-function toggleConfirmarSenha() { _toggleInput("confirmarSenha", "iconeOlhoConfirmar"); }
-</script>
+<script src="js/core/login-page.js"></script>
 
 </body>
 </html>

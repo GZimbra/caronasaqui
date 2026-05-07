@@ -12,22 +12,7 @@
 
 <div id="app"></div>
 
-<!-- 🔐 VALIDA USUÁRIO ANTES DE TUDO -->
-<script>
-(function(){
-
-  const user = localStorage.getItem("user");
-
-  if(!user){
-    window.location.replace("index.html");
-    return;
-  }
-
-  // 🔥 DEFINE GLOBAL ANTES DOS SCRIPTS
-  window.usuarioLogado = JSON.parse(user);
-
-})();
-</script>
+<script src="js/core/app-guard.js"></script>
 
 <!-- 📦 LIBS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -41,6 +26,8 @@
 <script src="js/utils/escape.js"></script>
 
 <!-- 🔥 SERVIÇOS -->
+<script src="js/config/faculdades.js"></script>
+<script src="js/config/firebase-config.js"></script>
 <script src="js/services/firebase.js"></script>
 <script src="js/services/geo.js"></script>
 <script src="js/services/map.js"></script>
