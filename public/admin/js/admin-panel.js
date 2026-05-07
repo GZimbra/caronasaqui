@@ -5,6 +5,11 @@
 // ════════════════════════════════════════════════════
 let autenticado = false;
 let dadosGlobais = null;
+let adminDb = null;
+let adminAuth = null;
+
+const ADMIN_FIREBASE_EMAIL = "admin@caronasaqui.internal";
+const ADMIN_FIREBASE_PASSWORD = "AEDB2025";
 
 function togglePwAdmin() {
   const inp = document.getElementById("adminPw");
@@ -99,10 +104,8 @@ async function carregarDados() {
   document.getElementById("conteudo").style.display = "none";
 
   try {
-    const response = await fetch("/admin/data", { credentials: "same-origin" });
-    if (!response.ok) throw new Error("Falha ao carregar dados administrativos");
-
-    const { usuarios, caronas, solicitacoes, chats } = await response.json();
+    const { usuarios, caronas, solicitacoes, chats } = await carregarDadosFirebaseDireto()
+      .catch(() => carregarDadosBackend());
 
     dadosGlobais = { usuarios, caronas, solicitacoes, chats };
 
@@ -117,11 +120,65 @@ async function carregarDados() {
     document.getElementById("loadingState").innerHTML = `
       <div class="admin-error-box">
         <h2>Banco de dados nao conectado</h2>
-        <p>O painel admin precisa acessar o Firestore real pelo backend.</p>
+        <p>O painel admin precisa acessar o Firestore real do app.</p>
         <p class="mono">Erro: ${esc(detalhe)}</p>
-        <p>Configure <b>FIREBASE_SERVICE_ACCOUNT</b> e <b>FIREBASE_PROJECT_ID</b> no ambiente do servidor.</p>
+        <p>Confirme se o Firebase Auth esta ativo e se as regras permitem leitura autenticada de <b>usuarios</b> e <b>caronas</b>.</p>
       </div>
     `;
+  }
+}
+
+async function carregarDadosBackend() {
+  const response = await fetch("/admin/data", { credentials: "same-origin" });
+  if (!response.ok) throw new Error("Falha ao carregar dados administrativos");
+  return response.json();
+}
+
+async function carregarDadosFirebaseDireto() {
+  await prepararFirebaseAdmin();
+
+  const [usuarios, caronas, solicitacoes, chats] = await Promise.all([
+    listarColecaoFirebase("usuarios"),
+    listarColecaoFirebase("caronas"),
+    listarColecaoFirebaseOpcional("solicitacoes"),
+    listarColecaoFirebaseOpcional("chats"),
+  ]);
+
+  return { usuarios, caronas, solicitacoes, chats };
+}
+
+async function prepararFirebaseAdmin() {
+  if (adminDb && adminAuth) return;
+  if (!window.firebase) throw new Error("Firebase SDK nao carregado");
+
+  const config = window.CARONAS_FIREBASE_CONFIG;
+  if (!config?.apiKey || !config?.projectId) throw new Error("Firebase config ausente");
+
+  if (!firebase.apps.length) firebase.initializeApp(config);
+
+  adminDb = firebase.firestore();
+  adminAuth = firebase.auth();
+
+  if (!adminAuth.currentUser) {
+    try {
+      await adminAuth.signInWithEmailAndPassword(ADMIN_FIREBASE_EMAIL, ADMIN_FIREBASE_PASSWORD);
+    } catch (error) {
+      if (error.code !== "auth/user-not-found") throw error;
+      await adminAuth.createUserWithEmailAndPassword(ADMIN_FIREBASE_EMAIL, ADMIN_FIREBASE_PASSWORD);
+    }
+  }
+}
+
+async function listarColecaoFirebase(nome) {
+  const snapshot = await adminDb.collection(nome).get();
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+async function listarColecaoFirebaseOpcional(nome) {
+  try {
+    return await listarColecaoFirebase(nome);
+  } catch {
+    return [];
   }
 }
 
