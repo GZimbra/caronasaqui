@@ -1263,3 +1263,80 @@ button:hover {
     box-shadow: 0 -14px 38px rgba(13, 96, 176, 0.14);
   }
 }
+
+/* Readability fix for confirmation popups and map popups. */
+.popup-box,
+.popup-box *:not(button):not(svg):not(path),
+.notif-drawer,
+.notif-drawer *:not(button):not(svg):not(path),
+.notificacao-card,
+.notificacao-card *:not(button):not(svg):not(path) {
+  color: #172033;
+}
+
+.popup-box h1,
+.popup-box h2,
+.popup-box h3,
+.popup-box b,
+.notif-drawer h1,
+.notif-drawer h2,
+.notif-drawer h3,
+.notif-drawer b,
+.notificacao-card b {
+  color: #063d73;
+}
+
+.popup-box p,
+.popup-box small,
+.popup-box .popup-hint,
+.popup-box .field-hint,
+.popup-box .form-status,
+.notif-drawer p,
+.notif-drawer small,
+.notificacao-card p,
+.notificacao-card small {
+  color: #2d4f68;
+}
+
+.popup-box .popup-label,
+.popup-box .form-label {
+  color: #102a43;
+}
+
+.popup-box .field-error,
+.popup-box .form-status.erro {
+  color: #b42318;
+}
+
+.popup-box .form-status.aviso {
+  color: #9a6700;
+}
+
+.popup-box .form-status.sucesso {
+  color: #087443;
+}
+
+.popup-box input,
+.popup-box textarea,
+.popup-box select,
+.popup-box .input-select,
+.popup-box .input-textarea {
+  color: #172033;
+  background: rgba(255,255,255,0.86);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(255,255,255,0.94);
+  color: #172033;
+  box-shadow: 0 12px 32px rgba(13, 96, 176, 0.18);
+}
+
+.leaflet-popup-content,
+.leaflet-popup-content * {
+  color: #172033 !important;
+}
+
+.toast-msg {
+  color: #ffffff !important;
+}
