@@ -30,9 +30,3 @@ Stack principal:
   - graficos e exportacao CSV.
 
 
-Login admin:
-
-```text
-admin
-AEDB2025
-```
