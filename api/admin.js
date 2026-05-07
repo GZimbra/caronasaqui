@@ -7,7 +7,11 @@ let cachedFirebaseUserToken = null;
 
 function requiredEnv(name) {
   const value = process.env[name];
-  if (!value) throw new Error(`Variavel obrigatoria ausente: ${name}`);
+  if (!value) {
+    const error = new Error(`Variavel obrigatoria ausente: ${name}`);
+    error.code = "MISSING_ENV";
+    throw error;
+  }
   return value;
 }
 
@@ -245,6 +249,7 @@ module.exports = async function handler(req, res) {
 
     sendJson(res, 404, { ok: false });
   } catch (error) {
-    sendJson(res, 503, { ok: false, error: error.message });
+    const status = error.code === "MISSING_ENV" ? 500 : 503;
+    sendJson(res, status, { ok: false, error: error.message });
   }
 };

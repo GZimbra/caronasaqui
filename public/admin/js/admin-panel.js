@@ -29,14 +29,20 @@ async function fazerLogin() {
       body: JSON.stringify({ username, password: pw })
     });
 
-    if (!res.ok) throw new Error("unauthorized");
+    if (!res.ok) {
+      let message = "Usuario ou senha incorretos.";
+      if (res.status >= 500) {
+        message = "Admin nao configurado no Vercel. Configure ADMIN_USERNAME, ADMIN_PASSWORD e ADMIN_SESSION_SECRET.";
+      }
+      throw new Error(message);
+    }
 
     autenticado = true;
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
     carregarDados();
-  } catch {
-    err.textContent = "Usuario ou senha incorretos.";
+  } catch (error) {
+    err.textContent = error.message || "Usuario ou senha incorretos.";
     document.getElementById("adminPw").value = "";
     setTimeout(() => err.textContent = "", 3000);
   }
