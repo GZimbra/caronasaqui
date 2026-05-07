@@ -508,3 +508,336 @@ select:focus,
     max-width: 48px !important;
   }
 }
+
+/* Light blue visual identity for Caronas Aqui. Imported last. */
+:root {
+  --bg: #f4f9ff;
+  --bg-elevated: #ffffff;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.92);
+  --bg-hover: rgba(18, 105, 180, 0.08);
+  --bg-subtle: #eef7ff;
+  --border: rgba(18, 105, 180, 0.14);
+  --border-md: rgba(18, 105, 180, 0.24);
+  --accent: #1688dc;
+  --accent-strong: #1269b4;
+  --accent-dim: rgba(22, 136, 220, 0.12);
+  --green: #19a76f;
+  --green-dim: rgba(25, 167, 111, 0.12);
+  --red: #d64545;
+  --amber: #e9a20f;
+  --violet: #5d6be8;
+  --text: #172033;
+  --text-muted: #52627a;
+  --text-dim: #7a8aa0;
+  --shadow-sm: 0 8px 24px rgba(18, 105, 180, 0.08);
+  --shadow-md: 0 18px 42px rgba(18, 105, 180, 0.13);
+  --shadow-lg: 0 30px 80px rgba(18, 105, 180, 0.18);
+  --focus-ring: 0 0 0 3px rgba(22, 136, 220, 0.24);
+}
+
+html,
+body {
+  background: var(--bg);
+}
+
+body {
+  color: var(--text);
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f4f9ff 48%, #eaf5ff 100%);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.login-page {
+  min-height: 100dvh;
+  background:
+    linear-gradient(90deg, #f8fbff 0%, #eef7ff 52%, #ffffff 100%);
+}
+
+.login-left {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(101, 220, 255, 0.34), transparent 30%),
+    linear-gradient(145deg, #ffffff 0%, #eef7ff 54%, #dcefff 100%);
+  border-right: 1px solid rgba(18, 105, 180, 0.12);
+}
+
+.login-left::before {
+  background-image: radial-gradient(circle, rgba(18, 105, 180, 0.12) 1px, transparent 1px);
+  opacity: 0.72;
+}
+
+.login-left::after {
+  background: linear-gradient(to bottom, transparent, rgba(18, 105, 180, 0.2), transparent);
+}
+
+.login-left-content {
+  max-width: 640px;
+  gap: 24px;
+}
+
+.login-brand {
+  align-items: center;
+}
+
+.login-brand-icon {
+  width: 62px;
+  height: 62px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid rgba(18, 105, 180, 0.14);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.login-brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.login-brand-name {
+  color: var(--accent-strong);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.login-headline {
+  max-width: 620px;
+  color: var(--text);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-size: clamp(34px, 4.2vw, 58px);
+  line-height: 1.03;
+}
+
+.login-sub {
+  max-width: 560px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.login-route-preview {
+  width: min(560px, 100%);
+  border: 1px solid rgba(18, 105, 180, 0.14);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.login-route-preview img {
+  width: 100%;
+  display: block;
+}
+
+.login-feature {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(18, 105, 180, 0.14);
+  box-shadow: 0 6px 20px rgba(18, 105, 180, 0.06);
+}
+
+.login-feature-icon {
+  color: var(--accent-strong);
+  background: #e4f4ff;
+  border-color: rgba(18, 105, 180, 0.16);
+}
+
+.login-right {
+  background: #ffffff;
+  padding: 28px;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-color: rgba(18, 105, 180, 0.14);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card h2 {
+  color: var(--text);
+}
+
+.tabs {
+  background: #eef7ff;
+  border-color: rgba(18, 105, 180, 0.12);
+}
+
+.tabs button {
+  color: var(--text-muted);
+}
+
+.tabs button:hover {
+  background: rgba(22, 136, 220, 0.09);
+  color: var(--accent-strong);
+}
+
+.tabs button.active {
+  background: #ffffff;
+  color: var(--accent-strong);
+  box-shadow: 0 4px 14px rgba(18, 105, 180, 0.08);
+}
+
+input,
+textarea,
+select,
+.input-select,
+.search {
+  background: #ffffff;
+  color: var(--text);
+  border-color: rgba(18, 105, 180, 0.16);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8a9bb1;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.input-select:focus,
+.search:focus {
+  background: #ffffff;
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  background: var(--accent-strong);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(18, 105, 180, 0.24);
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+}
+
+.btn-secondary,
+button {
+  color: var(--text);
+  background: #ffffff;
+  border-color: rgba(18, 105, 180, 0.16);
+}
+
+button:hover,
+.btn-secondary:hover {
+  background: #eef7ff;
+  border-color: rgba(18, 105, 180, 0.28);
+}
+
+.layout {
+  background: #f4f9ff;
+}
+
+.sidebar,
+.right-sidebar {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(18, 105, 180, 0.14);
+  box-shadow: var(--shadow-sm);
+}
+
+.logo {
+  color: var(--accent-strong);
+}
+
+.brand-name {
+  color: var(--accent-strong);
+}
+
+.sidebar button {
+  color: var(--text-muted);
+}
+
+.sidebar button:hover {
+  background: #eef7ff;
+  color: var(--accent-strong);
+}
+
+.sidebar button.active {
+  color: var(--accent-strong);
+  background: #e1f2ff;
+  border-color: rgba(18, 105, 180, 0.2);
+}
+
+.ride-card,
+.perfil-card,
+.profile-card,
+.my-ride-card,
+.table-card,
+.mensagens-lista,
+.mensagens-chat,
+.popup-box,
+.notificacao-card {
+  background: #ffffff;
+  border-color: rgba(18, 105, 180, 0.14);
+  box-shadow: var(--shadow-sm);
+}
+
+.ride-card {
+  border-left-color: var(--accent);
+}
+
+.ride-card:hover {
+  border-color: rgba(18, 105, 180, 0.26);
+  box-shadow: var(--shadow-md);
+}
+
+.ride-driver,
+.status-badge,
+.location-chip,
+.chat-input {
+  background: #f2f8ff;
+  border-color: rgba(18, 105, 180, 0.14);
+}
+
+.avatar,
+.conversa-avatar,
+.user-avatar {
+  background: #e4f4ff;
+  border-color: rgba(18, 105, 180, 0.18);
+  color: var(--accent-strong);
+}
+
+.popup {
+  background: rgba(13, 34, 56, 0.28);
+}
+
+.map,
+.leaflet-container,
+#mapMain {
+  border-color: rgba(18, 105, 180, 0.16);
+}
+
+.msg.me .bubble {
+  background: var(--accent-strong);
+  color: #ffffff;
+}
+
+.msg.other .bubble {
+  background: #eef7ff;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .login-page {
+    display: block;
+    min-height: auto;
+  }
+
+  .login-left,
+  .login-right {
+    min-height: auto;
+  }
+
+  .login-left-content {
+    padding: 34px 20px 24px;
+  }
+
+  .login-right {
+    padding: 18px;
+  }
+}

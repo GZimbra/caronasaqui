@@ -64,6 +64,10 @@
     {
       "source": "/js/:path*",
       "destination": "/public/js/:path*"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/public/assets/:path*"
     }
   ],
   "headers": [
