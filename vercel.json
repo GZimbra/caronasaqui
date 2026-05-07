@@ -3,19 +3,19 @@
   "rewrites": [
     {
       "source": "/admin",
-      "destination": "/admin/index.html"
+      "destination": "/public/admin/index.html"
     },
     {
       "source": "/admin/",
-      "destination": "/admin/index.html"
+      "destination": "/public/admin/index.html"
     },
     {
       "source": "/admin/css/:path*",
-      "destination": "/admin/css/:path*"
+      "destination": "/public/admin/css/:path*"
     },
     {
       "source": "/admin/js/:path*",
-      "destination": "/admin/js/:path*"
+      "destination": "/public/admin/js/:path*"
     },
     {
       "source": "/admin/login",
