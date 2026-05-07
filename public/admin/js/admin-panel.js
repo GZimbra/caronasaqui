@@ -101,7 +101,9 @@ async function carregarDados() {
   if (!autenticado) return;
 
   document.getElementById("loadingState").style.display = "flex";
-  document.getElementById("conteudo").style.display = "none";
+  const conteudo = document.getElementById("conteudo");
+  conteudo.classList.add("is-hidden");
+  conteudo.style.display = "none";
 
   try {
     const { usuarios, caronas, solicitacoes, chats } = await carregarDadosFirebaseDireto()
@@ -499,6 +501,7 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
   `;
 
   document.getElementById("loadingState").style.display = "none";
+  el.classList.remove("is-hidden");
   el.style.display = "block";
 }
 
