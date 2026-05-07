@@ -4,7 +4,7 @@ O painel admin foi preparado para rodar independente do servidor local.
 
 No Vercel:
 
-- `/admin` serve `admin/index.html`.
+- `/admin` serve `public/admin/index.html`.
 - `/admin/css/*` serve CSS do admin.
 - `/admin/js/*` serve JS do admin.
 - `/admin/login`, `/admin/session`, `/admin/logout`, `/admin/data` usam `api/admin.js`.

@@ -3,7 +3,7 @@
 Estado atual do projeto:
 
 - Frontend publico usa Firebase Auth e Firestore direto no browser.
-- Painel admin roda em servidor local separado (`server/admin-server.js`) e nao vai para o Vercel.
+- Painel admin estatico vai para o Vercel em `public/admin/`; dados e login passam pela API serverless.
 - Nao existe backend Express publico neste checkout; por isso `helmet.js`, `express-rate-limit`, JWT proprio e bcrypt nao se aplicam sem uma migracao de arquitetura.
 
 Checklist:
@@ -15,8 +15,8 @@ Checklist:
 - [x] Rate limit no login admin: 10 req/min por IP.
 - [x] `.env` fora do repositorio e `.env.example` documentado.
 - [x] Firebase client config tratado como configuracao publica do client; secrets continuam fora do codigo.
-- [x] Admin fora do Vercel via `.vercelignore`.
-- [x] `/admin/:path*` bloqueado no `vercel.json`.
+- [x] Admin publicado em `public/admin/` com login via cookie `HttpOnly`.
+- [x] Rotas sensiveis `/admin/login`, `/admin/session`, `/admin/logout` e `/admin/data` reescritas para `api/admin.js`.
 - [x] Inputs criticos validados em Firestore Rules.
 - [x] Local de partida sanitizado no client e validado nas rules.
 - [ ] CORS restrito no backend publico: pendente porque nao ha backend Express publico.

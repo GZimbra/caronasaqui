@@ -20,11 +20,10 @@
       features/           Funcionalidades do app
       services/           Firebase, mapa e geolocalizacao
       utils/              Helpers sem regra de negocio
-
-  admin/                  Painel admin local, fora do deploy Vercel
-    index.html
-    css/
-    js/
+    admin/                Painel admin estatico publicado no Vercel
+      index.html
+      css/
+      js/
 
   api/
     admin.js              API serverless do admin no Vercel
@@ -47,8 +46,8 @@ npm run check
 
 Regras:
 
-- Tudo que roda no navegador publico fica em `public/`.
-- Painel admin fica em `admin/` e e servido apenas por `server/admin-server.js`.
+- Tudo que roda no navegador fica em `public/`.
+- Painel admin fica em `public/admin/`; no Vercel a API continua em `api/admin.js`.
 - Em producao no mesmo servidor, use `npm start`; `/` serve o site e `/admin` serve o painel.
 - Servidores locais ficam em `server/`.
 - Config sensivel continua fora do Git via `.env`; config Firebase do client e publica.

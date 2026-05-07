@@ -149,9 +149,9 @@ function resolveStaticPath(urlPath) {
   if (urlPath === "/sw.js") return "/public/sw.js";
   if (urlPath.startsWith("/css/")) return `/public${decodeURIComponent(urlPath)}`;
   if (urlPath.startsWith("/js/")) return `/public${decodeURIComponent(urlPath)}`;
-  if (urlPath === "/admin" || urlPath === "/admin/") return "/admin/index.html";
+  if (urlPath === "/admin" || urlPath === "/admin/") return "/public/admin/index.html";
   if (urlPath.startsWith("/admin/css/") || urlPath.startsWith("/admin/js/")) {
-    return decodeURIComponent(urlPath);
+    return `/public${decodeURIComponent(urlPath)}`;
   }
   return null;
 }
