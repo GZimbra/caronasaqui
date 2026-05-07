@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node dev-server.js",
-    "admin": "node admin-server.js",
-    "check": "node --check admin-server.js && node --check dev-server.js && node --check admin/js/admin-panel.js && node --check js/config/faculdades.js && node --check js/config/firebase-config.example.js && node --check js/services/firebase.js && node --check js/core/login-page.js && node --check js/core/app-guard.js && node --check js/core/auth.js && node --check js/core/app.js && node --check js/features/feed.js && node --check js/features/minha-carona.js && node --check js/features/solicitacoes.js && node --check js/features/sidebar.js && node --check js/features/profile.js"
+    "dev": "node -e \"process.env.ADMIN_PORT=process.env.ADMIN_PORT||'5500'; require('./server/admin-server.js')\"",
+    "admin": "node server/admin-server.js",
+    "start": "node server/admin-server.js",
+    "check": "node --check api/admin.js && node --check server/admin-server.js && node --check server/dev-server.js && node --check admin/js/admin-panel.js && node --check public/js/config/faculdades.js && node --check public/js/config/firebase-config.example.js && node --check public/js/services/firebase.js && node --check public/js/services/geo.js && node --check public/js/services/map.js && node --check public/js/core/login-page.js && node --check public/js/core/app-guard.js && node --check public/js/core/auth.js && node --check public/js/core/app.js && node --check public/js/features/feed.js && node --check public/js/features/minha-carona.js && node --check public/js/features/chat.js && node --check public/js/features/localizacao-passageiros.js && node --check public/js/features/solicitacoes.js && node --check public/js/features/sidebar.js && node --check public/js/features/profile.js && node --check public/js/utils/escape.js && node --check public/js/utils/helpers.js && node --check public/js/utils/icons.js"
   },
   "keywords": [],
   "author": "",

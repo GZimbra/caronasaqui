@@ -1,0 +1,327 @@
+﻿/* ============================================================
+   ÃCONES SVG â€” alinhamento inline
+   ============================================================ */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+ 
+.time svg,
+.descricao svg {
+  margin-right: 4px;
+  opacity: 0.75;
+}
+ 
+.sidebar nav button svg {
+  width: 18px;
+  height: 18px;
+}
+ 
+.logo svg {
+  width: 20px;
+  height: 20px;
+}
+ 
+/* ============================================================
+   TOGGLE COBRAR CARONA
+   ============================================================ */
+.cobrar-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 8px;
+  gap: 12px;
+}
+ 
+.cobrar-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+ 
+.cobrar-label svg {
+  opacity: 0.7;
+}
+ 
+.toggle-cobrar {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-md);
+  background: var(--bg-hover);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+ 
+.toggle-cobrar.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+ 
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform 0.2s, background 0.2s;
+}
+ 
+.toggle-cobrar.active .toggle-thumb {
+  transform: translateX(18px);
+  background: var(--accent);
+}
+ 
+#precoSection {
+  transition: opacity 0.2s;
+}
+ 
+#precoSection input {
+  margin-top: 4px;
+}
+ 
+/* ============================================================
+   MELHORIAS VISUAIS â€” CARDS, PERFIL MODAL, SHIMMER, DRIVER LINK
+   ============================================================ */
+ 
+/* Bordas coloridas sutis por tipo de carona */
+.ride-card[data-tipo="oferta"] {
+  border-left: 3px solid var(--accent);
+}
+.ride-card[data-tipo="pedido"] {
+  border-left: 3px solid var(--amber);
+}
+ 
+/* Driver name com hover de link */
+.driver-name-link {
+  transition: color var(--transition);
+}
+.driver-left:hover .driver-name-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+ 
+/* Shimmer de carregamento */
+.loading-shimmer {
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-md) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+ 
+/* Modal de perfil de usuÃ¡rio */
+#modalPerfilUsuario .popup-box {
+  min-width: 320px;
+}
+#modalPerfilUsuario .perfil-card p {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+  font-size: 13.5px;
+}
+#modalPerfilUsuario .perfil-card p:last-child {
+  border-bottom: none;
+}
+ 
+/* Melhorias no header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+ 
+/* Melhorias nos inputs */
+input {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus {
+  box-shadow: 0 0 0 3px rgba(79,158,255,0.12);
+}
+ 
+/* Ride footer botÃµes mais espaÃ§ados */
+.ride-footer {
+  gap: 10px;
+  padding-top: 2px;
+}
+.ride-footer button {
+  flex: 1;
+  min-width: 0;
+}
+ 
+/* Perfil card melhoria */
+.perfil-card p {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.perfil-card p:last-of-type {
+  border-bottom: none;
+}
+.perfil-card p b {
+  color: var(--text);
+  margin-right: 6px;
+}
+ 
+/* Auth card â€” melhora visual do login */
+.auth-card {
+  box-shadow: 0 0 0 1px var(--border), var(--shadow-lg);
+}
+ 
+/* Login left â€” gradiente jÃ¡ definido acima */
+ 
+/* ============================================================
+   BOTÃƒO GOOGLE
+   ============================================================ */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+ 
+.btn-google svg {
+  flex-shrink: 0;
+}
+ 
+/* ============================================================
+   ANIMAÃ‡ÃƒO CAMPOS EXTRAS (registro â†” login)
+   TÃ©cnica grid-template-rows: 0fr â†’ 1fr, zero layout jump
+   ============================================================ */
+.campos-extras {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+ 
+.campos-extras.campos-abertos {
+  grid-template-rows: 1fr;
+}
+ 
+.campos-extras-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* padding animado junto para nÃ£o cortar o foco dos inputs */
+  padding-bottom: 0;
+  transition: padding-bottom 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+ 
+.campos-extras.campos-abertos .campos-extras-inner {
+  padding-bottom: 0;
+}
+ 
+/* Remove margin individual dos inputs dentro do auth-fields */
+.auth-fields > input,
+.auth-fields > .senha-wrapper {
+  margin: 0;
+}
+.auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+ 
+/* ============================================================
+   AVISO FINANCEIRO (popup criar carona)
+   ============================================================ */
+.aviso-financeiro {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(245, 166, 35, 0.08);
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 4px 0;
+}
+.aviso-financeiro svg { color: var(--amber); margin-top: 1px; }
+ 
+/* Campo de horÃ¡rio no popup */
+.input-time {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg2, #131820);
+  color: var(--text);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.input-time:focus { outline: none; border-color: var(--accent); }
+
+.perfil-card .form-status,
+.auth-card .form-status {
+  border-bottom: 0;
+  padding: 0;
+  margin: 4px 0 0;
+}
+
+.not-found-page {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+.not-found-link {
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.map-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(8, 11, 16, 0.72);
+  backdrop-filter: blur(4px);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.map-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(79, 158, 255, 0.2);
+  border-top-color: #4f9eff;
+  animation: mapaSpinner 0.8s linear infinite;
+}
+
+.map-loading-text {
+  color: #8892a0;
+  font-size: 13px;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+@keyframes mapaSpinner {
+  to { transform: rotate(360deg); }
+}

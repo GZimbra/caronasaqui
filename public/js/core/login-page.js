@@ -25,9 +25,18 @@ function toggleConfirmarSenha() {
 window.toggleSenha = toggleSenha;
 window.toggleConfirmarSenha = toggleConfirmarSenha;
 
+function initAdminLocalAccess() {
+  document.addEventListener("keydown", event => {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "a") {
+      window.location.href = "/admin";
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("tabLogin")?.addEventListener("click", () => mostrarLogin(true));
   document.getElementById("tabRegister")?.addEventListener("click", mostrarRegistro);
   document.getElementById("btnOlho")?.addEventListener("click", toggleSenha);
   document.getElementById("btnOlhoConfirmar")?.addEventListener("click", toggleConfirmarSenha);
+  initAdminLocalAccess();
 });

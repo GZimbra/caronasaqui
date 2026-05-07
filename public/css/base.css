@@ -1,0 +1,78 @@
+﻿/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg:          #080b10;
+  --bg-card:     #0f1318;
+  --bg-glass:    rgba(15, 19, 24, 0.85);
+  --bg-hover:    rgba(255,255,255,0.04);
+  --bg-subtle:   rgba(255,255,255,0.03);
+  --border:      rgba(255,255,255,0.07);
+  --border-md:   rgba(255,255,255,0.12);
+  --accent:      #4f9eff;
+  --accent-dim:  rgba(79,158,255,0.15);
+  --green:       #2ecc71;
+  --green-dim:   rgba(46,204,113,0.15);
+  --red:         #e55;
+  --amber:       #f5a623;
+  --text:        #f0f2f5;
+  --text-muted:  #8892a0;
+  --text-dim:    #555f6b;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-full: 999px;
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:   0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg:   0 16px 48px rgba(0,0,0,0.5);
+  --transition:  0.2s ease;
+}
+ 
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+ 
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+ 
+h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
+h1 { font-size: 22px; }
+h2 { font-size: 18px; }
+h3 { font-size: 15px; }
+p  { margin: 0 0 6px; color: var(--text-muted); }
+ 
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+ 
+.main-area {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+ 
+#content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  min-width: 0;
+}
+ 
+/* ============================================================
+   SIDEBAR
+   ============================================================ */

@@ -1,7 +1,6 @@
-admin/
-admin-server.js
-dev-server.js
-docs/admin-isolation.md
+server/
+src/
+docs/
 firebase-debug.log
 firebase-debug.*.log
 .firebase

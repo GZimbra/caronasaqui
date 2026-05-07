@@ -1,0 +1,246 @@
+﻿/* ============================================================
+   LOGIN PAGE
+   ============================================================ */
+.login-page { display: flex; height: 100vh; }
+ 
+.login-left {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(79,158,255,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 20%, rgba(46,204,113,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(79,158,255,0.06) 0%, transparent 45%),
+    linear-gradient(160deg, #060a10 0%, #0a1020 50%, #07111e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+/* Grade de pontos sutil no fundo */
+.login-left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(79,158,255,0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+ 
+/* Linha decorativa vertical */
+.login-left::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(79,158,255,0.2) 30%, rgba(79,158,255,0.2) 70%, transparent);
+}
+ 
+.login-left-content {
+  position: relative;
+  z-index: 1;
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 500px;
+  width: 100%;
+}
+ 
+/* Brand */
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+ 
+.login-brand-icon {
+  width: 44px; height: 44px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(79,158,255,0.3);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+ 
+.login-brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+ 
+/* Hero text */
+.login-headline {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, #ffffff 40%, rgba(79,158,255,0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+ 
+.login-sub {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 380px;
+}
+ 
+/* IlustraÃ§Ã£o */
+.login-illustration {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(79,158,255,0.12);
+  box-shadow: 0 0 40px rgba(79,158,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+ 
+.city-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+ 
+/* AnimaÃ§Ã£o do carro principal */
+.car-main {
+  animation: car-drive 6s ease-in-out infinite;
+}
+ 
+@keyframes car-drive {
+  0%, 100% { transform: translateX(0px); }
+  50%       { transform: translateX(8px); }
+}
+ 
+.car-bg {
+  animation: car-drive 6s ease-in-out infinite 0.8s;
+}
+ 
+.car-far {
+  animation: car-drive2 7s ease-in-out infinite 0.4s;
+}
+ 
+@keyframes car-drive2 {
+  0%, 100% { transform: translateX(0px); }
+  50%       { transform: translateX(-6px); }
+}
+ 
+/* Features */
+.login-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+ 
+.login-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+ 
+.login-feature-icon {
+  width: 32px; height: 32px;
+  background: rgba(79,158,255,0.08);
+  border: 1px solid rgba(79,158,255,0.18);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+ 
+.login-right {
+  flex: 1; display: flex; justify-content: center; align-items: center;
+  background: #0a0e16;
+}
+ 
+.auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 36px; border-radius: var(--radius-xl);
+  width: min(380px, calc(100vw - 32px)); box-shadow: var(--shadow-lg);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+}
+
+.contents-form { display: contents; }
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+ 
+/* Container dos campos do formulÃ¡rio â€” anima altura ao trocar de aba */
+.auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+ 
+/* Todos os inputs dentro do auth-card: espaÃ§amento zerado (gap cuida disso) */
+.auth-card input,
+.auth-card .senha-wrapper {
+  margin: 0;
+  width: 100%;
+}
+ 
+.senha-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+ 
+.senha-wrapper input {
+  width: 100%;
+  padding-right: 42px;
+}
+ 
+.btn-olho {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+ 
+.btn-olho:hover {
+  color: var(--text);
+  background: none;
+  box-shadow: none;
+}
+ 
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 24px;
+  background: var(--bg-subtle); border-radius: var(--radius-md);
+  padding: 4px;
+}
+ 
+.tabs button {
+  flex: 1; border-radius: var(--radius-sm);
+  border: none; color: var(--text-muted);
+  background: transparent; padding: 8px; font-size: 13px;
+  box-shadow: none;
+}
+ 
+.tabs button:hover { background: var(--bg-hover); color: var(--text); }
+.tabs button.active { background: var(--bg-card); color: var(--text); font-weight: 600; }
+ 

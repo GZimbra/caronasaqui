@@ -1,0 +1,170 @@
+﻿/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+ 
+/* ============================================================
+   INPUTS
+   ============================================================ */
+input {
+  width: 100%;
+  padding: 11px 14px;
+  margin: 6px 0;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+ 
+input:focus {
+  border-color: var(--accent);
+  background: rgba(79,158,255,0.04);
+}
+
+.input-select,
+select {
+  width: 100%;
+  padding: 11px 14px;
+  margin: 0;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+
+.input-select:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,158,255,0.12);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+ 
+input::placeholder { color: var(--text-dim); }
+ 
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+button {
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  color: var(--text);
+  padding: 9px 18px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: none;
+}
+ 
+button:hover { border-color: var(--border-md); background: rgba(255,255,255,0.07); }
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+ 
+.btn-primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+ 
+.btn-primary:hover { background: #6aadff; border-color: transparent; }
+ 
+.btn-secondary {
+  background: var(--bg-subtle);
+  border-color: var(--border);
+  color: var(--text);
+}
+ 
+.btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-md); }
+ 
+.btn-small { padding: 6px 12px; font-size: 12px; }
+ 
+.search { margin-bottom: 18px; }
+ 
+/* ============================================================
+   FEED / CARDS
+   ============================================================ */
+.feed { display: flex; flex-direction: column; gap: 12px; }
+ 
+.ride-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  opacity: 0;
+  transform: translateY(8px);
+}
+ 
+.ride-card.show {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, border-color var(--transition), box-shadow var(--transition);
+}
+ 
+.ride-card:hover {
+  border-color: var(--border-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+ 
+.ride-top { display: flex; gap: 14px; margin-bottom: 14px; }
+ 
+.timeline { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+ 
+.dot {
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+ 
+.line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  margin: 4px 0;
+}
+ 
+.ride-info { flex: 1; }
+.ride-info .time { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; display: block; }
+.ride-info h3 { font-size: 15px; color: var(--text); margin: 0 0 4px; }
+.ride-info .destino { color: var(--text-muted); font-size: 13px; margin: 0 0 8px; }
+.ride-info .descricao { font-size: 13px; color: var(--text-dim); }
+ 
+.ride-driver {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+ 
+.driver-left { display: flex; align-items: center; gap: 10px; }
+ 
+.ride-meta { display: flex; align-items: center; gap: 8px; }
+ 
+.ride-footer { display: flex; gap: 8px; flex-wrap: wrap; }
+ 

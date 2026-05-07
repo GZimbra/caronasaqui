@@ -3,7 +3,7 @@
 Estado atual do projeto:
 
 - Frontend publico usa Firebase Auth e Firestore direto no browser.
-- Painel admin roda em servidor local separado (`admin-server.js`) e nao vai para o Vercel.
+- Painel admin roda em servidor local separado (`server/admin-server.js`) e nao vai para o Vercel.
 - Nao existe backend Express publico neste checkout; por isso `helmet.js`, `express-rate-limit`, JWT proprio e bcrypt nao se aplicam sem uma migracao de arquitetura.
 
 Checklist:
@@ -14,7 +14,7 @@ Checklist:
 - [x] Headers HTTP no servidor local publico e admin.
 - [x] Rate limit no login admin: 10 req/min por IP.
 - [x] `.env` fora do repositorio e `.env.example` documentado.
-- [x] Firebase client config fora do codigo versionado (`js/config/firebase-config.js` ignorado).
+- [x] Firebase client config tratado como configuracao publica do client; secrets continuam fora do codigo.
 - [x] Admin fora do Vercel via `.vercelignore`.
 - [x] `/admin/:path*` bloqueado no `vercel.json`.
 - [x] Inputs criticos validados em Firestore Rules.
@@ -26,8 +26,7 @@ Checklist:
 
 Arquivos locais obrigatorios antes de rodar o frontend:
 
-- Copiar `js/config/firebase-config.example.js` para `js/config/firebase-config.js`.
-- Preencher os dados do Firebase no arquivo local.
+- Opcional: sobrescrever `window.CARONAS_FIREBASE_CONFIG` em `public/js/config/firebase-config.js` para outro projeto Firebase.
 - Restringir a API key no console do Firebase por HTTP referrer e APIs permitidas.
 
 Se o projeto migrar para backend Express:

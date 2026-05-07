@@ -1,10 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "admin@caronasaqui.internal";
+    }
 
     match /usuarios/{userId} {
-      allow list: if request.auth != null;
-      allow get: if request.auth != null;
+      allow list: if request.auth != null || isAdmin();
+      allow get: if request.auth != null || isAdmin();
       allow create: if request.auth != null
         && request.auth.uid == userId
         && request.resource.data.nome is string
@@ -27,7 +31,7 @@ service cloud.firestore {
     }
 
     match /caronas/{caronaId} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null || isAdmin();
       allow create: if request.auth != null
         && request.resource.data.motoristaId == request.auth.uid
         && request.resource.data.partidaLivre is string
@@ -52,7 +56,8 @@ service cloud.firestore {
     }
 
     match /solicitacoes/{solId} {
-      allow read: if request.auth != null
+      allow read: if isAdmin()
+        || request.auth != null
         && (request.auth.uid == resource.data.passageiroId
          || request.auth.uid == resource.data.motoristaId);
       allow create: if request.auth != null
@@ -68,19 +73,25 @@ service cloud.firestore {
     }
 
     match /chats/{chatId} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null || isAdmin();
       allow create: if request.auth != null;
       allow update: if request.auth != null
         && request.auth.uid in resource.data.participantes;
 
       match /mensagens/{msgId} {
-        allow read, write: if request.auth != null
+        allow read: if isAdmin()
+          || request.auth != null
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes;
+        allow write: if request.auth != null
           && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes;
       }
     }
 
     match /mensagens/{conversaId}/msgs/{msgId} {
-      allow read, write: if request.auth != null
+      allow read: if isAdmin()
+        || request.auth != null
+        && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
+      allow write: if request.auth != null
         && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
     }
 

@@ -107,9 +107,15 @@ async function carregarDados() {
       "Atualizado às " + agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   } catch (e) {
-    console.error(e);
-    document.getElementById("loadingState").innerHTML =
-      `<p style="color:var(--danger)">Erro ao carregar dados: ${e.message}</p>`;
+    const detalhe = e.message || "Falha desconhecida";
+    document.getElementById("loadingState").innerHTML = `
+      <div class="admin-error-box">
+        <h2>Banco de dados nao conectado</h2>
+        <p>O painel admin precisa acessar o Firestore real pelo backend.</p>
+        <p class="mono">Erro: ${esc(detalhe)}</p>
+        <p>Configure <b>FIREBASE_SERVICE_ACCOUNT</b> e <b>FIREBASE_PROJECT_ID</b> no ambiente do servidor.</p>
+      </div>
+    `;
   }
 }
 
@@ -223,6 +229,17 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     })
     .slice(0, 8);
 
+  const usuariosOrdenados = [...usuarios]
+    .sort((a, b) => (a.nome || "").localeCompare(b.nome || "", "pt-BR"));
+
+  const caronasRealizadas = [...caronas]
+    .filter(c => c.status === "finalizada")
+    .sort((a, b) => obterMillisAdmin(b.finalizadoEm || b.atualizadoEm || b.criadoEm) - obterMillisAdmin(a.finalizadoEm || a.atualizadoEm || a.criadoEm));
+
+  const caronasMarcadas = [...caronas]
+    .filter(c => ["aberta", "lotada", "a_caminho", "em_andamento", "chegou"].includes(c.status || "aberta"))
+    .sort((a, b) => obterMillisAdmin(b.criadoEm || b.atualizadoEm) - obterMillisAdmin(a.criadoEm || a.atualizadoEm));
+
   // ════ RENDER ════
   const el = document.getElementById("conteudo");
   el.innerHTML = `
@@ -271,6 +288,12 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
         <div class="kpi-sub">${solicitacoes.length} solicitações totais</div>
       </div>
     </div>
+
+    <div class="section-label">dados do banco</div>
+
+    ${renderTabelaUsuariosAdmin(usuariosOrdenados)}
+    ${renderTabelaCaronasRealizadasAdmin(caronasRealizadas)}
+    ${renderTabelaCaronasMarcadasAdmin(caronasMarcadas)}
 
     <!-- SOLICITAÇÕES -->
     <div class="section-label">solicitações</div>
@@ -440,12 +463,120 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
   el.style.display = "block";
 }
 
+function renderTabelaUsuariosAdmin(usuarios) {
+  return `
+    <div class="table-card table-card-wide">
+      <div class="table-header">
+        <h3>Usuarios Registrados</h3>
+        <span>${usuarios.length} total</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th><th>Email</th><th>Celular</th><th>Faculdade</th>
+              <th>Campus</th><th>Matricula</th><th>Curso</th><th>Criado em</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${usuarios.length ? usuarios.map(u => `
+              <tr>
+                <td>${esc(u.nome || "-")}</td>
+                <td class="mono">${esc(u.email || "-")}</td>
+                <td class="mono">${esc(u.celular || "-")}</td>
+                <td>${esc(u.faculdadeNome || "-")}</td>
+                <td>${esc(u.faculdadeCampus || "-")}</td>
+                <td class="mono">${u.matriculaLast4 ? `****${esc(u.matriculaLast4)}` : "-"}</td>
+                <td>${esc(u.curso || "-")}</td>
+                <td class="mono">${formatarData(u.criadoEm)}</td>
+              </tr>
+            `).join("") : `<tr class="empty-row"><td colspan="8">Nenhum usuario registrado.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderTabelaCaronasRealizadasAdmin(caronas) {
+  return `
+    <div class="table-card table-card-wide">
+      <div class="table-header">
+        <h3>Corridas Realizadas</h3>
+        <span>${caronas.length} finalizadas</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Motorista</th><th>Faculdade</th><th>Partida</th><th>Origem</th>
+              <th>Destino</th><th>Passageiros</th><th>Distancia</th><th>Finalizada em</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${caronas.length ? caronas.map(c => `
+              <tr>
+                <td>${esc(c.motoristaNome || c.motorista || "-")}</td>
+                <td>${esc([c.faculdadeNome, c.faculdadeCampus].filter(Boolean).join(" - ") || "-")}</td>
+                <td>${esc(c.partidaLivre || "-")}</td>
+                <td>${esc(resumirEndereco(c.origemEndereco))}</td>
+                <td>${esc(resumirEndereco(c.destinoEndereco))}</td>
+                <td class="mono">${contarPassageiros(c)}</td>
+                <td class="mono">${esc(c.distancia || "0")} km</td>
+                <td class="mono">${formatarData(c.finalizadoEm || c.atualizadoEm || c.criadoEm)}</td>
+              </tr>
+            `).join("") : `<tr class="empty-row"><td colspan="8">Nenhuma corrida realizada.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderTabelaCaronasMarcadasAdmin(caronas) {
+  return `
+    <div class="table-card table-card-wide">
+      <div class="table-header">
+        <h3>Corridas Marcadas</h3>
+        <span>${caronas.length} ativas/agendadas</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Motorista</th><th>Status</th><th>Horario</th><th>Faculdade</th>
+              <th>Partida</th><th>Origem</th><th>Destino</th><th>Vagas</th><th>Criada em</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${caronas.length ? caronas.map(c => `
+              <tr>
+                <td>${esc(c.motoristaNome || c.motorista || "-")}</td>
+                <td>${badgeStatus(c.status || "aberta")}</td>
+                <td class="mono">${esc(c.horario || "-")}</td>
+                <td>${esc([c.faculdadeNome, c.faculdadeCampus].filter(Boolean).join(" - ") || "-")}</td>
+                <td>${esc(c.partidaLivre || "-")}</td>
+                <td>${esc(resumirEndereco(c.origemEndereco))}</td>
+                <td>${esc(resumirEndereco(c.destinoEndereco))}</td>
+                <td class="mono">${esc(c.vagas ?? "-")}/${esc(c.vagasTotais || 4)}</td>
+                <td class="mono">${formatarData(c.criadoEm)}</td>
+              </tr>
+            `).join("") : `<tr class="empty-row"><td colspan="9">Nenhuma corrida marcada.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
 // ════════════════════════════════════════════════════
 // 📥 EXPORTAR CSV
 // ════════════════════════════════════════════════════
 function exportarCSV() {
   if (!dadosGlobais) return;
   const { usuarios, caronas, solicitacoes, chats } = dadosGlobais;
+  const caronasRealizadas = caronas.filter(c => c.status === "finalizada");
+  const caronasMarcadas = caronas.filter(c => ["aberta", "lotada", "a_caminho", "em_andamento", "chegou"].includes(c.status || "aberta"));
 
   const sheets = [
     {
@@ -469,6 +600,39 @@ function exportarCSV() {
         (c.passageiros?.length || 0),
         c.distancia || "",
         c.preco || "",
+        formatarData(c.criadoEm)
+      ])
+    },
+    {
+      nome: "Corridas_Realizadas",
+      colunas: ["ID", "Motorista", "Faculdade", "Campus", "Local Partida", "Origem", "Destino", "Passageiros", "Distancia (km)", "Finalizada Em"],
+      linhas: caronasRealizadas.map(c => [
+        c.id,
+        c.motoristaNome || c.motorista,
+        c.faculdadeNome || "",
+        c.faculdadeCampus || "",
+        c.partidaLivre || "",
+        c.origemEndereco || "",
+        c.destinoEndereco || "",
+        contarPassageiros(c),
+        c.distancia || "",
+        formatarData(c.finalizadoEm || c.atualizadoEm || c.criadoEm)
+      ])
+    },
+    {
+      nome: "Corridas_Marcadas",
+      colunas: ["ID", "Motorista", "Status", "Horario", "Faculdade", "Campus", "Local Partida", "Origem", "Destino", "Vagas", "Criada Em"],
+      linhas: caronasMarcadas.map(c => [
+        c.id,
+        c.motoristaNome || c.motorista,
+        c.status || "aberta",
+        c.horario || "",
+        c.faculdadeNome || "",
+        c.faculdadeCampus || "",
+        c.partidaLivre || "",
+        c.origemEndereco || "",
+        c.destinoEndereco || "",
+        `${c.vagas ?? ""}/${c.vagasTotais || 4}`,
         formatarData(c.criadoEm)
       ])
     },
@@ -525,6 +689,12 @@ function resumirEndereco(end) {
   if (!end) return "—";
   const partes = end.split(",").map(p => p.trim()).filter(p => p && p.toLowerCase() !== "brasil");
   return partes.slice(0, 2).join(", ") || end;
+}
+
+function contarPassageiros(carona) {
+  const passageiros = Array.isArray(carona?.passageiros) ? carona.passageiros.length : 0;
+  const participantes = Array.isArray(carona?.participantes) ? carona.participantes.length : 0;
+  return Math.max(passageiros, participantes);
 }
 
 function formatarData(ts) {

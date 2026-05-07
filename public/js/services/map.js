@@ -544,23 +544,10 @@ function _mostrarLoadingMapa(msg = "Calculando rota...") {
 
   const overlay = document.createElement("div");
   overlay.id = "mapaLoadingOverlay";
-  overlay.style.cssText = `
-    position:absolute;inset:0;z-index:1000;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    background:rgba(8,11,16,0.72);backdrop-filter:blur(4px);
-    border-radius:inherit;pointer-events:none;gap:14px;
-  `;
+  overlay.className = "map-loading-overlay";
   overlay.innerHTML = `
-    <div style="
-      width:36px;height:36px;border-radius:50%;
-      border:3px solid rgba(79,158,255,0.2);
-      border-top-color:#4f9eff;
-      animation:mapaSpinner 0.8s linear infinite;
-    "></div>
-    <span style="color:#8892a0;font-size:13px;font-family:inherit;letter-spacing:.02em">${msg}</span>
-    <style>
-      @keyframes mapaSpinner { to { transform: rotate(360deg); } }
-    </style>
+    <div class="map-loading-spinner"></div>
+    <span class="map-loading-text">${msg}</span>
   `;
 
   // O elemento pai do mapa precisa ser relative

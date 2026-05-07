@@ -3,15 +3,18 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 
+const PROJECT_ROOT = path.resolve(__dirname, "..");
+
 loadEnvFile();
 
-const HOST = process.env.ADMIN_HOST || "127.0.0.1";
-const PORT = Number(process.env.ADMIN_PORT || 4174);
+const HOST = process.env.ADMIN_HOST || "0.0.0.0";
+const PORT = Number(process.env.ADMIN_PORT || process.env.PORT || 4174);
 const ADMIN_USERNAME = requiredEnv("ADMIN_USERNAME");
 const ADMIN_PASSWORD = requiredEnv("ADMIN_PASSWORD");
 const SESSION_SECRET = requiredEnv("ADMIN_SESSION_SECRET");
-const ROOT = __dirname;
+const ROOT = PROJECT_ROOT;
 let cachedToken = null;
+let cachedFirebaseUserToken = null;
 const loginRateLimit = new Map();
 
 const MIME = {
@@ -27,7 +30,7 @@ const MIME = {
 };
 
 function loadEnvFile() {
-  const envPath = path.join(__dirname, ".env");
+  const envPath = path.join(PROJECT_ROOT, ".env");
   if (!fs.existsSync(envPath)) return;
 
   const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/);
@@ -53,7 +56,7 @@ function requiredEnv(name) {
 
 function securityHeaders(extra = {}) {
   return {
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "Content-Security-Policy": "default-src 'self' https://www.gstatic.com https://unpkg.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://*.firebasestorage.app https://nominatim.openstreetmap.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     "X-Frame-Options": "DENY",
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
@@ -117,9 +120,12 @@ function readBody(req) {
 }
 
 function serveFile(res, urlPath) {
-  const cleanPath = ["/", "/admin", "/admin/"].includes(urlPath)
-    ? "/admin/index.html"
-    : decodeURIComponent(urlPath);
+  const cleanPath = resolveStaticPath(urlPath);
+  if (!cleanPath) {
+    send(res, 404, "Not found");
+    return;
+  }
+
   const target = path.resolve(ROOT, "." + cleanPath);
 
   if (!target.startsWith(ROOT) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) {
@@ -133,6 +139,21 @@ function serveFile(res, urlPath) {
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
   });
+}
+
+function resolveStaticPath(urlPath) {
+  if (urlPath === "/") return "/public/index.html";
+  if (urlPath === "/index.html") return "/public/index.html";
+  if (urlPath === "/app" || urlPath === "/app.html") return "/public/app.html";
+  if (urlPath === "/404.html") return "/public/404.html";
+  if (urlPath === "/sw.js") return "/public/sw.js";
+  if (urlPath.startsWith("/css/")) return `/public${decodeURIComponent(urlPath)}`;
+  if (urlPath.startsWith("/js/")) return `/public${decodeURIComponent(urlPath)}`;
+  if (urlPath === "/admin" || urlPath === "/admin/") return "/admin/index.html";
+  if (urlPath.startsWith("/admin/css/") || urlPath.startsWith("/admin/js/")) {
+    return decodeURIComponent(urlPath);
+  }
+  return null;
 }
 
 function isRateLimited(req) {
@@ -203,6 +224,43 @@ async function getAccessToken() {
   return cachedToken.token;
 }
 
+function loadFirebaseClientConfig() {
+  const configPath = path.join(PROJECT_ROOT, "public", "js", "config", "firebase-config.js");
+  const raw = fs.readFileSync(configPath, "utf8");
+  const match = raw.match(/window\.CARONAS_FIREBASE_CONFIG\s*=\s*(\{[\s\S]*?\});/);
+  if (!match) throw new Error("Firebase client config nao encontrada");
+  return Function(`"use strict"; return (${match[1]});`)();
+}
+
+async function getFirebaseUserToken() {
+  if (cachedFirebaseUserToken && cachedFirebaseUserToken.expiresAt > Date.now() + 60000) {
+    return cachedFirebaseUserToken.token;
+  }
+
+  const config = loadFirebaseClientConfig();
+  const email = process.env.ADMIN_FIREBASE_EMAIL || `${ADMIN_USERNAME}@caronasaqui.internal`;
+  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${config.apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password: ADMIN_PASSWORD,
+      returnSecureToken: true,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Sem acesso ao Firestore: configure FIREBASE_SERVICE_ACCOUNT ou crie o usuario Firebase Auth admin@caronasaqui.internal com a senha admin");
+  }
+
+  const data = await response.json();
+  cachedFirebaseUserToken = {
+    token: data.idToken,
+    expiresAt: Date.now() + (Number(data.expiresIn || 3600) * 1000),
+  };
+  return cachedFirebaseUserToken.token;
+}
+
 function decodeValue(value) {
   if ("stringValue" in value) return value.stringValue;
   if ("integerValue" in value) return Number(value.integerValue);
@@ -224,7 +282,8 @@ function decodeDocument(doc) {
 }
 
 async function listCollection(projectId, collection) {
-  const token = await getAccessToken();
+  const sa = loadServiceAccount();
+  const token = sa ? await getAccessToken() : await getFirebaseUserToken();
   const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collection}?pageSize=300`;
   const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (!response.ok) throw new Error(`Firestore ${collection}: ${response.status}`);
@@ -232,16 +291,26 @@ async function listCollection(projectId, collection) {
   return (data.documents || []).map(decodeDocument);
 }
 
+async function listCollectionOptional(projectId, collection) {
+  try {
+    return await listCollection(projectId, collection);
+  } catch (error) {
+    if (String(error.message).includes(": 403")) return [];
+    throw error;
+  }
+}
+
 async function loadAdminData() {
   const sa = loadServiceAccount();
-  const projectId = process.env.FIREBASE_PROJECT_ID || sa?.project_id;
+  const clientConfig = !sa ? loadFirebaseClientConfig() : null;
+  const projectId = process.env.FIREBASE_PROJECT_ID || sa?.project_id || clientConfig?.projectId;
   if (!projectId) throw new Error("FIREBASE_PROJECT_ID nao configurado");
 
   const [usuarios, caronas, solicitacoes, chats] = await Promise.all([
     listCollection(projectId, "usuarios"),
     listCollection(projectId, "caronas"),
-    listCollection(projectId, "solicitacoes"),
-    listCollection(projectId, "chats"),
+    listCollectionOptional(projectId, "solicitacoes"),
+    listCollectionOptional(projectId, "chats"),
   ]);
 
   return { usuarios, caronas, solicitacoes, chats };
@@ -298,5 +367,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Admin local: http://${HOST}:${PORT}`);
+  console.log(`Site e admin: http://${HOST}:${PORT}`);
 });
