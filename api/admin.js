@@ -147,26 +147,39 @@ async function getFirebaseUserToken() {
   const config = loadFirebaseClientConfig();
   const username = adminEnv("ADMIN_USERNAME");
   const email = process.env.ADMIN_FIREBASE_EMAIL || `${username}@caronasaqui.internal`;
-  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${config.apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email,
-      password: adminEnv("ADMIN_PASSWORD"),
-      returnSecureToken: true,
-    }),
+  const password = adminEnv("ADMIN_PASSWORD");
+  let data = await requestFirebaseAuth(config.apiKey, "accounts:signInWithPassword", {
+    email,
+    password,
+    returnSecureToken: true,
   });
 
-  if (!response.ok) {
-    throw new Error("Sem acesso ao Firestore: configure FIREBASE_SERVICE_ACCOUNT ou crie o usuario Firebase Auth admin@caronasaqui.internal com a senha admin");
+  if (data.error?.message === "EMAIL_NOT_FOUND") {
+    data = await requestFirebaseAuth(config.apiKey, "accounts:signUp", {
+      email,
+      password,
+      returnSecureToken: true,
+    });
   }
 
-  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Sem acesso ao Firestore: Firebase Auth ${data.error.message}`);
+  }
+
   cachedFirebaseUserToken = {
     token: data.idToken,
     expiresAt: Date.now() + (Number(data.expiresIn || 3600) * 1000),
   };
   return cachedFirebaseUserToken.token;
+}
+
+async function requestFirebaseAuth(apiKey, action, body) {
+  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/${action}?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return response.json();
 }
 
 function decodeValue(value) {

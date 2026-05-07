@@ -308,13 +308,12 @@ function renderizarDashboard({ usuarios, caronas, solicitacoes, chats }) {
     </div>
 
     <div class="section-label">graficos</div>
-    ${renderGraficoFirebaseAdmin(usuarios.length, caronasRealizadas.length)}
-    ${renderGraficoResumoVisualAdmin(graficoResumoCaronas)}
     <div class="charts-grid">
+      ${renderGraficoFirebaseAdmin(usuarios.length, caronasRealizadas.length)}
+      ${renderGraficoBarrasAdmin("Corridas realizadas", graficoResumoCaronas, Math.max(totalCaronas, 1))}
       ${renderGraficoBarrasAdmin("Corridas por status", Object.entries(statusCount)
         .sort((a, b) => b[1] - a[1])
         .map(([status, count]) => [labelStatus(status), count, "var(--accent)"]), totalCaronas)}
-      ${renderGraficoBarrasAdmin("Realizadas x Marcadas", graficoResumoCaronas, Math.max(totalCaronas, 1))}
       ${renderGraficoBarrasAdmin("Solicitacoes", graficoSolicitacoes, Math.max(solicitacoes.length, 1))}
       ${renderGraficoBarrasAdmin("Caronas por horario", horariosPico.map(([h, count]) => [h, count, "var(--info)"]), horariosPico[0]?.[1] || 1)}
     </div>
@@ -482,16 +481,18 @@ function renderTabelaUsuariosAdmin(usuarios) {
 }
 
 function renderGraficoBarrasAdmin(titulo, itens, totalReferencia) {
-  const validos = itens.filter(([, count]) => Number(count) > 0);
+  const rows = itens.map(([label, count, color]) => [label, Number(count || 0), color]);
+  const total = rows.reduce((acc, [, count]) => acc + count, 0);
+  const escala = Math.max(Number(totalReferencia || 0), ...rows.map(([, count]) => count), 1);
   return `
     <div class="chart-card">
       <div class="table-header">
         <h3>${esc(titulo)}</h3>
-        <span>${validos.reduce((acc, [, count]) => acc + Number(count || 0), 0)} registros</span>
+        <span>${total} registros</span>
       </div>
       <div class="chart-body">
-        ${validos.length ? validos.map(([label, count, color]) => {
-          const percent = totalReferencia > 0 ? Math.max((Number(count) / totalReferencia) * 100, 3) : 0;
+        ${rows.length ? rows.map(([label, count, color]) => {
+          const percent = count > 0 ? Math.max((count / escala) * 100, 3) : 0;
           return `
             <div class="chart-row">
               <div class="chart-row-top">
@@ -499,7 +500,7 @@ function renderGraficoBarrasAdmin(titulo, itens, totalReferencia) {
                 <strong>${count}</strong>
               </div>
               <div class="chart-track">
-                <div class="chart-fill" style="width:${percent.toFixed(1)}%;background:${color || "var(--accent)"}"></div>
+                <div class="chart-fill" style="width:${percent.toFixed(1)}%;min-width:${count > 0 ? "3px" : "0"};background:${color || "var(--accent)"}"></div>
               </div>
             </div>
           `;
