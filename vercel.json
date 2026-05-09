@@ -54,6 +54,18 @@
       "destination": "/public/404.html"
     },
     {
+      "source": "/ads.txt",
+      "destination": "/public/ads.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/public/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/public/sitemap.xml"
+    },
+    {
       "source": "/sw.js",
       "destination": "/public/sw.js"
     },
