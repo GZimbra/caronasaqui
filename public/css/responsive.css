@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    RESPONSIVO â€” MOBILE (â‰¤ 700px)
    ============================================================ */
 @media (max-width: 700px) {
@@ -202,10 +202,49 @@
   .map, .leaflet-container { height: 220px !important; }
   #mapMain { height: 260px !important; }
  
-  /* â”€â”€ Login â”€â”€ */
-  .login-left { display: none; }
-  .login-right { flex: 1; padding: 16px; align-items: flex-start; overflow-y: auto; }
-  .auth-card { padding: 24px; margin: 0 auto; max-height: none; }
+  /* ―― Login ―― */
+  .login-page {
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+  }
+  .login-left {
+    display: flex;
+    flex: none;
+    padding: 30px 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .login-left-content {
+    padding: 0;
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .login-brand {
+    justify-content: center;
+  }
+  .login-headline {
+    font-size: 28px;
+    margin-bottom: 0;
+  }
+  .login-sub {
+    font-size: 14px;
+    max-width: 100%;
+  }
+  .login-route-preview, .login-features {
+    display: none;
+  }
+  .login-right {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-card { padding: 24px; margin: 0 auto; max-height: none; width: 100%; }
  
   /* â”€â”€ BotÃµes gerais â”€â”€ */
   .popup-actions {
