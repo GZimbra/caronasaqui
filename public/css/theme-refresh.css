@@ -162,7 +162,8 @@ select:focus,
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-danger {
   min-height: 42px;
   border-radius: var(--radius-md);
   font-weight: 700;
@@ -380,7 +381,8 @@ select:focus,
   }
 
   .header .btn-primary,
-  .header .btn-secondary {
+  .header .btn-secondary,
+  .header .btn-danger {
     width: 100%;
   }
 
@@ -496,7 +498,8 @@ select:focus,
   }
 
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     width: 100%;
   }
 

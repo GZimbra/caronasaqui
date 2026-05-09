@@ -252,7 +252,7 @@ function renderPerfil(content) {
         </div>
       </form>
     </div>
-    <button class="btn-secondary" onclick="logout()">Sair da conta</button>
+    <button class="btn-danger" onclick="logout()">Sair da conta</button>
   `;
   carregarPerfilAutenticado();
 }
