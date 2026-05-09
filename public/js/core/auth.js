@@ -163,7 +163,8 @@ async function login() {
 
     const docSnap = await db.collection("usuarios").doc(uid).get();
     if (!docSnap.exists) {
-      const msg = "Usuario nao encontrado.";
+      console.warn("[Auth Warning] Login bem-sucedido no Auth mas doc do usuário ausente. UID:", uid);
+      const msg = "Matricula/usuario ou senha incorretos.";
       setAuthFeedback(msg);
       showToast(msg, "erro");
       return;
@@ -185,7 +186,10 @@ async function login() {
     }));
     window.location.replace("app.html");
   } catch (e) {
-    const msg = _traduzirErro(e.code) || "Matricula/usuario ou senha incorretos.";
+    // Log interno separado
+    console.error("[Auth Error] Falha no login:", e.code || e.message);
+    
+    const msg = _traduzirErro(e.code, "login") || "Matricula/usuario ou senha incorretos.";
     setAuthFeedback(msg);
     showToast(msg, "erro");
   } finally {
@@ -237,9 +241,12 @@ async function registrar() {
     await auth.signOut();
     mostrarLogin(true);
   } catch (e) {
+    // Log interno separado
+    console.error("[Auth Error] Falha no registro:", e.code || e.message);
+    
     const msg = e.code === "auth/email-already-in-use"
       ? "Matricula ja cadastrada."
-      : (_traduzirErro(e.code) || "Nao foi possivel criar a conta.");
+      : (_traduzirErro(e.code, "registro") || "Nao foi possivel criar a conta.");
     setAuthFeedback(msg);
     showToast(msg, "erro");
   } finally {
@@ -255,16 +262,25 @@ function logout() {
   });
 }
 
-function _traduzirErro(code) {
+function _traduzirErro(code, contexto = "login") {
+  if (contexto === "login") {
+    // PADRONIZAÇÃO CONTRA ENUMERAÇÃO (CWE-204)
+    const errosGenericos = [
+      "auth/user-not-found",
+      "auth/wrong-password",
+      "auth/invalid-email",
+      "auth/invalid-credential"
+    ];
+    if (errosGenericos.includes(code)) {
+      return "Matricula/usuario ou senha incorretos.";
+    }
+  }
+
   const map = {
-    "auth/user-not-found": "Usuario nao encontrado.",
-    "auth/wrong-password": "Senha incorreta.",
-    "auth/invalid-email": "Identificador invalido.",
     "auth/email-already-in-use": "Identificador ja cadastrado.",
     "auth/weak-password": "Senha muito fraca. Use ao menos 8 caracteres.",
     "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos.",
     "auth/network-request-failed": "Sem conexao com a internet.",
-    "auth/invalid-credential": "Matricula/usuario ou senha incorretos.",
   };
   return map[code] || null;
 }

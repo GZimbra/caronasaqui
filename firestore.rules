@@ -1,16 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdmin() {
-      return request.auth != null
-        && request.auth.token.email == "admin@caronasaqui.internal";
+    
+    // ==========================================
+    // FUNÇÕES AUXILIARES DE SEGURANÇA
+    // ==========================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      // Recomenda-se no futuro usar custom claims: request.auth.token.admin == true
+      return isAuthenticated() && request.auth.token.email == "admin@caronasaqui.internal";
+    }
+
+    // ==========================================
+    // USUÁRIOS
+    // ==========================================
     match /usuarios/{userId} {
-      allow list: if request.auth != null || isAdmin();
-      allow get: if request.auth != null || isAdmin();
-      allow create: if request.auth != null
-        && request.auth.uid == userId
+      // Qualquer usuário autenticado pode ler os perfis básicos
+      allow read: if isAuthenticated();
+      
+      // Apenas o próprio usuário pode criar seu registro com validação rígida de dados
+      allow create: if isOwner(userId)
         && request.resource.data.nome is string
         && request.resource.data.nome.size() >= 3
         && request.resource.data.matriculaHash is string
@@ -18,83 +34,149 @@ service cloud.firestore {
         && request.resource.data.matriculaLast4 is string
         && request.resource.data.matriculaLast4.matches('^[0-9]{4}$')
         && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"];
-      allow update: if request.auth != null
-        && request.auth.uid == userId
+      
+      // Apenas o dono pode atualizar, sendo impedido de alterar dados sensíveis
+      allow update: if isOwner(userId)
         && (!("nome" in request.resource.data) || request.resource.data.nome.size() >= 3)
         && (!("email" in request.resource.data) || request.resource.data.email is string)
         && (!("celular" in request.resource.data) || request.resource.data.celular is string)
         && (!("curso" in request.resource.data) || request.resource.data.curso is string)
         && (!("foto" in request.resource.data) || request.resource.data.foto is string)
+        // Proteção: matriculaHash e faculdadeId não podem ser modificados após criados
         && (!("matriculaHash" in request.resource.data) || request.resource.data.matriculaHash == resource.data.matriculaHash)
-        && (!("faculdadeId" in request.resource.data) || request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]);
-      allow delete: if request.auth != null && request.auth.uid == userId;
+        && (!("faculdadeId" in request.resource.data) || request.resource.data.faculdadeId == resource.data.faculdadeId);
+        
+      allow delete: if isOwner(userId) || isAdmin();
     }
 
+    // ==========================================
+    // CARONAS
+    // ==========================================
     match /caronas/{caronaId} {
-      allow read: if request.auth != null || isAdmin();
-      allow create: if request.auth != null
+      // Usuários autenticados podem buscar caronas
+      allow read: if isAuthenticated();
+      
+      // Validação do motorista na criação
+      allow create: if isAuthenticated()
         && request.resource.data.motoristaId == request.auth.uid
         && request.resource.data.partidaLivre is string
         && request.resource.data.partidaLivre.matches('^[^<>]{3,140}$')
         && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]
         && request.resource.data.faculdadeLat is number
         && request.resource.data.faculdadeLng is number;
-      allow update: if request.auth != null
-        && request.auth.uid == resource.data.motoristaId
+        
+      // Apenas o motorista que criou pode editar sua própria carona
+      allow update: if isOwner(resource.data.motoristaId)
+        && request.resource.data.motoristaId == resource.data.motoristaId // Impede transferência de propriedade
         && (!("partidaLivre" in request.resource.data)
           || (request.resource.data.partidaLivre is string
             && request.resource.data.partidaLivre.matches('^[^<>]{3,140}$')))
         && (!("faculdadeId" in request.resource.data)
-          || request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]);
-      allow delete: if request.auth != null
-        && request.auth.uid == resource.data.motoristaId;
+          || request.resource.data.faculdadeId == resource.data.faculdadeId); // Impede mudança de faculdade
+          
+      allow delete: if isOwner(resource.data.motoristaId) || isAdmin();
 
+      // ==========================================
+      // LOCALIZAÇÕES DA CARONA (Subcoleção)
+      // ==========================================
       match /localizacoes/{passageiroId} {
-        allow read: if request.auth != null;
-        allow write: if request.auth != null && request.auth.uid == passageiroId;
+        allow read: if isAuthenticated();
+        // Apenas o passageiro específico pode atualizar sua localização
+        allow write: if isOwner(passageiroId);
       }
     }
 
+    // ==========================================
+    // SOLICITAÇÕES
+    // ==========================================
     match /solicitacoes/{solId} {
-      allow read: if isAdmin()
-        || request.auth != null
-        && (request.auth.uid == resource.data.passageiroId
-         || request.auth.uid == resource.data.motoristaId);
-      allow create: if request.auth != null
+      // Apenas os envolvidos (motorista ou passageiro) podem ver a solicitação
+      allow read: if isAuthenticated()
+        && (request.auth.uid == resource.data.passageiroId || request.auth.uid == resource.data.motoristaId)
+        || isAdmin();
+        
+      // O passageiro cria a solicitação
+      allow create: if isAuthenticated()
         && request.resource.data.passageiroId == request.auth.uid
         && request.resource.data.status in ["pending", "pendente"];
-      allow update: if request.auth != null
-        && (request.auth.uid == resource.data.passageiroId
-         || request.auth.uid == resource.data.motoristaId)
-        && (!("status" in request.resource.data)
-          || request.resource.data.status in ["pending", "pendente", "approved", "aceita", "rejected", "recusada"]);
-      allow delete: if request.auth != null
-        && request.auth.uid == resource.data.passageiroId;
+        
+      // REGRA CRÍTICA CORRIGIDA: Passageiro não pode se auto-aprovar
+      allow update: if isAuthenticated()
+        // Impede alterar os envolvidos
+        && request.resource.data.passageiroId == resource.data.passageiroId
+        && request.resource.data.motoristaId == resource.data.motoristaId
+        && (
+          // Se for o motorista, ele pode aprovar ou recusar
+          (request.auth.uid == resource.data.motoristaId && request.resource.data.status in ["approved", "aceita", "rejected", "recusada", "pending", "pendente"])
+          ||
+          // Se for o passageiro, ele só pode cancelar a solicitação
+          (request.auth.uid == resource.data.passageiroId && request.resource.data.status in ["cancelled", "cancelada"])
+        );
+        
+      allow delete: if isOwner(resource.data.passageiroId) || isAdmin();
     }
 
+    // ==========================================
+    // CHATS
+    // ==========================================
     match /chats/{chatId} {
-      allow read: if request.auth != null || isAdmin();
-      allow create: if request.auth != null;
-      allow update: if request.auth != null
+      // REGRA CRÍTICA CORRIGIDA: Apenas participantes do chat podem lê-lo
+      allow read: if isAuthenticated() 
+        && request.auth.uid in resource.data.participantes;
+        
+      // O criador do chat deve estar na lista de participantes
+      allow create: if isAuthenticated()
+        && request.auth.uid in request.resource.data.participantes;
+        
+      allow update: if isAuthenticated()
         && request.auth.uid in resource.data.participantes;
 
+      // ==========================================
+      // MENSAGENS (Subcoleção de Chats)
+      // ==========================================
       match /mensagens/{msgId} {
-        allow read: if isAdmin()
-          || request.auth != null
+        // Apenas participantes da conversa podem ler
+        allow read: if isAuthenticated()
           && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes;
-        allow write: if request.auth != null
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes;
+          
+        // REGRA CRÍTICA CORRIGIDA: Permissão separada (create ao invés de write)
+        allow create: if isAuthenticated()
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantes
+          && request.resource.data.senderId == request.auth.uid; // Previne falsificação de remetente
+          
+        // Apenas o próprio autor pode editar/deletar suas mensagens
+        allow update, delete: if isOwner(resource.data.senderId);
       }
     }
 
-    match /mensagens/{conversaId}/msgs/{msgId} {
-      allow read: if isAdmin()
-        || request.auth != null
-        && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
-      allow write: if request.auth != null
-        && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
+    // ==========================================
+    // MENSAGENS DIRETAS (Estrutura legada/alternativa)
+    // ==========================================
+    match /mensagens/{conversaId} {
+      // Mesma proteção aplicada à coleção de chats
+      allow read: if isAuthenticated()
+        && request.auth.uid in resource.data.participantes;
+      allow create: if isAuthenticated()
+        && request.auth.uid in request.resource.data.participantes;
+      allow update: if isAuthenticated()
+        && request.auth.uid in resource.data.participantes;
+
+      match /msgs/{msgId} {
+        allow read: if isAuthenticated()
+          && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes;
+          
+        allow create: if isAuthenticated()
+          && request.auth.uid in get(/databases/$(database)/documents/mensagens/$(conversaId)).data.participantes
+          && (request.resource.data.senderId == request.auth.uid || request.resource.data.remetenteId == request.auth.uid);
+          
+        allow update, delete: if isAuthenticated() 
+          && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.remetenteId);
+      }
     }
 
+    // ==========================================
+    // DEFAULT DENY (Fechamento)
+    // ==========================================
     match /{document=**} {
       allow read, write: if false;
     }
