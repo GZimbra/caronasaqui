@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso — Caronas Aqui</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand: #1A73E8;
+            --brand-dark: #0d5cbf;
+            --brand-light: #e8f0fe;
+            --ink: #1a1f2e;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8faff;
+            --white: #ffffff;
+            --accent: #34d399;
+            --radius: 12px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 60px;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .topbar-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--brand);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-logo svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .topbar-name {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--brand);
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 100px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.25);
+        }
+
+        .btn-back:hover {
+            background: var(--brand-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(26, 115, 232, 0.35);
+        }
+
+        .btn-back svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #0d5cbf 0%, #1A73E8 50%, #4096f4 100%);
+            color: white;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(255, 255, 255, 0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            opacity: 0.85;
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+            font-weight: 300;
+        }
+
+        .hero-meta {
+            font-size: 0.8rem;
+            opacity: 0.65;
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem 5rem;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* ── SIDEBAR NAV ── */
+        .sidebar {
+            position: sticky;
+            top: 80px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+            padding-left: 12px;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-list a {
+            display: block;
+            padding: 7px 12px;
+            font-size: 0.83rem;
+            font-weight: 400;
+            color: var(--muted);
+            text-decoration: none;
+            border-radius: 8px;
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .nav-list a:hover,
+        .nav-list a.active {
+            background: var(--brand-light);
+            color: var(--brand);
+            border-left-color: var(--brand);
+            font-weight: 500;
+        }
+
+        /* ── CONTENT ── */
+        .content {
+            min-width: 0;
+        }
+
+        /* preâmbulo */
+        .preamble {
+            background: white;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--brand);
+            border-radius: var(--radius);
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 2.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .preamble p+p {
+            margin-top: 0.75rem;
+        }
+
+        /* seções */
+        .section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            scroll-margin-top: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.75rem;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .section-header:hover {
+            background: var(--bg);
+        }
+
+        .section.open .section-header {
+            border-bottom-color: var(--border);
+            background: var(--bg);
+        }
+
+        .section-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--brand-light);
+            color: var(--brand);
+            font-family: 'Fraunces', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section.open .section-num {
+            background: var(--brand);
+            color: white;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .section-chevron {
+            width: 16px;
+            height: 16px;
+            color: var(--muted);
+            transition: transform 0.25s;
+            flex-shrink: 0;
+        }
+
+        .section.open .section-chevron {
+            transform: rotate(180deg);
+        }
+
+        .section-body {
+            display: none;
+            padding: 1.5rem 1.75rem;
+            font-size: 0.9rem;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .section.open .section-body {
+            display: block;
+            animation: fadeSlide 0.2s ease;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* sub-section dentro do body */
+        .sub {
+            margin-top: 1.25rem;
+        }
+
+        .sub h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--brand);
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px solid var(--brand-light);
+        }
+
+        .sub p {
+            margin-top: 0.5rem;
+        }
+
+        /* listas */
+        ul.legal {
+            margin-top: 0.6rem;
+            padding-left: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        ul.legal li {
+            padding-left: 1.4rem;
+            position: relative;
+        }
+
+        ul.legal li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--brand);
+            font-size: 0.8rem;
+            top: 0.12em;
+        }
+
+        /* alerta NÃO */
+        .alert-box {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #9a3412;
+        }
+
+        /* tag destaque */
+        .tag {
+            display: inline-block;
+            background: var(--brand-light);
+            color: var(--brand);
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: var(--ink);
+            color: #94a3b8;
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.82rem;
+        }
+
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+                padding: 1.5rem 1rem 4rem;
+                gap: 1.5rem;
+            }
+
+            .sidebar {
+                position: static;
+                display: none;
+            }
+
+            .topbar {
+                padding: 0 1rem;
+            }
+
+            .hero {
+                padding: 3rem 1rem 2.5rem;
+            }
+
+            .section-body {
+                padding: 1.25rem;
+            }
+
+            .section-header {
+                padding: 1rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <a href="/" class="topbar-brand">
+            <div class="topbar-logo">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                </svg>
+            </div>
+            <span class="topbar-name">Caronas Aqui</span>
+        </a>
+        <button class="btn-back" onclick="history.back()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Voltar
+        </button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Documento Legal
+        </div>
+        <h1>Termos de Uso</h1>
+        <p class="hero-sub">Plataforma de mobilidade universitária exclusiva para estudantes verificados</p>
+        <p class="hero-meta">Última atualização: 11 de maio de 2026 &nbsp;·&nbsp; www.caronasaqui.com</p>
+    </section>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <p class="nav-label">Índice</p>
+            <ul class="nav-list" id="nav">
+                <li><a href="#s1">1. Definições</a></li>
+                <li><a href="#s2">2. Elegibilidade</a></li>
+                <li><a href="#s3">3. Funcionamento</a></li>
+                <li><a href="#s4">4. Obrigações</a></li>
+                <li><a href="#s5">5. Segurança e Privacidade</a></li>
+                <li><a href="#s6">6. Responsabilidades</a></li>
+                <li><a href="#s7">7. Conduta Proibida</a></li>
+                <li><a href="#s8">8. Propriedade Intelectual</a></li>
+                <li><a href="#s9">9. Disponibilidade</a></li>
+                <li><a href="#s10">10. Suspensão de Conta</a></li>
+                <li><a href="#s11">11. Disposições Gerais</a></li>
+                <li><a href="#s12">12. Contato e Suporte</a></li>
+            </ul>
+        </nav>
+
+        <!-- CONTENT -->
+        <main class="content">
+
+            <div class="preamble">
+                <p>Estes Termos de Uso (<strong>"Termos"</strong>) regulam o acesso e a utilização da plataforma Caronas
+                    Aqui, disponível em <strong>www.caronasaqui.com</strong>, operada por <strong>Caronas Aqui
+                        Tecnologia Ltda.</strong> Ao se cadastrar e utilizar a plataforma, você
+                    (<strong>"Usuário"</strong>) declara ter lido, compreendido e concordado integralmente com estes
+                    Termos, bem como com a nossa Política de Privacidade.</p>
+                <p>A utilização da plataforma é exclusivamente destinada a estudantes universitários devidamente
+                    matriculados em instituições de ensino superior. Caso não concorde com alguma cláusula deste
+                    documento, solicitamos que não utilize nossos serviços.</p>
+            </div>
+
+            <!-- 1 -->
+            <div class="section open" id="s1">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">1</div>
+                    <span class="section-title">Definições</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <p>Para fins deste instrumento, aplicam-se as seguintes definições:</p>
+                    <ul class="legal" style="margin-top:0.75rem">
+                        <li><strong>"Plataforma"</strong>: o sistema web e aplicativo Caronas Aqui, incluindo todos os
+                            seus recursos, funcionalidades e interfaces.</li>
+                        <li><strong>"Usuário"</strong>: qualquer pessoa física que acesse, cadastre-se ou utilize a
+                            plataforma.</li>
+                        <li><strong>"Motorista"</strong>: usuário que oferece vagas em seu veículo para outros usuários.
+                        </li>
+                        <li><strong>"Passageiro"</strong>: usuário que solicita ou aceita carona oferecida por um
+                            Motorista.</li>
+                        <li><strong>"Carona"</strong>: deslocamento compartilhado entre Motorista e Passageiro(s),
+                            intermediado pela plataforma.</li>
+                        <li><strong>"Matrícula Verificada"</strong>: número de matrícula institucional confirmado pela
+                            plataforma como pertencente a estudante ativo de instituição de ensino superior.</li>
+                        <li><strong>"Conta"</strong>: conjunto de credenciais e informações cadastrais associadas a um
+                            Usuário na plataforma.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="section" id="s2">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">2</div>
+                    <span class="section-title">Elegibilidade e Cadastro</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>2.1 Requisitos de Elegibilidade</h3>
+                        <p>Para utilizar a plataforma Caronas Aqui, o Usuário deve:</p>
+                        <ul class="legal">
+                            <li>Ser estudante regularmente matriculado em instituição de ensino superior (graduação ou
+                                pós-graduação);</li>
+                            <li>Possuir matrícula institucional ativa e verificável;</li>
+                            <li>Ter idade mínima de 18 (dezoito) anos ou 16 (dezesseis) anos emancipado;</li>
+                            <li>Fornecer informações verídicas, completas e atualizadas no momento do cadastro;</li>
+                            <li>Possuir capacidade civil plena para contratar, nos termos da legislação brasileira
+                                vigente.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>2.2 Processo de Verificação</h3>
+                        <p>O Caronas Aqui adota processo de verificação de matrícula institucional como medida de
+                            segurança. O Usuário autoriza a plataforma a realizar checagens periódicas da validade do
+                            vínculo institucional. A verificação poderá ser realizada via matrícula, e-mail
+                            institucional ou integração com sistemas das instituições parceiras. Contas com matrículas
+                            não verificadas ou inválidas serão suspensas automaticamente.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>2.3 Responsabilidade pelas Informações</h3>
+                        <p>O Usuário é integralmente responsável pela veracidade dos dados cadastrados. A inserção de
+                            informações falsas ou enganosas constitui violação destes Termos e sujeitará o Usuário às
+                            penalidades previstas na Cláusula 10, sem prejuízo das sanções legais aplicáveis, incluindo
+                            responsabilização civil e criminal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="section" id="s3">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">3</div>
+                    <span class="section-title">Funcionamento da Plataforma</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>3.1 Natureza do Serviço</h3>
+                        <p>O Caronas Aqui atua exclusivamente como plataforma tecnológica de intermediação entre
+                            Motoristas e Passageiros universitários.</p>
+                        <div class="alert-box">⚠️ A plataforma <strong>NÃO</strong> é empresa de transporte,
+                            <strong>NÃO</strong> presta serviços de táxi ou transporte remunerado, e
+                            <strong>NÃO</strong> possui qualquer vínculo trabalhista ou de prestação de serviços com os
+                            Usuários. As caronas são voluntárias e baseadas na economia compartilhada entre estudantes.
+                        </div>
+                    </div>
+                    <div class="sub">
+                        <h3>3.2 Funcionalidades Disponíveis</h3>
+                        <ul class="legal">
+                            <li>Publicação e busca de rotas de carona universitária;</li>
+                            <li>Comunicação entre Motoristas e Passageiros para combinação de horários e pontos de
+                                encontro;</li>
+                            <li>Rastreamento do status da rota em tempo real;</li>
+                            <li>Sistema de avaliação entre usuários após a realização da carona;</li>
+                            <li>Verificação e exibição de perfil de estudante verificado.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>3.3 Gratuidade e Ressarcimento</h3>
+                        <p>Os Usuários podem combinar entre si o ressarcimento de despesas com combustível e pedágio, de
+                            forma proporcional à distância percorrida. Fica expressamente vedada qualquer cobrança que
+                            caracterize transporte remunerado, conforme legislação vigente (Lei nº 12.587/2012 e
+                            regulamentações do Contran/Detran).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="section" id="s4">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">4</div>
+                    <span class="section-title">Obrigações dos Usuários</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>4.1 Obrigações Gerais</h3>
+                        <ul class="legal">
+                            <li>Utilizar a plataforma exclusivamente para fins lícitos e compatíveis com estes Termos;
+                            </li>
+                            <li>Manter seus dados cadastrais atualizados;</li>
+                            <li>Preservar a confidencialidade de suas credenciais de acesso;</li>
+                            <li>Comunicar imediatamente ao Caronas Aqui qualquer uso não autorizado de sua conta;</li>
+                            <li>Respeitar os demais usuários, abstendo-se de qualquer conduta discriminatória, abusiva
+                                ou assediante;</li>
+                            <li>Cumprir pontualmente os horários e rotas combinados;</li>
+                            <li>Notificar eventuais cancelamentos com antecedência razoável.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>4.2 Obrigações Específicas do Motorista <span class="tag">Motorista</span></h3>
+                        <ul class="legal">
+                            <li>Possuir Carteira Nacional de Habilitação (CNH) válida e compatível com a categoria do
+                                veículo utilizado;</li>
+                            <li>Manter o veículo em condições adequadas de segurança, com documentação obrigatória
+                                regularizada (CRLV, seguro obrigatório DPVAT/SPVAT);</li>
+                            <li>Respeitar integralmente o Código de Trânsito Brasileiro (Lei nº 9.503/1997);</li>
+                            <li>Não conduzir veículo sob influência de álcool, drogas ou qualquer substância que
+                                prejudique a capacidade de dirigir;</li>
+                            <li>Não utilizar aparelhos de comunicação durante a condução, salvo via viva-voz;</li>
+                            <li>Garantir que o número de passageiros não exceda a capacidade do veículo;</li>
+                            <li>Manter seguro veicular válido.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>4.3 Obrigações Específicas do Passageiro <span class="tag">Passageiro</span></h3>
+                        <ul class="legal">
+                            <li>Aguardar o Motorista no local e horário combinados;</li>
+                            <li>Utilizar cinto de segurança obrigatoriamente;</li>
+                            <li>Não solicitar ao Motorista que realize manobras perigosas ou infringir normas de
+                                trânsito;</li>
+                            <li>Zelar pelo veículo do Motorista, evitando danos ou sujeira.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="section" id="s5">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">5</div>
+                    <span class="section-title">Segurança e Privacidade</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>5.1 Medidas de Segurança da Plataforma</h3>
+                        <ul class="legal">
+                            <li>Verificação obrigatória de matrícula institucional para todos os perfis;</li>
+                            <li>Sistema de avaliações e reputação entre usuários;</li>
+                            <li>Monitoramento de atividades suspeitas e acesso controlado à plataforma;</li>
+                            <li>Rastreamento de rotas em tempo real durante a realização das caronas;</li>
+                            <li>Canal de denúncias para relato de condutas inadequadas.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>5.2 Dados Pessoais e LGPD <span class="tag">Lei 13.709/2018</span></h3>
+                        <p>O tratamento de dados pessoais dos Usuários é regido pela Lei Geral de Proteção de Dados (Lei
+                            nº 13.709/2018 — LGPD) e detalhado em nossa Política de Privacidade. Ao utilizar a
+                            plataforma, o Usuário consente expressamente com o tratamento dos dados necessários ao
+                            funcionamento do serviço, incluindo dados de localização durante a realização de caronas.
+                        </p>
+                    </div>
+                    <div class="sub">
+                        <h3>5.3 Compartilhamento de Dados</h3>
+                        <p>O Caronas Aqui não comercializa dados pessoais dos Usuários. Informações de perfil (nome,
+                            curso, instituição e foto) serão visíveis para outros usuários verificados da plataforma,
+                            para fins de identificação e segurança durante a realização das caronas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 -->
+            <div class="section" id="s6">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">6</div>
+                    <span class="section-title">Responsabilidades e Limitações</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>6.1 Responsabilidade dos Usuários</h3>
+                        <ul class="legal">
+                            <li>Todos os atos praticados sob suas contas;</li>
+                            <li>Acidentes, danos materiais, corporais ou morais decorrentes das caronas realizadas;</li>
+                            <li>Infrações de trânsito cometidas durante o deslocamento;</li>
+                            <li>Cumprimento das obrigações tributárias eventualmente aplicáveis.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>6.2 Isenção de Responsabilidade do Caronas Aqui</h3>
+                        <p>O Caronas Aqui não se responsabiliza por:</p>
+                        <ul class="legal">
+                            <li>Acidentes, lesões ou danos de qualquer natureza ocorridos durante a realização de
+                                caronas;</li>
+                            <li>Condutas, declarações ou ações de qualquer Usuário;</li>
+                            <li>Falhas de disponibilidade da plataforma por caso fortuito ou força maior;</li>
+                            <li>Perdas financeiras decorrentes de cancelamentos ou não comparecimentos;</li>
+                            <li>Conteúdos enviados por Usuários que violem direitos de terceiros;</li>
+                            <li>Danos indiretos, lucros cessantes ou danos emergentes de qualquer espécie.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>6.3 Seguro e Cobertura</h3>
+                        <p>O Caronas Aqui recomenda fortemente que o Motorista mantenha seguro veicular com cobertura
+                            para transporte de passageiros. A responsabilidade civil decorrente das caronas é
+                            exclusivamente dos Usuários envolvidos, conforme as disposições do Código Civil Brasileiro
+                            (Lei nº 10.406/2002).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7 -->
+            <div class="section" id="s7">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">7</div>
+                    <span class="section-title">Conduta Proibida</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <p>É expressamente vedado ao Usuário:</p>
+                    <ul class="legal" style="margin-top:0.75rem">
+                        <li>Fornecer informações falsas, imprecisas ou enganosas em qualquer campo da plataforma;</li>
+                        <li>Compartilhar credenciais de acesso com terceiros;</li>
+                        <li>Utilizar a plataforma para fins de transporte remunerado ou comercial;</li>
+                        <li>Praticar qualquer forma de assédio, discriminação ou intimidação contra outros usuários;
+                        </li>
+                        <li>Publicar conteúdo ilegal, difamatório, pornográfico ou que viole direitos de terceiros;</li>
+                        <li>Realizar engenharia reversa, decompilação ou tentativa de acesso não autorizado aos sistemas
+                            da plataforma;</li>
+                        <li>Criar múltiplas contas ou utilizar contas de terceiros;</li>
+                        <li>Automatizar o acesso à plataforma por meio de bots, scripts ou ferramentas similares;</li>
+                        <li>Utilizar a plataforma para coleta massiva de dados de outros usuários (scraping);</li>
+                        <li>Praticar qualquer ato que comprometa a integridade, segurança ou disponibilidade da
+                            plataforma.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 8 -->
+            <div class="section" id="s8">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">8</div>
+                    <span class="section-title">Propriedade Intelectual</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <p>Todo o conteúdo e tecnologia da plataforma Caronas Aqui, incluindo mas não limitado a marcas,
+                        logotipos, design, código-fonte, interfaces, textos, imagens e funcionalidades, são de
+                        propriedade exclusiva do Caronas Aqui ou de seus licenciadores, protegidos pela <strong>Lei nº
+                            9.610/1998</strong> (Lei de Direitos Autorais) e <strong>Lei nº 9.279/1996</strong> (Lei de
+                        Propriedade Industrial).</p>
+                    <p style="margin-top:0.75rem">É vedada a reprodução, distribuição, modificação ou uso comercial de
+                        qualquer elemento da plataforma sem autorização prévia e expressa do Caronas Aqui. O Usuário
+                        concede ao Caronas Aqui licença não exclusiva, gratuita e mundial para uso do conteúdo que
+                        publicar na plataforma, para fins operacionais e de melhoria do serviço.</p>
+                </div>
+            </div>
+
+            <!-- 9 -->
+            <div class="section" id="s9">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">9</div>
+                    <span class="section-title">Disponibilidade e Modificações</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>9.1 Disponibilidade do Serviço</h3>
+                        <p>O Caronas Aqui empenhará esforços razoáveis para manter a plataforma disponível de forma
+                            contínua. Contudo, não garante disponibilidade ininterrupta, especialmente em casos de
+                            manutenção programada, falhas técnicas, ataques cibernéticos ou eventos de força maior.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>9.2 Alterações na Plataforma</h3>
+                        <p>O Caronas Aqui reserva-se o direito de modificar, suspender ou descontinuar funcionalidades
+                            da plataforma a qualquer momento, com ou sem aviso prévio, sem que isso gere qualquer
+                            direito de indenização aos Usuários.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>9.3 Alterações nestes Termos</h3>
+                        <p>Estes Termos poderão ser atualizados periodicamente. Alterações substanciais serão
+                            comunicadas aos Usuários por e-mail ou notificação na plataforma com antecedência mínima de
+                            <strong>15 (quinze) dias</strong>. O uso continuado da plataforma após a entrada em vigor
+                            das alterações implicará aceitação tácita dos novos Termos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10 -->
+            <div class="section" id="s10">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">10</div>
+                    <span class="section-title">Suspensão e Encerramento de Conta</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>10.1 Suspensão por Violação</h3>
+                        <p>O Caronas Aqui poderá, a seu exclusivo critério, suspender ou encerrar a conta do Usuário
+                            que:</p>
+                        <ul class="legal">
+                            <li>Violar quaisquer disposições destes Termos;</li>
+                            <li>Tiver sua matrícula invalidada ou perda de vínculo com instituição de ensino;</li>
+                            <li>Receber avaliações negativas recorrentes de outros usuários;</li>
+                            <li>For objeto de denúncias comprovadas de conduta inadequada;</li>
+                            <li>Praticar atos que comprometam a segurança de outros usuários ou da plataforma.</li>
+                        </ul>
+                    </div>
+                    <div class="sub">
+                        <h3>10.2 Encerramento Voluntário</h3>
+                        <p>O Usuário poderá solicitar o encerramento de sua conta a qualquer momento, mediante
+                            solicitação pelo canal de suporte da plataforma. O encerramento não exime o Usuário de
+                            responsabilidades decorrentes de atos praticados antes do encerramento.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11 -->
+            <div class="section" id="s11">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">11</div>
+                    <span class="section-title">Disposições Gerais</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <div class="sub">
+                        <h3>11.1 Lei Aplicável e Foro</h3>
+                        <p>Estes Termos são regidos pelas leis da República Federativa do Brasil. Para dirimir quaisquer
+                            controvérsias, fica eleito o foro da comarca da sede do Caronas Aqui, com renúncia expressa
+                            a qualquer outro, por mais privilegiado que seja.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>11.2 Invalidade Parcial</h3>
+                        <p>Caso qualquer disposição destes Termos seja declarada nula, inválida ou inexequível, as
+                            demais disposições permanecerão válidas e em pleno vigor, e a cláusula afetada será
+                            substituída pela disposição legal mais próxima de sua intenção original.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>11.3 Cessão</h3>
+                        <p>O Caronas Aqui poderá ceder ou transferir estes Termos, no todo ou em parte, a terceiros em
+                            caso de fusão, aquisição, reorganização societária ou venda de ativos, mediante notificação
+                            aos Usuários. O Usuário não poderá ceder seus direitos sem prévia autorização escrita do
+                            Caronas Aqui.</p>
+                    </div>
+                    <div class="sub">
+                        <h3>11.4 Renúncia</h3>
+                        <p>A omissão do Caronas Aqui em exigir o cumprimento de qualquer disposição destes Termos não
+                            constituirá renúncia ao direito de fazê-lo em momento posterior.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12 -->
+            <div class="section" id="s12">
+                <div class="section-header" onclick="toggle(this)">
+                    <div class="section-num">12</div>
+                    <span class="section-title">Contato e Suporte</span>
+                    <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+                <div class="section-body">
+                    <p>Para dúvidas, sugestões ou reclamações relacionadas a estes Termos ou ao funcionamento da
+                        plataforma, o Usuário poderá entrar em contato pelos seguintes canais:</p>
+                    <ul class="legal" style="margin-top:0.75rem">
+                        <li>Site: <a href="https://www.caronasaqui.com"
+                                style="color:var(--brand)">www.caronasaqui.com</a></li>
+                        <li>E-mail: <a href="mailto:contato@caronasaqui.com"
+                                style="color:var(--brand)">contato@caronasaqui.com</a></li>
+                        <li>Canal de suporte: disponível na plataforma após login</li>
+                    </ul>
+                    <div class="sub">
+                        <h3>Encarregado de Dados (DPO) — LGPD</h3>
+                        <p>Para exercício dos direitos previstos na LGPD (acesso, correção, exclusão, portabilidade e
+                            outros), contate o Encarregado de Dados pelo e-mail: <a
+                                href="mailto:privacidade@caronasaqui.com"
+                                style="color:var(--brand)">privacidade@caronasaqui.com</a></p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2026 Caronas Aqui Tecnologia Ltda. · <a href="/">www.caronasaqui.com</a> · <a
+                href="mailto:contato@caronasaqui.com">contato@caronasaqui.com</a></p>
+
+    </footer>
+
+    <script>
+        function toggle(header) {
+            const section = header.closest('.section');
+            section.classList.toggle('open');
+        }
+
+        // highlight active nav link on scroll
+        const sections = document.querySelectorAll('.section[id]');
+        const navLinks = document.querySelectorAll('.nav-list a');
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(a => a.classList.remove('active'));
+                    const active = document.querySelector(`.nav-list a[href="#${entry.target.id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0px -70% 0px' });
+
+        sections.forEach(s => observer.observe(s));
+
+        // open section when nav link clicked
+        navLinks.forEach(a => {
+            a.addEventListener('click', e => {
+                const id = a.getAttribute('href').slice(1);
+                const target = document.getElementById(id);
+                if (target && !target.classList.contains('open')) {
+                    target.classList.add('open');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
