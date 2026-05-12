@@ -443,6 +443,7 @@ async function salvarCarona() {
   await db.collection('caronas').add({
     motorista:      usuarioLogado.nome,
     motoristaFoto:  usuarioLogado.foto || '',
+    motoristaTags:  normalizarTagsPerfil(usuarioLogado.tags || []),
     motoristaId:    usuarioLogado.id,
     descricao,
     horario,

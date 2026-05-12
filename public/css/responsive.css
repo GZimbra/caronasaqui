@@ -237,13 +237,16 @@
     display: none;
   }
   .login-ad-wrapper {
-    min-height: 50px;
-    max-height: 56px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
     margin-top: 10px;
   }
-  .login-ad-wrapper .adsbygoogle {
-    height: 50px !important;
-    max-height: 56px;
+  .login-ad-wrapper .adsbygoogle,
+  .login-ad-wrapper iframe {
+    height: 36px !important;
+    max-height: 36px !important;
+    min-height: 0 !important;
   }
   .login-right {
     flex: 1;

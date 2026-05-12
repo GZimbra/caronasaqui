@@ -80,7 +80,8 @@ service cloud.firestore {
         && request.resource.data.partidaLivre.matches('^[^<>]{3,140}$')
         && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]
         && request.resource.data.faculdadeLat is number
-        && request.resource.data.faculdadeLng is number;
+        && request.resource.data.faculdadeLng is number
+        && (!("motoristaTags" in request.resource.data) || validProfileTags(request.resource.data.motoristaTags));
         
       // Apenas o motorista que criou pode editar sua própria carona
       allow update: if isOwner(resource.data.motoristaId)

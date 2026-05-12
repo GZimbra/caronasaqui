@@ -54,6 +54,8 @@ function _criarCardCarona(id, d) {
   const destinoTexto  = eh(_fmtEndereco(d.destinoEndereco));
   const partidaLivre  = eh(d.partidaLivre || '');
   const faculdadeTexto = eh([d.faculdadeNome, d.faculdadeCampus].filter(Boolean).join(' - '));
+  const tagsNormalizadas = normalizarTagsPerfil(d.motoristaTags || []);
+  const tagsMotorista = tagsNormalizadas.length ? renderTagsPerfil(tagsNormalizadas) : '';
   const descricao     = eh(d.descricao || 'Sem descrição');
   const horario       = d.horario ? ' · ' + eh(d.horario) : '';
 
@@ -102,6 +104,7 @@ function _criarCardCarona(id, d) {
         <div class="avatar" style="overflow:hidden">${avatar}</div>
         <div>
           <b class="driver-name-link">${motoristaNome}</b>
+          <div class="ride-driver-tags">${tagsMotorista}</div>
         </div>
       </div>
 

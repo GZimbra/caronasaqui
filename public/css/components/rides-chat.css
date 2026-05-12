@@ -39,6 +39,20 @@
 .status-chegou     { color: #f39c12; }
 .status-finalizada { color: #27ae60; }
 .status-cancelada  { color: var(--red); }
+
+.ride-driver-tags {
+  margin-top: 6px;
+}
+
+.ride-driver-tags .profile-tags-list {
+  gap: 5px;
+}
+
+.ride-driver-tags .profile-tag {
+  min-height: 24px;
+  padding: 4px 9px;
+  font-size: 11px;
+}
  
 /* ============================================================
    POPUP

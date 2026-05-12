@@ -42,26 +42,31 @@
   .ad-wrapper {
     flex-shrink: 0;
     width: 100%;
-    min-height: 72px;
-    max-height: 90px;
+    height: 64px;
+    min-height: 64px;
+    max-height: 64px;
     text-align: center;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
     overflow: hidden;
   }
-  .ad-wrapper .adsbygoogle {
-    height: 72px !important;
-    max-height: 90px;
+  .ad-wrapper .adsbygoogle,
+  .ad-wrapper iframe {
+    height: 64px !important;
+    max-height: 64px !important;
     overflow: hidden;
   }
   @media (max-width: 700px) {
     .ad-wrapper {
-      min-height: 50px;
-      max-height: 56px;
+      height: 36px;
+      min-height: 36px;
+      max-height: 36px;
     }
-    .ad-wrapper .adsbygoogle {
-      height: 50px !important;
-      max-height: 56px;
+    .ad-wrapper .adsbygoogle,
+    .ad-wrapper iframe {
+      height: 36px !important;
+      max-height: 36px !important;
+      min-height: 0 !important;
     }
   }
 </style>

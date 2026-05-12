@@ -174,6 +174,24 @@ function validarDadosPerfil(dados) {
   return "";
 }
 
+async function atualizarTagsEmCaronasAtivas(tags) {
+  const snapshot = await db.collection("caronas")
+    .where("motoristaId", "==", usuarioLogado.id)
+    .where("status", "in", ["aberta", "em_andamento", "lotada", "a_caminho", "chegou"])
+    .get();
+
+  if (snapshot.empty) return;
+
+  const batch = db.batch();
+  snapshot.docs.forEach(doc => {
+    batch.update(doc.ref, {
+      motoristaTags: normalizarTagsPerfil(tags),
+      atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+  await batch.commit();
+}
+
 async function salvarDadosPerfil(event) {
   event?.preventDefault();
 
@@ -210,6 +228,11 @@ async function salvarDadosPerfil(event) {
     }, { merge: true });
 
     atualizarUsuarioLocal({ ...dados, ...dadosFaculdade, tags: normalizarTagsPerfil(dados.tags) });
+    try {
+      await atualizarTagsEmCaronasAtivas(dados.tags);
+    } catch (error) {
+      console.warn("Nao foi possivel sincronizar tags nas caronas ativas:", error);
+    }
     atualizarAvataresDoUsuario();
     const tagsPreview = document.getElementById("perfilTagsPreview");
     if (tagsPreview) tagsPreview.innerHTML = renderTagsPerfil(dados.tags);
