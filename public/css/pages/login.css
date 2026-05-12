@@ -155,6 +155,23 @@
   color: var(--accent);
   flex-shrink: 0;
 }
+
+.login-ad-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-height: 64px;
+  max-height: 90px;
+  margin-top: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.login-ad-wrapper .adsbygoogle {
+  height: 64px !important;
+  max-height: 90px;
+  overflow: hidden;
+}
  
 .login-right {
   flex: 1; display: flex; justify-content: center; align-items: center;

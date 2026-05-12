@@ -225,6 +225,15 @@ function renderPerfil(content) {
             <select id="perfilFaculdade" class="input-select"></select>
           </div>
         </div>
+        <div class="profile-tags-field">
+          <label class="form-label">Tags do perfil</label>
+          <div id="perfilTagsOpcoes" class="profile-tags-options">
+            ${renderTagsPerfilSelecionaveis(usuarioLogado.tags || [])}
+          </div>
+          <div id="perfilTagsPreview" class="profile-tags-preview">
+            ${renderTagsPerfil(usuarioLogado.tags || [])}
+          </div>
+        </div>
         <p id="perfilFaculdadeInfo" class="field-hint"></p>
         <p class="field-hint">Matricula vinculada: final ${esc(usuarioLogado.matriculaLast4 || '----')}</p>
         <p id="perfilFormStatus" class="form-status" aria-live="polite"></p>

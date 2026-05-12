@@ -42,10 +42,27 @@
   .ad-wrapper {
     flex-shrink: 0;
     width: 100%;
+    min-height: 72px;
+    max-height: 90px;
     text-align: center;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
     overflow: hidden;
+  }
+  .ad-wrapper .adsbygoogle {
+    height: 72px !important;
+    max-height: 90px;
+    overflow: hidden;
+  }
+  @media (max-width: 700px) {
+    .ad-wrapper {
+      min-height: 50px;
+      max-height: 56px;
+    }
+    .ad-wrapper .adsbygoogle {
+      height: 50px !important;
+      max-height: 56px;
+    }
   }
 </style>
 <!-- Vercel Analytics & Speed Insights -->

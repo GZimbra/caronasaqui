@@ -18,6 +18,21 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.token.email == "admin@caronasaqui.internal";
     }
 
+    function validProfileTags(tags) {
+      return tags is list
+        && tags.size() <= 8
+        && tags.hasOnly([
+          "rock",
+          "funk",
+          "sertanejo",
+          "eletronica",
+          "falante",
+          "quieto",
+          "pontual",
+          "sem-fumaca"
+        ]);
+    }
+
     // ==========================================
     // USUÁRIOS
     // ==========================================
@@ -33,7 +48,8 @@ service cloud.firestore {
         && request.resource.data.matriculaHash.matches('^[a-f0-9]{64}$')
         && request.resource.data.matriculaLast4 is string
         && request.resource.data.matriculaLast4.matches('^[0-9]{4}$')
-        && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"];
+        && request.resource.data.faculdadeId in ["dom-bosco-resende", "uerj-resende"]
+        && (!("tags" in request.resource.data) || validProfileTags(request.resource.data.tags));
       
       // Apenas o dono pode atualizar, sendo impedido de alterar dados sensíveis
       allow update: if isOwner(userId)
@@ -42,6 +58,7 @@ service cloud.firestore {
         && (!("celular" in request.resource.data) || request.resource.data.celular is string)
         && (!("curso" in request.resource.data) || request.resource.data.curso is string)
         && (!("foto" in request.resource.data) || request.resource.data.foto is string)
+        && (!("tags" in request.resource.data) || validProfileTags(request.resource.data.tags))
         // Proteção: matriculaHash e faculdadeId não podem ser modificados após criados
         && (!("matriculaHash" in request.resource.data) || request.resource.data.matriculaHash == resource.data.matriculaHash)
         && (!("faculdadeId" in request.resource.data) || request.resource.data.faculdadeId == resource.data.faculdadeId);

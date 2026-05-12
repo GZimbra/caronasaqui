@@ -183,6 +183,7 @@ async function login() {
       matriculaLast4: data.matriculaLast4 || "",
       curso: data.curso || "",
       foto: data.foto || "",
+      tags: Array.isArray(data.tags) ? data.tags : [],
     }));
     window.location.replace("app.html");
   } catch (e) {
@@ -229,6 +230,7 @@ async function registrar() {
       email: "",
       celular: "",
       foto: "",
+      tags: [],
       matriculaHash,
       matriculaLast4: matricula.slice(-4),
       ...dadosFaculdade,

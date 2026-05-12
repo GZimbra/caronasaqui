@@ -190,7 +190,8 @@ async function verPerfilUsuario(uid, nomeInicial, fotoInicial) {
     document.getElementById('perfilModalStatus').textContent = 'Membro da plataforma';
     info.innerHTML = '<p><b>Nome:</b> ' + esc(data.nome || '—') + '</p>'
       + '<p><b>Curso:</b> ' + esc(data.curso || '—') + '</p>'
-      + '<p><b>Celular:</b> ' + esc(data.celular || '—') + '</p>';
+      + '<p><b>Celular:</b> ' + esc(data.celular || '—') + '</p>'
+      + '<div class="profile-modal-tags"><b>Tags:</b>' + renderTagsPerfil(data.tags || []) + '</div>';
   } catch (e) {
     console.error(e);
     const info = document.getElementById('perfilModalInfo');

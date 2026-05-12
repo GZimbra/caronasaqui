@@ -1,3 +1,52 @@
+const PERFIL_TAGS_DISPONIVEIS = [
+  { id: "rock", label: "Rock" },
+  { id: "funk", label: "Funk" },
+  { id: "sertanejo", label: "Sertanejo" },
+  { id: "eletronica", label: "Eletronica" },
+  { id: "falante", label: "Falante" },
+  { id: "quieto", label: "Quieto" },
+  { id: "pontual", label: "Pontual" },
+  { id: "sem-fumaca", label: "Sem fumaca" },
+];
+
+function normalizarTagsPerfil(tags) {
+  if (!Array.isArray(tags)) return [];
+  const permitidas = new Set(PERFIL_TAGS_DISPONIVEIS.map(tag => tag.id));
+  return [...new Set(tags.filter(tag => permitidas.has(tag)))];
+}
+
+function obterTagsPerfilSelecionadas() {
+  return Array.from(document.querySelectorAll('input[name="perfilTags"]:checked'))
+    .map(input => input.value);
+}
+
+function renderTagsPerfilSelecionaveis(tagsSelecionadas = []) {
+  const selecionadas = new Set(normalizarTagsPerfil(tagsSelecionadas));
+
+  return PERFIL_TAGS_DISPONIVEIS.map(tag => `
+    <label class="profile-tag-option">
+      <input type="checkbox" name="perfilTags" value="${tag.id}" ${selecionadas.has(tag.id) ? "checked" : ""}>
+      <span>${tag.label}</span>
+    </label>
+  `).join("");
+}
+
+function renderTagsPerfil(tags = []) {
+  const normalizadas = normalizarTagsPerfil(tags);
+  if (!normalizadas.length) {
+    return '<p class="empty-inline">Nenhuma tag selecionada.</p>';
+  }
+
+  return `
+    <div class="profile-tags-list">
+      ${normalizadas.map(tagId => {
+        const tag = PERFIL_TAGS_DISPONIVEIS.find(item => item.id === tagId);
+        return `<span class="profile-tag">${esc(tag?.label || tagId)}</span>`;
+      }).join("")}
+    </div>
+  `;
+}
+
 function criarAvatarHTML(usuario, extraClass = "", elementId = "") {
   const nome = usuario?.nome || "Usuário";
   const inicial = nome.charAt(0).toUpperCase();
@@ -62,6 +111,10 @@ function preencherFormularioPerfil(dados) {
   });
 
   popularSelectFaculdades(document.getElementById("perfilFaculdade"), dados.faculdadeId || "");
+  const tagsContainer = document.getElementById("perfilTagsOpcoes");
+  if (tagsContainer) tagsContainer.innerHTML = renderTagsPerfilSelecionaveis(dados.tags || []);
+  const tagsPreview = document.getElementById("perfilTagsPreview");
+  if (tagsPreview) tagsPreview.innerHTML = renderTagsPerfil(dados.tags || []);
   atualizarInfoFaculdadePerfil();
 }
 
@@ -96,6 +149,7 @@ async function carregarPerfilAutenticado() {
       matriculaLast4: dados.matriculaLast4 || usuarioLogado.matriculaLast4 || "",
       curso: dados.curso || "",
       foto: dados.foto || "",
+      tags: normalizarTagsPerfil(dados.tags),
     });
 
     preencherFormularioPerfil(window.usuarioLogado);
@@ -130,6 +184,7 @@ async function salvarDadosPerfil(event) {
     email: (document.getElementById("perfilEmail")?.value || "").trim(),
     celular: (document.getElementById("perfilCelular")?.value || "").trim(),
     faculdadeId: document.getElementById("perfilFaculdade")?.value || "",
+    tags: obterTagsPerfilSelecionadas(),
   };
 
   const erro = validarDadosPerfil(dados);
@@ -154,8 +209,10 @@ async function salvarDadosPerfil(event) {
       atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
 
-    atualizarUsuarioLocal({ ...dados, ...dadosFaculdade });
+    atualizarUsuarioLocal({ ...dados, ...dadosFaculdade, tags: normalizarTagsPerfil(dados.tags) });
     atualizarAvataresDoUsuario();
+    const tagsPreview = document.getElementById("perfilTagsPreview");
+    if (tagsPreview) tagsPreview.innerHTML = renderTagsPerfil(dados.tags);
 
     const userLabel = document.querySelector(".user span");
     const titulo = document.querySelector(".perfil-topo h2");
@@ -272,6 +329,10 @@ document.addEventListener("click", event => {
 
 document.addEventListener("change", event => {
   if (event.target?.id === "perfilFaculdade") atualizarInfoFaculdadePerfil();
+  if (event.target?.name === "perfilTags") {
+    const preview = document.getElementById("perfilTagsPreview");
+    if (preview) preview.innerHTML = renderTagsPerfil(obterTagsPerfilSelecionadas());
+  }
 });
 
 // =========================

@@ -236,6 +236,15 @@
   .login-route-preview, .login-features {
     display: none;
   }
+  .login-ad-wrapper {
+    min-height: 50px;
+    max-height: 56px;
+    margin-top: 10px;
+  }
+  .login-ad-wrapper .adsbygoogle {
+    height: 50px !important;
+    max-height: 56px;
+  }
   .login-right {
     flex: 1;
     padding: 16px;
