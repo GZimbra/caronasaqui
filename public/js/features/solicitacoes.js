@@ -141,6 +141,11 @@ function abrirModalRecusa(solicitacaoId) {
 async function recusarSolicitacao(solicitacaoId) {
   try {
     const motivo = (document.getElementById("motivoRecusaSolicitacao")?.value || "").trim();
+    const erroConteudo = validarTextoPermitido("Motivo", motivo);
+    if (erroConteudo) {
+      showToast(erroConteudo, "aviso");
+      return;
+    }
 
     await db.collection("solicitacoes").doc(solicitacaoId).update({
       status: "rejected",

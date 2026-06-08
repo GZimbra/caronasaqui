@@ -213,6 +213,12 @@ async function enviarMsg(id) {
   const texto = input.value.trim();
   if (!texto) return;
 
+  const erroConteudo = validarTextoPermitido("Mensagem", texto);
+  if (erroConteudo) {
+    showToast(erroConteudo, "aviso");
+    return;
+  }
+
   input.value = "";
 
   const chatRef = db.collection("chats").doc(id);

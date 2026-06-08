@@ -1267,6 +1267,464 @@ button:hover {
   }
 }
 
+/* Final responsive hardening. Keep this last: theme-refresh is imported after responsive.css. */
+html {
+  min-width: 0;
+  overflow-x: hidden;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body,
+#app,
+.layout,
+.main-area,
+#content,
+.ride-card,
+.perfil-card,
+.my-ride-card,
+.mensagens-layout,
+.mensagens-lista,
+.mensagens-chat,
+.popup-box,
+.auth-card {
+  min-width: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p,
+span,
+b,
+small,
+label,
+button,
+input,
+select,
+textarea {
+  overflow-wrap: anywhere;
+}
+
+button,
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ride-info,
+.driver-left,
+.conversa-info,
+.chat-header h2,
+.perfil-topo > div,
+.my-ride-header > div,
+.my-ride-driver-box > div,
+.passenger-item > div {
+  min-width: 0;
+}
+
+.ride-info h3,
+.ride-info .destino,
+.ride-info .descricao,
+.conversa-nome,
+.conversa-preview,
+.driver-name-link {
+  overflow-wrap: anywhere;
+}
+
+.popup-box {
+  width: min(100%, 560px);
+}
+
+.popup-box:not(.popup-box-wide) {
+  width: min(100%, 420px);
+}
+
+.popup-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.popup-actions-grid button {
+  min-width: 0;
+}
+
+.chat-input button {
+  width: 48px;
+  min-width: 48px;
+  padding-inline: 0;
+}
+
+.login-page {
+  min-height: 100dvh;
+  height: auto;
+}
+
+.login-left,
+.login-right {
+  min-width: 0;
+}
+
+.about-section {
+  width: min(1200px, calc(100% - 32px));
+}
+
+footer > div {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .login-page {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .login-left-content {
+    width: 100%;
+  }
+
+  .login-right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  body:has(#app) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  #app,
+  .layout {
+    height: 100%;
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .main-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    order: 1;
+    width: 100%;
+  }
+
+  #content {
+    height: 100%;
+    padding: 14px 12px calc(78px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+
+  .header {
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 4px 0 12px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    line-height: 1.15;
+  }
+
+  .header p {
+    font-size: 13px;
+  }
+
+  .search {
+    margin-bottom: 12px;
+  }
+
+  .sidebar,
+  .sidebar:hover {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    order: 2;
+    width: 100% !important;
+    height: calc(66px + env(safe-area-inset-bottom));
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    overflow: hidden;
+    border-right: 0;
+    border-top: 1px solid rgba(255,255,255,0.72);
+    border-radius: 18px 18px 0 0;
+    z-index: 100;
+  }
+
+  .sidebar nav {
+    min-width: 0;
+  }
+
+  .sidebar button,
+  .sidebar:hover button,
+  .user,
+  .sidebar:hover .user {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 68px;
+    min-height: 52px;
+    padding: 6px 4px !important;
+    border-radius: 12px;
+  }
+
+  .sidebar nav button svg,
+  .user-avatar {
+    width: 20px;
+    height: 20px;
+  }
+
+  .user-avatar {
+    min-width: 20px;
+    min-height: 20px;
+    font-size: 10px;
+  }
+
+  .sidebar button span,
+  .sidebar:hover button span,
+  .user span,
+  .sidebar:hover .user span {
+    width: 100%;
+    max-width: 58px !important;
+    font-size: 9px !important;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .ride-card,
+  .perfil-card,
+  .my-ride-card,
+  .notificacao-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .ride-top {
+    gap: 10px;
+  }
+
+  .timeline {
+    width: 14px;
+  }
+
+  .ride-driver,
+  .driver-left,
+  .my-ride-driver-box {
+    align-items: flex-start;
+  }
+
+  .driver-left,
+  .my-ride-driver-box {
+    width: 100%;
+  }
+
+  .ride-footer,
+  .popup-actions,
+  .my-ride-actions,
+  .my-ride-history-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .ride-footer button,
+  .popup-actions button,
+  .my-ride-actions button,
+  .my-ride-history-actions button {
+    width: 100%;
+  }
+
+  .my-ride-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .passenger-item,
+  .my-ride-history-top,
+  .my-ride-header {
+    gap: 10px;
+  }
+
+  .perfil-card {
+    margin-bottom: 12px;
+  }
+
+  .perfil-topo {
+    gap: 16px;
+  }
+
+  .avatar-perfil {
+    width: 92px;
+    height: 92px;
+    font-size: 32px;
+  }
+
+  .menu-foto-perfil {
+    width: min(230px, calc(100vw - 24px));
+  }
+
+  .popup {
+    align-items: flex-end;
+    padding: 10px 10px 0;
+  }
+
+  .popup-box,
+  .popup-box:not(.popup-box-wide) {
+    width: 100%;
+    max-height: min(92dvh, 720px);
+    padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+  }
+
+  .popup-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map,
+  .leaflet-container {
+    height: 240px !important;
+  }
+
+  #mapMain {
+    height: min(62dvh, 460px) !important;
+  }
+
+  .mensagens-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 154px);
+    min-height: 0;
+  }
+
+  .mensagens-lista {
+    flex: 0 0 auto;
+    max-height: 34dvh;
+    min-height: 0;
+  }
+
+  .mensagens-chat {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .chat-header {
+    padding: 12px 14px;
+  }
+
+  .chat-box {
+    padding: 12px 14px;
+  }
+
+  .bubble {
+    max-width: 88%;
+  }
+
+  .chat-input {
+    padding: 10px;
+  }
+
+  .login-page {
+    min-height: 100dvh;
+  }
+
+  .login-left {
+    padding: 24px 16px 18px;
+  }
+
+  .login-left-content {
+    padding: 0;
+    gap: 14px;
+  }
+
+  .login-brand-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .login-brand-name {
+    font-size: 20px;
+  }
+
+  .login-headline {
+    font-size: clamp(28px, 9vw, 34px);
+    line-height: 1.08;
+  }
+
+  .login-sub {
+    font-size: 14px;
+  }
+
+  .login-right {
+    padding: 14px 12px 20px;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 20px 16px;
+    max-height: none;
+  }
+
+  .about-section {
+    margin: 24px auto !important;
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .sidebar,
+  .sidebar:hover {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .sidebar button,
+  .sidebar:hover button,
+  .user,
+  .sidebar:hover .user {
+    max-width: 58px;
+  }
+
+  .sidebar button span,
+  .sidebar:hover button span,
+  .user span,
+  .sidebar:hover .user span {
+    max-width: 50px !important;
+    font-size: 8px !important;
+  }
+
+  .ride-card,
+  .perfil-card,
+  .my-ride-card,
+  .notificacao-card,
+  .popup-box {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
 /* Readability fix for confirmation popups and map popups. */
 .popup-box,
 .popup-box *:not(button):not(svg):not(path),

@@ -168,6 +168,8 @@ async function carregarPerfilAutenticado() {
 
 function validarDadosPerfil(dados) {
   if (dados.nome.length < 3) return "Nome deve ter ao menos 3 caracteres.";
+  const erroConteudoNome = validarTextoPermitido("Nome", dados.nome);
+  if (erroConteudoNome) return erroConteudoNome;
   if (dados.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email)) return "Email invalido.";
   if (dados.celular && !/^\+?[\d\s().-]{10,20}$/.test(dados.celular)) return "Celular invalido.";
   if (!obterFaculdadePorId(dados.faculdadeId)) return "Selecione uma faculdade valida.";

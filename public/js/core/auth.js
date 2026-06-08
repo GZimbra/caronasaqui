@@ -62,12 +62,16 @@ function initFaculdadesAuth() {
   });
 }
 
-function mostrarLogin(animar) {
+function mostrarLogin(animar, identificadorLogin = null) {
+  const modoAnterior = window.modo;
   window.modo = "login";
   document.getElementById("titulo").innerText = "Entrar";
   document.getElementById("btnAcao").innerText = "Entrar";
-  document.getElementById("labelIdentificador").innerText = "Matricula ou usuario";
+  document.getElementById("labelIdentificador").innerText = "Matricula";
   document.getElementById("nomeUsuario").placeholder = "Ex: 2024123456";
+  if (identificadorLogin !== null || modoAnterior === "registro") {
+    document.getElementById("nomeUsuario").value = identificadorLogin || "";
+  }
   document.getElementById("tabLogin").classList.add("active");
   document.getElementById("tabRegister").classList.remove("active");
   document.getElementById("senha")?.setAttribute("autocomplete", "current-password");
@@ -92,6 +96,7 @@ function mostrarRegistro() {
   document.getElementById("btnAcao").innerText = "Registrar";
   document.getElementById("labelIdentificador").innerText = "Nome completo";
   document.getElementById("nomeUsuario").placeholder = "Ex: Gabriel Silva";
+  document.getElementById("nomeUsuario").value = "";
   document.getElementById("tabLogin").classList.remove("active");
   document.getElementById("tabRegister").classList.add("active");
   document.getElementById("senha")?.setAttribute("autocomplete", "new-password");
@@ -114,6 +119,11 @@ function validarRegistro({ nome, matricula, senha, confirma, faculdadeId }) {
 
   if (nome.length < 3) {
     setFieldError("erroNomeUsuario", "Informe o nome completo.");
+    ok = false;
+  }
+  const erroConteudoNome = validarTextoPermitido("Nome", nome);
+  if (erroConteudoNome) {
+    setFieldError("erroNomeUsuario", erroConteudoNome);
     ok = false;
   }
   if (!MATRICULA_REGEX.test(matricula)) {
@@ -142,7 +152,7 @@ async function login() {
   const senha = (document.getElementById("senha")?.value || "").trim();
 
   if (!identificador || !senha) {
-    const msg = "Preencha a matricula/usuario e a senha.";
+    const msg = "Preencha a matricula e a senha.";
     setAuthFeedback(msg, "aviso");
     showToast(msg, "aviso");
     return;
@@ -164,7 +174,7 @@ async function login() {
     const docSnap = await db.collection("usuarios").doc(uid).get();
     if (!docSnap.exists) {
       console.warn("[Auth Warning] Login bem-sucedido no Auth mas doc do usuário ausente. UID:", uid);
-      const msg = "Matricula/usuario ou senha incorretos.";
+      const msg = "Matricula ou senha incorretos.";
       setAuthFeedback(msg);
       showToast(msg, "erro");
       return;
@@ -190,7 +200,7 @@ async function login() {
     // Log interno separado
     console.error("[Auth Error] Falha no login:", e.code || e.message);
     
-    const msg = _traduzirErro(e.code, "login") || "Matricula/usuario ou senha incorretos.";
+    const msg = _traduzirErro(e.code, "login") || "Matricula ou senha incorretos.";
     setAuthFeedback(msg);
     showToast(msg, "erro");
   } finally {
@@ -241,7 +251,7 @@ async function registrar() {
     setAuthFeedback("Conta criada. Faca login com sua matricula.", "sucesso");
     showToast("Conta criada. Faca login com sua matricula.", "sucesso", 4000);
     await auth.signOut();
-    mostrarLogin(true);
+    mostrarLogin(true, matricula);
   } catch (e) {
     // Log interno separado
     console.error("[Auth Error] Falha no registro:", e.code || e.message);
@@ -274,7 +284,7 @@ function _traduzirErro(code, contexto = "login") {
       "auth/invalid-credential"
     ];
     if (errosGenericos.includes(code)) {
-      return "Matricula/usuario ou senha incorretos.";
+      return "Matricula ou senha incorretos.";
     }
   }
 

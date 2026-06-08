@@ -428,6 +428,13 @@ async function salvarCarona() {
   }
 
   const descricao = sanitizarTextoLivre(document.getElementById('descricaoCarona').value);
+  const erroConteudoPartida = validarTextoPermitido('Local de partida', partidaLivre);
+  const erroConteudoDescricao = validarTextoPermitido('Descricao', descricao);
+  if (erroConteudoPartida || erroConteudoDescricao) {
+    const msg = erroConteudoPartida || erroConteudoDescricao;
+    showToast(msg, 'aviso');
+    return;
+  }
   const horario   = document.getElementById('horarioCarona')?.value || '';
 
   const [origemEndereco, destinoEndereco] = await Promise.all([

@@ -187,3 +187,84 @@ window.alert = function(msg) {
 };
 
 window.showToast = showToast;
+
+// ============================================================
+// MODERACAO DE TEXTO — bloqueio client-side de termos ofensivos
+// ============================================================
+
+const TERMOS_BLOQUEADOS = [
+  "abusar",
+  "abusando",
+  "abuso",
+  "abusado",
+  "abusada",
+  "arrombado",
+  "arrombada",
+  "bosta",
+  "caralho",
+  "chupar",
+  "chupa",
+  "chupando",
+  "chupada",
+  "chupado",
+  "cu",
+  "foder",
+  "fodase",
+  "foda-se",
+  "idiota",
+  "imbecil",
+  "mamar",
+  "mama",
+  "mamando",
+  "mamada",
+  "mamado",
+  "merda",
+  "molestar",
+  "molesta",
+  "molestando",
+  "molestado",
+  "molestada",
+  "otario",
+  "otaria",
+  "pqp",
+  "porra",
+  "puta",
+  "puto",
+  "vtnc",
+  "vadia",
+];
+
+function normalizarTextoModeracao(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[@4]/g, "a")
+    .replace(/[!1]/g, "i")
+    .replace(/[0]/g, "o")
+    .replace(/[$5]/g, "s")
+    .toLowerCase();
+}
+
+function contemConteudoBloqueado(valor) {
+  const texto = normalizarTextoModeracao(valor);
+
+  for (const termo of TERMOS_BLOQUEADOS) {
+    const termoNormalizado = normalizarTextoModeracao(termo).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(^|[^a-z0-9])${termoNormalizado}([^a-z0-9]|$)`, "i");
+    if (regex.test(texto)) {
+      return { bloqueado: true, termo };
+    }
+  }
+
+  return { bloqueado: false, termo: "" };
+}
+
+function validarTextoPermitido(campo, valor) {
+  const resultado = contemConteudoBloqueado(valor);
+  if (!resultado.bloqueado) return "";
+  return `${campo} contem termo nao permitido. Remova xingamentos ou linguagem abusiva.`;
+}
+
+window.TERMOS_BLOQUEADOS = TERMOS_BLOQUEADOS;
+window.contemConteudoBloqueado = contemConteudoBloqueado;
+window.validarTextoPermitido = validarTextoPermitido;
